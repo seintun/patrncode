@@ -4,5 +4,5 @@
   "initialVersions": {
     "patrncode": "0.1.0"
   },
-  "changesets": []
+  "changesets": ["initial-beta", "salty-jars-fall", "test-coverage-and-deployment"]
 }
