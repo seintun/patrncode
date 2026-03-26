@@ -25,8 +25,9 @@ model Problem {
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
 
-  testCases TestCase[]
-  sessions  Session[]
+  testCases     TestCase[]
+  sessions      Session[]
+  problemStates UserProblemState[]
 }
 
 model TestCase {
@@ -36,6 +37,9 @@ model TestCase {
   expected  String
   isHidden  Boolean @default(false)
   order     Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   problem Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
 }
@@ -52,7 +56,7 @@ model Session {
   completedAt DateTime?
   outcome     SessionOutcome?
 
-  problem  Problem          @relation(fields: [problemId], references: [id])
+  problem  Problem          @relation(fields: [problemId], references: [id], onDelete: Cascade)
   runs     TestRun[]
   hints    Hint[]
   feedback SessionFeedback?
@@ -112,6 +116,7 @@ model UserProblemState {
   guestId         String
   userId          String?
   problemId       String
+  problem         Problem      @relation(fields: [problemId], references: [id], onDelete: Cascade)
   mastery         MasteryState @default(UNSEEN)
   lastAttemptedAt DateTime?
   nextReviewAt    DateTime?
