@@ -1,0 +1,7 @@
+.next
+bun.lock
+*.tsbuildinfo
+node_modules
+dist
+out
+coverage
