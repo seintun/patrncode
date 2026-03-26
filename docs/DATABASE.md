@@ -208,17 +208,20 @@ Run manually: `bunx prisma db seed`
 
 ---
 
-## 5. Migrations
+## 5. Schema Sync
+
+The project currently uses `db push` (no migration history). This is suitable for rapid development during beta.
 
 ```bash
-# Create migration
-bunx prisma migrate dev --name <migration-name>
+# Sync schema to database (creates/alters tables to match schema.prisma)
+bunx prisma db push
 
-# Apply in production
-bunx prisma migrate deploy
+# Seed sample problems (8 problems with test cases)
+bunx prisma db seed
 
-# Reset (dev only)
-bunx prisma migrate reset
+# Generate Prisma client after schema changes
+bunx prisma generate
 ```
 
-Migrations are stored in `prisma/migrations/`.
+> [!NOTE]
+> When the project stabilizes post-beta, switch to `prisma migrate dev` for versioned, reviewable migrations. See the [Prisma docs on migrate vs db push](https://www.prisma.io/docs/orm/prisma-migrate/understanding-prisma-migrate/mental-model#choosing-db-push-or-prisma-migrate).
