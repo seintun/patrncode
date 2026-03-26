@@ -10,7 +10,7 @@ export async function GET(
   try {
     const { id } = await params;
 
-    const session = await prisma.session.findUnique({
+    const session = await prisma.session.findFirst({
       where: { id },
       include: {
         problem: {

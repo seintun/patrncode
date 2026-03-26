@@ -15,7 +15,7 @@ export async function POST(
   try {
     const { id } = await params;
 
-    const session = await prisma.session.findUnique({
+    const session = await prisma.session.findFirst({
       where: { id },
       include: {
         problem: true,
@@ -95,12 +95,10 @@ export async function POST(
     }
 
     const solved = outcome === 'SOLVED';
-    const existingState = await prisma.userProblemState.findUnique({
+    const existingState = await prisma.userProblemState.findFirst({
       where: {
-        guestId_problemId: {
-          guestId: session.guestId,
-          problemId: session.problemId,
-        },
+        guestId: session.guestId,
+        problemId: session.problemId,
       },
     });
 

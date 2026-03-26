@@ -39,8 +39,9 @@ cp .env.example .env.local
 # Fill in NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY,
 # DATABASE_URL, DIRECT_URL, OPENROUTER_API_KEY
 
-# 3. Run database migrations
-bunx prisma migrate dev
+# 3. Set up database (create tables + seed sample problems)
+bunx prisma db push
+bunx prisma db seed
 
 # 4. Start dev server
 bun dev

@@ -9,7 +9,7 @@ export async function GET(
   try {
     const { slug } = await params;
 
-    const problem = await prisma.problem.findUnique({
+    const problem = await prisma.problem.findFirst({
       where: { slug },
       include: {
         testCases: {

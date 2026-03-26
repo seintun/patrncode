@@ -48,8 +48,8 @@ cp .env.example .env.local
 # Fill in: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY,
 #          DATABASE_URL, DIRECT_URL, OPENROUTER_API_KEY
 
-# Database
-bunx prisma migrate dev
+# Database — create tables, then seed sample problems
+bunx prisma db push
 bunx prisma db seed
 
 # Run

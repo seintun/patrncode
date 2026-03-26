@@ -6,9 +6,10 @@ import type { Metadata } from 'next';
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
-  const problem = await getProblemBySlug(params.slug);
+  const { slug } = await params;
+  const problem = await getProblemBySlug(slug);
 
   if (!problem) {
     return {
@@ -38,8 +39,9 @@ export async function generateMetadata({
   };
 }
 
-export default async function ProblemPage({ params }: { params: { slug: string } }) {
-  const problem = await getProblemBySlug(params.slug);
+export default async function ProblemPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const problem = await getProblemBySlug(slug);
 
   if (!problem) {
     notFound();

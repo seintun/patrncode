@@ -1,7 +1,10 @@
 import { prisma } from '@/lib/db/prisma';
 
 export async function getProblemBySlug(slug: string) {
-  return await prisma.problem.findUnique({
+  // Use findFirst instead of findUnique to avoid Prisma 7.x query compiler
+  // panic (PrismaClientRustPanicError) when calls are batched with driver adapters.
+  // See: https://github.com/prisma/prisma/issues/new (selection.rs:218 panic)
+  return await prisma.problem.findFirst({
     where: { slug },
   });
 }
