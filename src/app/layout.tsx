@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter, JetBrains_Mono } from 'next/font/google';
 import Link from 'next/link';
 import './globals.css';
@@ -15,6 +15,10 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ['latin'],
 });
 
+export const viewport: Viewport = {
+  themeColor: '#0a0a0a',
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL('https://patrnco.de'),
   title: {
@@ -27,7 +31,6 @@ export const metadata: Metadata = {
     icon: '/favicon.ico',
     apple: '/apple-touch-icon.png',
   },
-  themeColor: '#0a0a0a',
   openGraph: {
     title: 'patrncode — AI Coding Interview Practice',
     description:

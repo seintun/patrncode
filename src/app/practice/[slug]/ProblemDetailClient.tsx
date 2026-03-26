@@ -29,7 +29,7 @@ interface ProblemDetail {
     isHidden: boolean;
     order: number;
   }>;
-  updatedAt: Date;
+  updatedAt: Date | string;
   tags?: string[];
   sourceType?: string;
   externalUrl?: string | null;

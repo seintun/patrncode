@@ -45,6 +45,7 @@ export default async function ProblemPage({ params }: { params: { slug: string }
     notFound();
   }
 
-  // Pass data to client component for interactivity
-  return <ProblemDetailClient problem={problem as any} />;
+  // Serialize Prisma model (Date fields → strings) before passing to client component
+  const plainProblem = JSON.parse(JSON.stringify(problem));
+  return <ProblemDetailClient problem={plainProblem} />;
 }

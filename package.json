@@ -40,6 +40,7 @@
     "@prisma/pg-worker": "^6.9.0",
     "@supabase/ssr": "^0.9.0",
     "@supabase/supabase-js": "^2.100.0",
+    "@tailwindcss/typography": "^0.5.19",
     "@vercel/analytics": "^2.0.1",
     "ai": "^6.0.138",
     "clsx": "^2.1.1",
