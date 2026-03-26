@@ -1,36 +1,135 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# patrncode
 
-## Getting Started
+AI-coached coding interview practice. Learn patterns, not just problems.
 
-First, run the development server:
+**[patrnco.de](https://patrnco.de)** · [Architecture](ARCHITECTURE.md) · [Contributing](.github/CONTRIBUTING.md)
+
+> **Beta** (`0.1.0-beta.x`) — APIs and data models may change between commits.
+
+---
+
+## What It Is
+
+patrncode is a session-based Python algorithm practice platform with an AI coach that teaches through Socratic questioning — never giving away solutions. Users practice curated DSA problems, get progressive hints, and build mastery through spaced repetition.
+
+**Three session modes:**
+
+- **Self-Practice** — hints off or delayed, work at your own pace
+- **Coach Me** — AI coach available on demand, guiding with questions
+- **Mock Interview** — simulated interview with probing follow-ups
+
+**Core loop:** Clarify → Plan → Code → Reflect
+
+---
+
+## Features
+
+- **Zero-friction entry** — start practicing immediately, no sign-up required. Guest data migrates to your account when you're ready.
+- **In-browser Python** — code runs via Pyodide (WebAssembly), no server sandbox needed. Instant feedback, works offline after first load.
+- **Progressive hints** — 3 levels (direction → approach → specific) that never spoil the solution.
+- **Pattern-based learning** — master 14 DSA patterns (Two Pointers, Sliding Window, BFS/DFS, DP, etc.), not memorize 1000 problems.
+- **Spaced repetition** — problems resurface based on mastery state and review intervals.
+- **AI coaching** — five specialized prompt contexts (explanation, hint, coach, interviewer, summary) powered by OpenRouter.
+- **Mastery heatmap** — visualize your pattern coverage on the dashboard.
+
+---
+
+## Quick Start
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
+# Prerequisites: Bun ≥ 1.1.0, Node ≥ 20
+
+git clone <repo-url>
+cd patrncode
+bun install
+
+# Set up environment
+cp .env.example .env.local
+# Fill in: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY,
+#          DATABASE_URL, DIRECT_URL, OPENROUTER_API_KEY
+
+# Database
+bunx prisma migrate dev
+bunx prisma db seed
+
+# Run
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000). The landing page is at `src/app/(marketing)/page.tsx`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Tech Stack
 
-## Learn More
+| Layer            | Technology                                   |
+| ---------------- | -------------------------------------------- |
+| Framework        | Next.js 16 (App Router, RSC)                 |
+| UI               | React 19, Tailwind CSS v4, Monaco Editor     |
+| Database         | Supabase Postgres, Prisma 7                  |
+| Auth             | Supabase OAuth (GitHub/Google) + guest UUIDs |
+| AI               | OpenRouter + Vercel AI SDK (streaming)       |
+| Python execution | Pyodide (WASM, in-browser)                   |
+| Testing          | Vitest (unit), Playwright (E2E)              |
+| CI/CD            | GitHub Actions (4 workflows)                 |
+| Deployment       | Vercel                                       |
+| Package manager  | Bun                                          |
+| Versioning       | Changesets                                   |
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Project Structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+src/
+├── app/                    # Next.js App Router (pages + API routes)
+├── components/
+│   ├── ui/                 # Primitives (Button, Card, Badge, etc.)
+│   └── domain/             # Feature components (CoachingPanel, CodeEditor, etc.)
+├── hooks/                  # useUser, useSession, useCodeExecution, useAIChat
+├── lib/
+│   ├── ai/                 # OpenRouter client, model config, 5 prompt builders
+│   ├── auth/               # Guest-to-user migration
+│   ├── db/                 # Prisma singleton
+│   ├── execution/          # Pyodide worker interface
+│   ├── supabase/           # Auth clients
+│   └── mastery.ts          # Spaced repetition state machine
+├── types/                  # Domain types (mirror Prisma enums)
+└── middleware.ts            # Supabase session refresh
+```
 
-## Deploy on Vercel
+See [ARCHITECTURE.md](ARCHITECTURE.md) for the full system design, or the [docs/](docs/) directory for detailed references:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- [Architecture](docs/ARCHITECTURE.md) — data flows, diagrams, tech rationale
+- [AI System](docs/AI-SYSTEM.md) — prompt contexts, model config, streaming
+- [Database](docs/DATABASE.md) — schema, models, enums, migrations
+- [Design System](docs/DESIGN-SYSTEM.md) — tokens, colors, typography, components
+- [Security](docs/SECURITY.md) — known gaps, mitigations
+- [Roadmap](docs/ROADMAP.md) — post-MVP features
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## Scripts
+
+```bash
+bun dev              # Start dev server
+bun run build        # Production build
+bun run lint         # ESLint
+bun run type-check   # TypeScript check
+bun run format       # Prettier
+bun run test         # Unit tests (Vitest)
+bun run test:e2e     # E2E tests (Playwright)
+bun run changeset    # Create a changeset for your PR
+```
+
+---
+
+## Deployment
+
+See [DEPLOY.md](DEPLOY.md) for the full checklist.
+
+---
+
+## Contributing
+
+See [CONTRIBUTING.md](.github/CONTRIBUTING.md). Key requirements: feature branches, conventional commits, changeset per PR, tests for new logic.
