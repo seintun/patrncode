@@ -1,4 +1,4 @@
 export const MODELS = {
-  reasoning: 'anthropic/claude-sonnet-4',
-  summary: 'openai/gpt-4o-mini',
+  reasoning: 'stepfun/step-3.5-flash:free',
+  summary: 'stepfun/step-3.5-flash:free',
 } as const;
