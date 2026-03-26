@@ -10,6 +10,10 @@ describe('AIBanner', () => {
     mockFetch.mockReset();
   });
 
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
   it('shows nothing when API returns 200', async () => {
     mockFetch.mockResolvedValueOnce(new Response(null, { status: 200 }));
 

@@ -23,7 +23,7 @@ const eslintConfig = defineConfig([
       ],
       // Disallow non-null assertions — use proper null checks
       '@typescript-eslint/no-non-null-assertion': 'warn',
-      // Enforce consistent array type syntax: `T[]` not `Array<T>`
+      // Enforce `T[]` for simple types, `Array<T>` for complex types
       '@typescript-eslint/array-type': ['error', { default: 'array-simple' }],
     },
   },

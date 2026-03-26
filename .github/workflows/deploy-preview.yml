@@ -48,9 +48,27 @@ jobs:
           script: |
             const url = '${{ steps.deploy.outputs.url }}';
             const sha = '${{ github.event.pull_request.head.sha }}'.substring(0, 7);
-            await github.rest.issues.createComment({
+            const marker = '<!-- vercel-preview-comment -->';
+            const body = `${marker}\n## 🚀 Preview Deployed\n\n**URL:** ${url}\n\n**Commit:** \`${sha}\`\n\n> Built from PR #${context.issue.number}`;
+
+            const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
-              body: `## 🚀 Preview Deployed\n\n**URL:** ${url}\n\n**Commit:** \`${sha}\`\n\n> Built from PR #${context.issue.number}`
             });
+            const existing = comments.find(c => c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }

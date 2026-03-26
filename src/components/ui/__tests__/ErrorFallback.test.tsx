@@ -31,11 +31,8 @@ describe('ErrorFallback', () => {
 
   it('does not render children section when not provided', () => {
     render(<ErrorFallback error={error} onRetry={() => {}} />);
-    const pre = screen.getByText(/Something broke/);
-    expect(pre).toBeInTheDocument();
+    expect(screen.getByText(/Something broke/)).toBeInTheDocument();
     expect(screen.getByText(/Something went wrong/)).toBeInTheDocument();
-    const paragraphs = screen.getAllByRole('paragraph');
-    const childParagraph = paragraphs.find((p) => p.textContent === 'Extra detail');
-    expect(childParagraph).toBeUndefined();
+    expect(screen.queryByText('Extra detail')).not.toBeInTheDocument();
   });
 });

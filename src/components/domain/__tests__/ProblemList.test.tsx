@@ -1,9 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import ProblemList from '../ProblemList';
 
-vi.stubGlobal('fetch', vi.fn());
-const mockFetch = vi.mocked(fetch);
-
 vi.mock('next/link', () => ({
   default: ({ children, href, ...props }: { children: React.ReactNode; href: string }) => (
     <a href={href} {...props}>
@@ -34,8 +31,15 @@ const mockProblems = [
 ];
 
 describe('ProblemList', () => {
+  let mockFetch: ReturnType<typeof vi.fn>;
+
   beforeEach(() => {
-    vi.clearAllMocks();
+    mockFetch = vi.fn();
+    vi.stubGlobal('fetch', mockFetch);
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
   });
 
   it('shows loading skeleton initially', () => {
