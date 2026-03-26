@@ -3,45 +3,35 @@
 import { type HTMLAttributes } from 'react';
 import { cn } from '@/lib/utils';
 
-const difficultyStyles = {
-  Easy: 'bg-[var(--color-success)]/20 text-[var(--color-success)]',
-  Medium: 'bg-[var(--color-warning)]/20 text-[var(--color-warning)]',
-  Hard: 'bg-[var(--color-error)]/20 text-[var(--color-error)]',
-};
-
-const masteryStyles = {
+const styles: Record<string, string> = {
+  EASY: 'bg-[var(--color-success)]/20 text-[var(--color-success)]',
+  MEDIUM: 'bg-[var(--color-warning)]/20 text-[var(--color-warning)]',
+  HARD: 'bg-[var(--color-error)]/20 text-[var(--color-error)]',
   UNSEEN: 'bg-[var(--color-bg-elevated)] text-[var(--color-text-muted)]',
   IN_PROGRESS: 'bg-[var(--color-warning)]/20 text-[var(--color-warning)]',
   MASTERED: 'bg-[var(--color-success)]/20 text-[var(--color-success)]',
   NEEDS_REFRESH: 'bg-[var(--color-error)]/20 text-[var(--color-error)]',
+  SOLVED: 'bg-[var(--color-success)]/20 text-[var(--color-success)]',
+  PARTIALLY_SOLVED: 'bg-[var(--color-warning)]/20 text-[var(--color-warning)]',
+  NOT_SOLVED: 'bg-[var(--color-error)]/20 text-[var(--color-error)]',
+  PATTERN: 'bg-[var(--color-accent)]/20 text-[var(--color-accent)]',
 };
 
-type BadgeVariant =
-  | { variant: 'difficulty'; level: keyof typeof difficultyStyles }
-  | { variant: 'pattern'; label: string }
-  | { variant: 'mastery'; state: keyof typeof masteryStyles };
+export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
+  variant: 'difficulty' | 'pattern' | 'mastery' | 'outcome';
+  value: string;
+  children?: React.ReactNode;
+}
 
-type BadgeProps = BadgeVariant &
-  Omit<HTMLAttributes<HTMLSpanElement>, 'children'> & {
-    className?: string;
-  };
+export function Badge({ variant, value, className, children, ...rest }: BadgeProps) {
+  let styleKey = value;
 
-function Badge(props: BadgeProps) {
-  const { className, ...variantProps } = props;
-
-  let style: string;
-  let label: string;
-
-  if (variantProps.variant === 'difficulty') {
-    style = difficultyStyles[variantProps.level];
-    label = variantProps.level;
-  } else if (variantProps.variant === 'pattern') {
-    style = 'bg-[var(--color-accent)]/20 text-[var(--color-accent)]';
-    label = variantProps.label;
-  } else {
-    style = masteryStyles[variantProps.state];
-    label = variantProps.state.replace(/_/g, ' ');
+  if (variant === 'pattern') {
+    styleKey = 'PATTERN';
   }
+
+  const style = styles[styleKey] || styles.PATTERN;
+  const label = children || value.replace(/_/g, ' ');
 
   return (
     <span
@@ -50,11 +40,11 @@ function Badge(props: BadgeProps) {
         style,
         className,
       )}
+      {...rest}
     >
       {label}
     </span>
   );
 }
 
-export { Badge, difficultyStyles, masteryStyles };
 export default Badge;
