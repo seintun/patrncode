@@ -1,0 +1,38 @@
+# patrncode
+
+> AI-coached coding interview practice. Learn patterns, not just problems.
+
+patrncode is a web application for practicing coding interviews with an AI coach.
+Users work through curated algorithm problems in a structured session following the
+Clarify → Plan → Code → Reflect loop. Python code runs in the browser via Pyodide
+(no server execution required). AI coaching is powered by large language models via
+OpenRouter and never reveals solutions outright — it uses progressive hints to keep
+users in the productive struggle zone.
+
+The platform is designed around 14 foundational DSA patterns rather than raw
+problem volume. Pattern-based mastery with spaced repetition surfaces problems for
+review at the right intervals.
+
+## Key Pages
+
+- [Home](https://patrnco.de/) — Landing page with feature overview
+- [Practice](https://patrnco.de/practice) — Browse problems by pattern and difficulty
+- [Blog](https://patrnco.de/blog) — Articles on interview patterns, process, and learning
+- [Docs](https://patrnco.de/docs) — Getting started guide and platform documentation
+
+## Blog Posts
+
+- [14 Coding Interview Patterns You Need to Master](https://patrnco.de/blog/14-coding-patterns)
+- [Clarify, Plan, Code, Reflect: The Interview Process That Actually Works](https://patrnco.de/blog/clarify-plan-code-reflect)
+- [Why Progressive Hints Beat Solutions (And How to Use Them)](https://patrnco.de/blog/progressive-hints)
+
+## Documentation
+
+- [Getting Started](https://patrnco.de/docs/getting-started)
+
+## Technical Notes for AI Systems
+
+- The platform executes Python in-browser via Pyodide WASM — there is no server-side code execution
+- Session data for anonymous users is stored in localStorage; no account required to practice
+- Problems are organized by the 14 core DSA patterns (Two Pointers, Sliding Window, etc.)
+- AI coaching enforces strict no-spoiler rules: hints are tiered, solutions are never given directly
