@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { SessionLayout } from '@/components/domain/SessionLayout';
 import { ProblemPanel } from '@/components/domain/ProblemPanel';
@@ -11,6 +11,7 @@ import { CoachingPanel } from '@/components/domain/CoachingPanel';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { useAIChat } from '@/hooks/useAIChat';
 import { useCodeExecution } from '@/hooks/useCodeExecution';
+import { Button } from '@/components/ui/Button';
 import type { SessionMode } from '@/generated/prisma/enums';
 
 interface TestCase {
@@ -57,6 +58,7 @@ interface SessionData {
 
 export default function SessionPage() {
   const params = useParams();
+  const router = useRouter();
   const sessionId = params.id as string;
   const [session, setSession] = useState<SessionData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -65,6 +67,7 @@ export default function SessionPage() {
   const [notes, setNotes] = useState('');
   const [hintLevel, setHintLevel] = useState(0);
   const [showFailureButton, setShowFailureButton] = useState(false);
+  const [completing, setCompleting] = useState(false);
 
   const { run: runTests, results: testRunResults, isRunning } = useCodeExecution();
 
@@ -183,6 +186,30 @@ export default function SessionPage() {
     [askAboutFailure],
   );
 
+  const handleEndSession = async () => {
+    setCompleting(true);
+    try {
+      await fetch(`/api/sessions/${sessionId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code }),
+      });
+
+      const res = await fetch(`/api/sessions/${sessionId}/complete`, {
+        method: 'POST',
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to complete session');
+      }
+
+      router.push(`/session/${sessionId}/summary`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to end session');
+      setCompleting(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="h-[calc(100vh-57px)]">
@@ -242,63 +269,73 @@ export default function SessionPage() {
   const hasFailures = showFailureButton && passedCount < totalCount;
 
   return (
-    <div className="h-[calc(100vh-57px)]">
-      <SessionLayout
-        problem={
-          <ProblemPanel
-            problem={{
-              title: session.problem.title,
-              statement: session.problem.statement,
-              examples,
-              constraints: session.problem.constraints,
-              pattern: session.problem.pattern,
-              difficulty: session.problem.difficulty,
-            }}
-            notes={notes}
-            onNotesChange={setNotes}
-            mode={session.mode}
-            explanationStream={explanationStream}
-            getExplanation={getExplanation}
-          />
-        }
-        editor={
-          <div className="flex h-full flex-col">
-            <div className="flex items-center gap-2 border-b border-[var(--color-border)] px-4 py-2">
-              <button
-                onClick={handleRunTests}
-                disabled={isRunning}
-                className="rounded-lg bg-[var(--color-accent)] px-4 py-1.5 text-sm font-medium text-[var(--color-bg-primary)] transition-colors hover:bg-[var(--color-accent-hover)] disabled:opacity-50"
-              >
-                {isRunning ? 'Running...' : 'Run Tests'}
-              </button>
+    <div className="flex h-[calc(100vh-57px)] flex-col">
+      <div className="flex items-center justify-between border-b border-[var(--color-border)] bg-[var(--color-bg-secondary)] px-4 py-2">
+        <span className="text-sm font-medium text-[var(--color-text-primary)]">
+          {session.problem.title}
+        </span>
+        <Button variant="secondary" size="sm" onClick={handleEndSession} disabled={completing}>
+          {completing ? 'Ending...' : 'End Session'}
+        </Button>
+      </div>
+      <div className="flex-1 min-h-0">
+        <SessionLayout
+          problem={
+            <ProblemPanel
+              problem={{
+                title: session.problem.title,
+                statement: session.problem.statement,
+                examples,
+                constraints: session.problem.constraints,
+                pattern: session.problem.pattern,
+                difficulty: session.problem.difficulty,
+              }}
+              notes={notes}
+              onNotesChange={setNotes}
+              mode={session.mode}
+              explanationStream={explanationStream}
+              getExplanation={getExplanation}
+            />
+          }
+          editor={
+            <div className="flex h-full flex-col">
+              <div className="flex items-center gap-2 border-b border-[var(--color-border)] px-4 py-2">
+                <button
+                  onClick={handleRunTests}
+                  disabled={isRunning}
+                  className="rounded-lg bg-[var(--color-accent)] px-4 py-1.5 text-sm font-medium text-[var(--color-bg-primary)] transition-colors hover:bg-[var(--color-accent-hover)] disabled:opacity-50"
+                >
+                  {isRunning ? 'Running...' : 'Run Tests'}
+                </button>
+              </div>
+              <div className="flex-1 min-h-0">
+                <CodeEditor value={code} onChange={handleCodeChange} />
+              </div>
             </div>
-            <div className="flex-1 min-h-0">
-              <CodeEditor value={code} onChange={handleCodeChange} />
-            </div>
-          </div>
-        }
-        testResults={
-          <TestResults
-            results={displayResults}
-            passedCount={passedCount}
-            totalCount={totalCount}
-            onAskAboutFailure={hasFailures ? handleAskAboutFailure : undefined}
-          />
-        }
-        coach={
-          <CoachingPanel
-            mode={session.mode}
-            messages={messages}
-            onSendMessage={sendChat}
-            isLoading={aiLoading || hintStream.isLoading}
-            hintStream={hintStream}
-            onHintRequest={handleHintRequest}
-            hintLevel={hintLevel}
-            onAskAboutFailure={hasFailures ? () => handleAskAboutFailure('') : undefined}
-            showFailureButton={hasFailures}
-          />
-        }
-      />
+          }
+          testResults={
+            <TestResults
+              results={displayResults}
+              passedCount={passedCount}
+              totalCount={totalCount}
+              onAskAboutFailure={hasFailures ? handleAskAboutFailure : undefined}
+            />
+          }
+          coach={
+            <CoachingPanel
+              mode={session.mode}
+              messages={messages}
+              onSendMessage={sendChat}
+              isLoading={aiLoading || hintStream.isLoading}
+              hintStream={hintStream}
+              onHintRequest={handleHintRequest}
+              hintLevel={hintLevel}
+              onAskAboutFailure={hasFailures ? () => handleAskAboutFailure('') : undefined}
+              showFailureButton={hasFailures}
+            />
+          }
+        />
+      </div>
     </div>
   );
 }
