@@ -17,10 +17,10 @@ interface ProblemSeed {
   pattern: 'HASH_MAPS' | 'ARRAYS_STRINGS' | 'TWO_POINTERS' | 'BINARY_SEARCH' | 'SLIDING_WINDOW';
   difficulty: 'EASY' | 'MEDIUM';
   statement: string;
-  examples: { input: string; output: string; explanation?: string }[];
+  examples: Array<{ input: string; output: string; explanation?: string }>;
   constraints: string[];
   starterCode: string;
-  approaches: { name: string; description: string; complexity: string }[];
+  approaches: Array<{ name: string; description: string; complexity: string }>;
   testCases: TestCaseData[];
 }
 

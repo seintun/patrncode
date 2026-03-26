@@ -12,7 +12,7 @@ interface SessionLayoutProps {
   coach: ReactNode;
 }
 
-const tabs: { key: TabKey; label: string }[] = [
+const tabs: Array<{ key: TabKey; label: string }> = [
   { key: 'problem', label: 'Problem' },
   { key: 'code', label: 'Code' },
   { key: 'coach', label: 'Coach' },

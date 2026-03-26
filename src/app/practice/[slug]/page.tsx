@@ -26,16 +26,16 @@ interface ProblemDetail {
   difficulty: 'EASY' | 'MEDIUM' | 'HARD';
   pattern: string;
   statement: string;
-  examples: { input: string; output: string; explanation?: string }[];
+  examples: Array<{ input: string; output: string; explanation?: string }>;
   constraints: string[];
   starterCode: string;
-  approaches: { name: string; description: string; complexity: string }[] | null;
+  approaches: Array<{ name: string; description: string; complexity: string }> | null;
   testCases: TestCase[];
 }
 
 type SessionMode = 'SELF_PRACTICE' | 'COACH_ME' | 'MOCK_INTERVIEW';
 
-const MODES: { id: SessionMode; title: string; description: string }[] = [
+const MODES: Array<{ id: SessionMode; title: string; description: string }> = [
   {
     id: 'SELF_PRACTICE',
     title: 'Self-Practice',

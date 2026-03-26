@@ -29,10 +29,10 @@ export interface Problem {
   difficulty: Difficulty;
   pattern: Pattern;
   statement: string;
-  examples: { input: string; output: string; explanation?: string }[];
+  examples: Array<{ input: string; output: string; explanation?: string }>;
   constraints: string[];
   starterCode: string;
-  approaches?: { name: string; description: string; complexity: string }[] | null;
+  approaches?: Array<{ name: string; description: string; complexity: string }> | null;
 }
 
 export interface TestCase {

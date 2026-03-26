@@ -41,7 +41,7 @@ export function ProblemPanel({
   const [activeTab, setActiveTab] = useState<TabKey>('statement');
   const [explanationRequested, setExplanationRequested] = useState(false);
 
-  const tabs: { key: TabKey; label: string }[] = [
+  const tabs: Array<{ key: TabKey; label: string }> = [
     { key: 'statement', label: 'Statement' },
     { key: 'examples', label: 'Examples' },
     ...(showExplanation ? [{ key: 'explanation' as const, label: 'Explanation' }] : []),
