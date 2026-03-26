@@ -17,7 +17,10 @@
     "test:e2e": "playwright test",
     "changeset": "changeset",
     "version": "changeset version",
-    "release": "bun run build && bun run version"
+    "release": "bun run build && bun run version",
+    "deploy": "vercel --yes",
+    "deploy:preview": "vercel --yes --prebuilt",
+    "deploy:prod": "vercel --yes --prod"
   },
   "lint-staged": {
     "*.{ts,tsx,mts,mjs}": [

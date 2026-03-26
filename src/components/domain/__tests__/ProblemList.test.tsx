@@ -1,0 +1,125 @@
+import { render, screen, waitFor } from '@testing-library/react';
+import ProblemList from '../ProblemList';
+
+vi.stubGlobal('fetch', vi.fn());
+const mockFetch = vi.mocked(fetch);
+
+vi.mock('next/link', () => ({
+  default: ({ children, href, ...props }: { children: React.ReactNode; href: string }) => (
+    <a href={href} {...props}>
+      {children}
+    </a>
+  ),
+}));
+
+const mockProblems = [
+  {
+    id: '1',
+    title: 'Two Sum',
+    slug: 'two-sum',
+    difficulty: 'EASY',
+    pattern: 'ARRAYS_STRINGS',
+    testCaseCount: 3,
+    mastery: null,
+  },
+  {
+    id: '2',
+    title: 'Longest Substring',
+    slug: 'longest-substring',
+    difficulty: 'MEDIUM',
+    pattern: 'SLIDING_WINDOW',
+    testCaseCount: 5,
+    mastery: null,
+  },
+];
+
+describe('ProblemList', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('shows loading skeleton initially', () => {
+    mockFetch.mockImplementation(() => new Promise(() => {}));
+
+    render(<ProblemList />);
+
+    const skeletons = document.querySelectorAll('.animate-pulse');
+    expect(skeletons.length).toBeGreaterThan(0);
+  });
+
+  it('renders problem list after fetch resolves', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockProblems,
+    } as Response);
+
+    render(<ProblemList />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Two Sum')).toBeInTheDocument();
+    });
+
+    expect(screen.getByText('Longest Substring')).toBeInTheDocument();
+    expect(screen.getByText('3 test cases')).toBeInTheDocument();
+    expect(screen.getByText('5 test cases')).toBeInTheDocument();
+  });
+
+  it('shows error message with retry on fetch failure', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+    } as Response);
+
+    render(<ProblemList />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/failed to load problems/i)).toBeInTheDocument();
+    });
+
+    expect(screen.getByRole('button', { name: /retry/i })).toBeInTheDocument();
+  });
+
+  it('shows empty state when no problems returned', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => [],
+    } as Response);
+
+    render(<ProblemList />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/no problems match your filters/i)).toBeInTheDocument();
+    });
+
+    expect(screen.getByRole('button', { name: /clear filters/i })).toBeInTheDocument();
+  });
+
+  it('renders difficulty badges', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockProblems,
+    } as Response);
+
+    render(<ProblemList />);
+
+    await waitFor(() => {
+      expect(screen.getAllByText('EASY').length).toBeGreaterThanOrEqual(1);
+    });
+
+    expect(screen.getAllByText('MEDIUM').length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('renders pattern badges', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockProblems,
+    } as Response);
+
+    render(<ProblemList />);
+
+    await waitFor(() => {
+      expect(screen.getAllByText('Arrays Strings').length).toBeGreaterThanOrEqual(1);
+    });
+
+    expect(screen.getAllByText('Sliding Window').length).toBeGreaterThanOrEqual(1);
+  });
+});
