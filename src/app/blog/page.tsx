@@ -5,12 +5,12 @@ import { getAllPosts } from '@/lib/content';
 export const metadata: Metadata = {
   title: 'Blog',
   description:
-    'Coding interview tips, pattern deep-dives, and learning strategies from the patrncode team.',
+    "Coding interview tips, DSA pattern deep-dives, and learning strategies from the Sophocode team — guided by Sophia's wisdom-first approach.",
   robots: { index: true, follow: true },
   openGraph: {
-    title: 'Blog — patrncode',
+    title: 'Blog — Sophocode',
     description:
-      'Coding interview tips, pattern deep-dives, and learning strategies from the patrncode team.',
+      "Coding interview tips, DSA pattern deep-dives, and learning strategies from the Sophocode team — guided by Sophia's wisdom-first approach.",
     type: 'website',
   },
 };

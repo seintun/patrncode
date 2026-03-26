@@ -49,7 +49,7 @@ export default function LoginPage() {
     <div className="flex min-h-[80vh] items-center justify-center px-4">
       <Card className="w-full max-w-md">
         <h1 className="mb-1 text-2xl font-bold text-[var(--color-text-primary)]">
-          Sign in to patrncode
+          Sign in to sophocode
         </h1>
         <p className="mb-6 text-sm text-[var(--color-text-secondary)]">
           Save your progress and sync across devices.

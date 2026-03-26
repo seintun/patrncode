@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/dashboard', '/progress', '/session', '/login'],
       },
     ],
-    sitemap: 'https://patrnco.de/sitemap.xml',
+    sitemap: 'https://sophoco.de/sitemap.xml',
   };
 }

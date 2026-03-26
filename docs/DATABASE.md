@@ -2,7 +2,7 @@
 
 ## Overview
 
-patrncode uses **Supabase Postgres** as the database, accessed via **Prisma 7** with the `@prisma/adapter-pg` adapter for edge-compatible connection pooling.
+sophocode uses **Supabase Postgres** as the database, accessed via **Prisma 7** with the `@prisma/adapter-pg` adapter for edge-compatible connection pooling.
 
 ---
 

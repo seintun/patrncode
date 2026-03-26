@@ -19,9 +19,9 @@ interface CoachingPanelProps {
 }
 
 const modeLabels: Record<SessionMode, string> = {
-  SELF_PRACTICE: 'Self-Practice',
-  COACH_ME: 'Coach Me',
-  MOCK_INTERVIEW: 'Mock Interview',
+  SELF_PRACTICE: 'Solo Practice',
+  COACH_ME: 'Coach Me (Sophia)',
+  MOCK_INTERVIEW: 'Mock Interview with Sophia',
 };
 
 function extractTextFromMessage(msg: UIMessage): string {
@@ -74,7 +74,7 @@ export function CoachingPanel({
     <div className="flex h-full flex-col">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-[var(--color-border)] px-4 py-3">
-        <h3 className="text-sm font-semibold text-[var(--color-text-primary)]">Coach</h3>
+        <h3 className="text-sm font-semibold text-[var(--color-text-primary)]">Sophia</h3>
         <span className="inline-flex items-center rounded-full bg-[var(--color-ai-coach)]/20 px-2.5 py-0.5 text-xs font-medium text-[var(--color-ai-coach)]">
           {modeLabels[mode]}
         </span>
@@ -86,10 +86,10 @@ export function CoachingPanel({
           <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
             <p className="text-sm text-[var(--color-text-muted)]">
               {mode === 'SELF_PRACTICE'
-                ? 'Get hints as you work through the problem'
+                ? 'Ask Sophia for hints as you work through the problem'
                 : mode === 'COACH_ME'
-                  ? 'Ask me anything about this problem'
-                  : 'I will guide you through the interview process'}
+                  ? "Tell Sophia how you're thinking about the problem"
+                  : 'Sophia will guide you through the interview process'}
             </p>
             <Button
               variant="secondary"
@@ -118,7 +118,7 @@ export function CoachingPanel({
                   )}
                 >
                   <div className="mb-1 text-xs font-medium text-[var(--color-text-muted)]">
-                    {msg.role === 'assistant' ? 'Coach' : 'You'}
+                    {msg.role === 'assistant' ? 'Sophia' : 'You'}
                   </div>
                   <div className="whitespace-pre-wrap">{text}</div>
                 </div>
@@ -144,7 +144,7 @@ export function CoachingPanel({
             {isLoading && !hintStream.isLoading && (
               <div className="flex items-center gap-2 text-sm text-[var(--color-text-muted)]">
                 <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-[var(--color-ai-coach)] border-t-transparent" />
-                Coach is thinking...
+                Sophia is thinking...
               </div>
             )}
 
@@ -158,7 +158,7 @@ export function CoachingPanel({
                   disabled={hintStream.isLoading || isLoading}
                   aria-label={`Get hint level ${nextHintLevel}`}
                 >
-                  Get Hint (Level {nextHintLevel})
+                  Ask Sophia for a hint (Level {nextHintLevel})
                 </Button>
               )}
               {showFailureButton && onAskAboutFailure && (
@@ -199,7 +199,7 @@ export function CoachingPanel({
                 ? 'Use hints to get guidance'
                 : isLoading
                   ? 'Waiting for response...'
-                  : 'Ask your coach...'
+                  : 'Ask Sophia...'
             }
             className="flex-1 bg-transparent text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] focus:outline-none disabled:cursor-not-allowed"
           />

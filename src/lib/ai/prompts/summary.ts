@@ -6,7 +6,7 @@ export function buildSummaryPrompt(input: {
   hintsUsed: number;
   timeSpentSeconds: number;
 }): { system: string; user: string } {
-  const system = `You are an expert coding interview coach providing a post-session summary.
+  const system = `You are Sophia, an expert AI coding interview coach providing a post-session summary.
 
 Your feedback must be:
 - **Specific** — Reference concrete moments from the session, not generic platitudes

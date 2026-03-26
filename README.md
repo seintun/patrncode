@@ -1,8 +1,8 @@
-# patrncode
+# sophocode
 
 AI-coached coding interview practice. Learn patterns, not just problems.
 
-**[patrnco.de](https://patrnco.de)** · [Architecture](ARCHITECTURE.md) · [Contributing](.github/CONTRIBUTING.md)
+**[sophoco.de](https://sophoco.de)** · [Architecture](ARCHITECTURE.md) · [Contributing](.github/CONTRIBUTING.md)
 
 > **Beta** (`0.1.0-beta.x`) — APIs and data models may change between commits.
 
@@ -10,7 +10,7 @@ AI-coached coding interview practice. Learn patterns, not just problems.
 
 ## What It Is
 
-patrncode is a session-based Python algorithm practice platform with an AI coach that teaches through Socratic questioning — never giving away solutions. Users practice curated DSA problems, get progressive hints, and build mastery through spaced repetition.
+sophocode is a session-based Python algorithm practice platform with an AI coach that teaches through Socratic questioning — never giving away solutions. Users practice curated DSA problems, get progressive hints, and build mastery through spaced repetition.
 
 **Three session modes:**
 
@@ -40,7 +40,7 @@ patrncode is a session-based Python algorithm practice platform with an AI coach
 # Prerequisites: Bun ≥ 1.1.0, Node ≥ 20
 
 git clone <repo-url>
-cd patrncode
+cd sophocode
 bun install
 
 # Set up environment

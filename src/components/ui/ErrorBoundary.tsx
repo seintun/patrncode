@@ -22,7 +22,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   }
 
   componentDidCatch(error: Error, info: ErrorInfo) {
-    console.error('PATRNCODE ERROR:', error, info.componentStack);
+    console.error('SOPHOCODE ERROR:', error, info.componentStack);
   }
 
   handleReset = () => {

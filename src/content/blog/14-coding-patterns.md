@@ -3,7 +3,7 @@ title: '14 Coding Interview Patterns You Need to Master'
 description: "Stop memorizing LeetCode problems. Learn these 14 foundational patterns and you'll be able to solve problems you've never seen before."
 publishedAt: '2026-03-01'
 tags: ['patterns', 'leetcode', 'interview prep', 'algorithms']
-author: 'patrncode'
+author: 'sophocode'
 ---
 
 Most engineers prepare for coding interviews the wrong way. They grind hundreds of LeetCode problems hoping that sheer volume will carry them through. It rarely does.
@@ -140,4 +140,4 @@ When you see a new problem, run through this checklist:
 
 The goal isn't to memorize these — it's to internalize the _shape_ of problems that each pattern solves. After you solve 3-5 problems in each category, the pattern recognition becomes automatic.
 
-That's what patrncode is built for: deliberate practice by pattern, with an AI coach that explains _why_ each approach works.
+That's what sophocode is built for: deliberate practice by pattern, with an AI coach that explains _why_ each approach works.

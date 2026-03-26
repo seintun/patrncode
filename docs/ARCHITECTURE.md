@@ -17,7 +17,7 @@
 
 ## 1. System Overview
 
-patrncode is a session-based Python algorithm practice platform with integrated AI coaching. Users work through curated algorithm problems inside a structured coding session — running Python code directly in the browser via WebAssembly, receiving AI hints that never spoil solutions, and accumulating a mastery score through spaced repetition.
+sophocode is a session-based Python algorithm practice platform with integrated AI coaching. Users work through curated algorithm problems inside a structured coding session — running Python code directly in the browser via WebAssembly, receiving AI hints that never spoil solutions, and accumulating a mastery score through spaced repetition.
 
 The system is designed with two guiding principles: **zero-friction entry** (anonymous guests can start practicing immediately with no sign-up required) and **no server-side code execution** (Python runs in-browser via Pyodide, eliminating sandbox complexity and server cost). AI coaching is powered by OpenRouter (model-agnostic) with five specialized prompt contexts, each enforcing strict no-spoiler rules.
 
@@ -86,7 +86,7 @@ graph TB
 ## 3. Directory Structure
 
 ```
-patrncode/
+sophocode/
 ├── .github/
 │   ├── workflows/
 │   │   ├── ci.yml                 # Lint, typecheck, unit tests, E2E, changeset check
@@ -577,7 +577,7 @@ flowchart TD
 
 ## 10. Versioning & Releases
 
-patrncode uses [Changesets](https://github.com/changesets/changesets) for intentional, PR-level version tracking.
+sophocode uses [Changesets](https://github.com/changesets/changesets) for intentional, PR-level version tracking.
 
 ### 10.1 Workflow for Contributors
 

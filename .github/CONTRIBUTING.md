@@ -1,4 +1,4 @@
-# Contributing to patrncode
+# Contributing to sophocode
 
 > **Active Beta** — The project is at `0.1.0-beta.x`. APIs and data models may change between commits.
 
@@ -30,8 +30,8 @@
 
 ```bash
 # 1. Clone and install
-git clone https://github.com/your-org/patrncode.git
-cd patrncode
+git clone https://github.com/your-org/sophocode.git
+cd sophocode
 bun install
 
 # 2. Set up environment variables

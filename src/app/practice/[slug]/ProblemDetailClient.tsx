@@ -40,18 +40,18 @@ type SessionMode = 'SELF_PRACTICE' | 'COACH_ME' | 'MOCK_INTERVIEW';
 const MODES: Array<{ id: SessionMode; title: string; description: string }> = [
   {
     id: 'SELF_PRACTICE',
-    title: 'Self-Practice',
-    description: 'Solve on your own with test feedback. Get hints when stuck.',
+    title: 'Solo Practice',
+    description: 'Solve on your own with test feedback. Ask Sophia for hints when stuck.',
   },
   {
     id: 'COACH_ME',
-    title: 'Coach Me',
-    description: 'AI coach guides you through the problem step-by-step.',
+    title: 'Coach Me (Sophia)',
+    description: 'Sophia guides you through the problem step-by-step.',
   },
   {
     id: 'MOCK_INTERVIEW',
-    title: 'Mock Interview',
-    description: 'Simulate a real interview with an AI interviewer.',
+    title: 'Mock Interview with Sophia',
+    description: 'Simulate a real interview with Sophia as your interviewer.',
   },
 ];
 

@@ -1,6 +1,6 @@
 # SEO — Overview
 
-This directory documents the SEO strategy, technical implementation, monitoring setup, and content approach for patrncode.
+This directory documents the SEO strategy, technical implementation, monitoring setup, and content approach for sophocode.
 
 ## Contents
 
@@ -23,10 +23,10 @@ This directory documents the SEO strategy, technical implementation, monitoring 
 
 ## Quick Reference
 
-- **Domain:** `https://patrnco.de`
-- **Sitemap:** `https://patrnco.de/sitemap.xml`
-- **robots.txt:** `https://patrnco.de/robots.txt`
-- **llms.txt:** `https://patrnco.de/llms.txt`
+- **Domain:** `https://sophoco.de`
+- **Sitemap:** `https://sophoco.de/sitemap.xml`
+- **robots.txt:** `https://sophoco.de/robots.txt`
+- **llms.txt:** `https://sophoco.de/llms.txt`
 - **metadataBase:** set in `src/app/layout.tsx`
 
 ## Key Files

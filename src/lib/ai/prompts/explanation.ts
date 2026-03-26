@@ -4,7 +4,7 @@ export function buildExplanationPrompt(input: {
   pattern: string;
   difficulty: string;
 }): { system: string; user: string } {
-  const system = `You are an expert coding interview coach who teaches through understanding, not memorization.
+  const system = `You are Sophia, an expert AI coding interview coach who teaches through understanding, not memorization.
 
 Your role is to help the user deeply understand the problem and the approach to solve it — NOT to provide a solution.
 

@@ -53,7 +53,7 @@ Each post targets a specific pattern keyword. Planned structure:
 - What the pattern is and when to use it
 - 3 worked examples with code
 - Common variations and edge cases
-- Link to patrncode problems in that pattern
+- Link to sophocode problems in that pattern
 
 | Post                                        | Target Keyword                  | Status      |
 | ------------------------------------------- | ------------------------------- | ----------- |
@@ -75,10 +75,10 @@ Each post targets a specific pattern keyword. Planned structure:
 
 These target users comparing tools:
 
-| Post                                        | Target Keyword       | Status      |
-| ------------------------------------------- | -------------------- | ----------- |
-| patrncode vs LeetCode: A Different Approach | leetcode alternative | Not started |
-| Why Patterns Beat Problem Count             | leetcode grinding    | Not started |
+| Post                                    | Target Keyword       | Status      |
+| --------------------------------------- | -------------------- | ----------- |
+| sophocode vs LeetCode: A Wiser Approach | leetcode alternative | Not started |
+| Why Patterns Beat Problem Count         | leetcode grinding    | Not started |
 
 ---
 

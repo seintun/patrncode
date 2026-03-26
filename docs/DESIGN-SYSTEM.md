@@ -2,7 +2,7 @@
 
 ## 1. UX Principles
 
-patrncode is a learning and practice tool for stressed new grads and busy engineers. The UX must:
+sophocode is a learning and practice tool for stressed new grads and busy engineers. The UX must:
 
 - **Reduce anxiety** rather than amplify it.
 - **Emphasize clarity and process** (clarify → plan → reason → code → test → reflect).

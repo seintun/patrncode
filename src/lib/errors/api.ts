@@ -47,7 +47,7 @@ export function withErrorHandling(handler: (req: NextRequest) => Promise<Respons
     try {
       return await handler(req);
     } catch (error) {
-      console.error('PATRNCODE API ERROR:', error);
+      console.error('SOPHOCODE API ERROR:', error);
       return handleApiError(new Response('', { status: 500 }), error);
     }
   };
@@ -63,7 +63,7 @@ export function withErrorHandlingParams<T extends Record<string, string>>(
     try {
       return await handler(req, params);
     } catch (error) {
-      console.error('PATRNCODE API ERROR:', error);
+      console.error('SOPHOCODE API ERROR:', error);
       return handleApiError(new Response('', { status: 500 }), error);
     }
   };
