@@ -106,9 +106,10 @@ Results:
 
 <!-- What could break? How is risk reduced? -->
 
-## Rollout / Rollback
+## Deployment
 
-<!-- Deploy considerations and rollback steps, if applicable -->
+<!-- No production deployment check appears in PRs — production deploys via deploy-production.yml on merge to main only.
+     Preview deploys automatically via deploy-preview.yml and comments the URL on this PR. -->
 
 ## Follow-ups
 
