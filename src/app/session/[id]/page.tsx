@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { SessionLayout } from '@/components/domain/SessionLayout';
 import { ProblemPanel } from '@/components/domain/ProblemPanel';
@@ -9,6 +9,7 @@ import { CodeEditor } from '@/components/domain/CodeEditor';
 import { TestResults } from '@/components/domain/TestResults';
 import { CoachingPanel } from '@/components/domain/CoachingPanel';
 import { Skeleton } from '@/components/ui/Skeleton';
+import { Button } from '@/components/ui/Button';
 import type { SessionMode } from '@/generated/prisma/enums';
 
 interface TestCase {
@@ -53,6 +54,7 @@ interface SessionData {
 
 export default function SessionPage() {
   const params = useParams();
+  const router = useRouter();
   const sessionId = params.id as string;
   const [session, setSession] = useState<SessionData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -60,6 +62,7 @@ export default function SessionPage() {
   const [code, setCode] = useState('');
   const [notes, setNotes] = useState('');
   const [hintLevel, setHintLevel] = useState(0);
+  const [completing, setCompleting] = useState(false);
 
   useEffect(() => {
     async function fetchSession() {
@@ -97,6 +100,30 @@ export default function SessionPage() {
   const handleHintRequest = (level: number) => {
     setHintLevel(level);
     // Hint AI integration wired in Phase 4
+  };
+
+  const handleEndSession = async () => {
+    setCompleting(true);
+    try {
+      await fetch(`/api/sessions/${sessionId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code }),
+      });
+
+      const res = await fetch(`/api/sessions/${sessionId}/complete`, {
+        method: 'POST',
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to complete session');
+      }
+
+      router.push(`/session/${sessionId}/summary`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to end session');
+      setCompleting(false);
+    }
   };
 
   if (loading) {
@@ -153,36 +180,46 @@ export default function SessionPage() {
       : [];
 
   return (
-    <div className="h-[calc(100vh-57px)]">
-      <SessionLayout
-        problem={
-          <ProblemPanel
-            problem={{
-              title: session.problem.title,
-              statement: session.problem.statement,
-              examples,
-              constraints: session.problem.constraints,
-            }}
-            notes={notes}
-            onNotesChange={setNotes}
-          />
-        }
-        editor={<CodeEditor value={code} onChange={handleCodeChange} />}
-        testResults={
-          <TestResults
-            results={testResults}
-            passedCount={session.runs[0]?.passed ?? 0}
-            totalCount={session.runs[0]?.total ?? 0}
-          />
-        }
-        coach={
-          <CoachingPanel
-            mode={session.mode}
-            onHintRequest={handleHintRequest}
-            hintLevel={hintLevel}
-          />
-        }
-      />
+    <div className="flex h-[calc(100vh-57px)] flex-col">
+      <div className="flex items-center justify-between border-b border-[var(--color-border)] bg-[var(--color-bg-secondary)] px-4 py-2">
+        <span className="text-sm font-medium text-[var(--color-text-primary)]">
+          {session.problem.title}
+        </span>
+        <Button variant="secondary" size="sm" onClick={handleEndSession} disabled={completing}>
+          {completing ? 'Ending...' : 'End Session'}
+        </Button>
+      </div>
+      <div className="flex-1 min-h-0">
+        <SessionLayout
+          problem={
+            <ProblemPanel
+              problem={{
+                title: session.problem.title,
+                statement: session.problem.statement,
+                examples,
+                constraints: session.problem.constraints,
+              }}
+              notes={notes}
+              onNotesChange={setNotes}
+            />
+          }
+          editor={<CodeEditor value={code} onChange={handleCodeChange} />}
+          testResults={
+            <TestResults
+              results={testResults}
+              passedCount={session.runs[0]?.passed ?? 0}
+              totalCount={session.runs[0]?.total ?? 0}
+            />
+          }
+          coach={
+            <CoachingPanel
+              mode={session.mode}
+              onHintRequest={handleHintRequest}
+              hintLevel={hintLevel}
+            />
+          }
+        />
+      </div>
     </div>
   );
 }
