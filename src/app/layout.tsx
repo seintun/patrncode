@@ -47,12 +47,12 @@ export default function RootLayout({
             <NavLink href="/practice">Practice</NavLink>
             <NavLink href="/progress">Progress</NavLink>
           </div>
-          <div
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--color-bg-elevated)] text-sm text-[var(--color-text-muted)]"
-            aria-label="Guest user"
+          <Link
+            href="/login"
+            className="text-sm font-medium text-[var(--color-text-secondary)] transition-colors hover:text-[var(--color-accent)]"
           >
-            G
-          </div>
+            Sign in
+          </Link>
         </nav>
         <main id="main-content" className="flex-1">
           {children}
