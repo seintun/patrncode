@@ -12,7 +12,7 @@ export async function generateMetadata({
 
   if (!problem) {
     return {
-      title: 'Problem Not Found - sophocode',
+      title: 'Problem Not Found - Sophocode',
       description: 'The requested coding problem could not be found.',
       robots: { index: false, follow: false },
     };
@@ -26,7 +26,7 @@ export async function generateMetadata({
   const description = plainStatement.substring(0, 160) + (plainStatement.length > 160 ? '...' : '');
 
   return {
-    title: `${problem.title} - sophocode`,
+    title: `${problem.title} - Sophocode`,
     description,
     robots: { index: true, follow: true },
     openGraph: {

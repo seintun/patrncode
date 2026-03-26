@@ -4,12 +4,15 @@
 
 ### Root Metadata (`src/app/layout.tsx`)
 
-`metadataBase` is set to `https://sophoco.de` so all relative OG image URLs resolve correctly. The title uses a template (`%s | sophocode`) so child pages only need to set the page-specific portion.
+`metadataBase` is set to `https://sophoco.de` so all relative OG image URLs resolve correctly. The title uses a template (`%s | Sophocode`) so child pages only need to set the page-specific portion.
 
 ```ts
 export const metadata: Metadata = {
   metadataBase: new URL('https://sophoco.de'),
-  title: { default: 'sophocode — AI Coding Interview Practice', template: '%s | sophocode' },
+  title: {
+    default: 'Sophocode — AI Coding Interview Practice with Sophia',
+    template: '%s | Sophocode',
+  },
   // ... openGraph, twitter, robots
 };
 ```
@@ -21,7 +24,7 @@ Public pages export a `metadata` constant from their server component:
 ```ts
 // src/app/practice/page.tsx
 export const metadata: Metadata = {
-  title: 'Practice Problems - sophocode',
+  title: 'Practice Problems - Sophocode',
   description: '...',
   robots: { index: true, follow: true },
 };

@@ -96,9 +96,11 @@ export function CoachingPanel({
               size="sm"
               onClick={() => onHintRequest(nextHintLevel)}
               disabled={!canGetHint || hintStream.isLoading}
-              aria-label={`Get hint level ${nextHintLevel}`}
+              aria-label={`Ask Sophia for a hint level ${nextHintLevel}`}
             >
-              {hintStream.isLoading ? 'Getting hint...' : `Get Hint (Level ${nextHintLevel})`}
+              {hintStream.isLoading
+                ? 'Getting hint...'
+                : `Ask Sophia for a hint (Level ${nextHintLevel})`}
             </Button>
           </div>
         ) : (
@@ -156,7 +158,7 @@ export function CoachingPanel({
                   size="sm"
                   onClick={() => onHintRequest(nextHintLevel)}
                   disabled={hintStream.isLoading || isLoading}
-                  aria-label={`Get hint level ${nextHintLevel}`}
+                  aria-label={`Ask Sophia for a hint level ${nextHintLevel}`}
                 >
                   Ask Sophia for a hint (Level {nextHintLevel})
                 </Button>
@@ -167,7 +169,7 @@ export function CoachingPanel({
                   size="sm"
                   onClick={onAskAboutFailure}
                   disabled={isLoading}
-                  aria-label="Ask coach why tests failed"
+                  aria-label="Ask Sophia why tests failed"
                   className="border-[var(--color-error)]/30 text-[var(--color-error)] hover:bg-[var(--color-error)]/10"
                 >
                   Why did this fail?
