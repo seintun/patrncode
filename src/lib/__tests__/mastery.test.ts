@@ -1,10 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {
-  computeNextMastery,
-  computeNextReviewDate,
-  type MasteryState,
-  type MasteryInput,
-} from '../mastery';
+import { computeNextMastery, computeNextReviewDate, type MasteryInput } from '../mastery';
 
 describe('computeNextMastery', () => {
   describe('UNSEEN state', () => {
