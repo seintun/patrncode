@@ -183,4 +183,15 @@ bun run format:check  # Prettier check (used in CI)
 
 ## Architecture Overview
 
-See [`ARCHITECTURE.md`](../ARCHITECTURE.md) for the full system design, data flow, and key technical decisions.
+See [`ARCHITECTURE.md`](../ARCHITECTURE.md) for a concise system overview, or the [`docs/`](../docs/) directory for detailed references:
+
+| Document                                          | Contents                                         |
+| ------------------------------------------------- | ------------------------------------------------ |
+| [docs/ARCHITECTURE.md](../docs/ARCHITECTURE.md)   | Full system design, data flows, Mermaid diagrams |
+| [docs/AI-SYSTEM.md](../docs/AI-SYSTEM.md)         | Prompt contexts, model config, streaming         |
+| [docs/DATABASE.md](../docs/DATABASE.md)           | Prisma schema, models, enums, migrations         |
+| [docs/DESIGN-SYSTEM.md](../docs/DESIGN-SYSTEM.md) | Design tokens, color palette, components         |
+| [docs/SECURITY.md](../docs/SECURITY.md)           | Security gaps and mitigations                    |
+| [docs/ROADMAP.md](../docs/ROADMAP.md)             | Post-MVP features and known limitations          |
+
+Agent conventions are documented in [`AGENTS.md`](../AGENTS.md) and [`CLAUDE.md`](../CLAUDE.md) at the project root.
