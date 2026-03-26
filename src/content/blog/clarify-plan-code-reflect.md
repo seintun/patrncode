@@ -3,7 +3,7 @@ title: 'Clarify, Plan, Code, Reflect: The Interview Process That Actually Works'
 description: "Most candidates jump straight to coding. The best candidates don't. Here's the four-step process top engineers use to ace coding interviews consistently."
 publishedAt: '2026-03-10'
 tags: ['interview process', 'coding interviews', 'methodology', 'tips']
-author: 'patrncode'
+author: 'sophocode'
 ---
 
 The most common mistake in coding interviews isn't getting the algorithm wrong.
@@ -82,6 +82,6 @@ The loop takes about 2-3 minutes for Clarify, 3-5 minutes for Plan, 10-15 minute
 
 The key insight: **the interviewer is watching all four phases, but most candidates only practice one**. If you only practice coding, you're leaving three-quarters of your evaluation on the table.
 
-Every session on patrncode follows this structure. The AI coach doesn't just check if your code passes tests — it guides you through each phase, asks clarifying questions if you skip ahead, and reflects back what your approach reveals about your thinking.
+Every session on sophocode follows this structure. The AI coach doesn't just check if your code passes tests — it guides you through each phase, asks clarifying questions if you skip ahead, and reflects back what your approach reveals about your thinking.
 
 The goal isn't to produce the right answer. It's to become the kind of engineer who consistently produces right answers under pressure.

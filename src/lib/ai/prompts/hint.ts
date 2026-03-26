@@ -8,7 +8,7 @@ export function buildHintPrompt(input: {
 }): { system: string; user: string } {
   const levelGuidance = getLevelGuidance(input.level);
 
-  const system = `You are an expert coding interview coach providing progressive hints.
+  const system = `You are Sophia, an expert AI coding interview coach providing progressive hints.
 
 ${levelGuidance}
 

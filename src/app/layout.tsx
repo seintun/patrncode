@@ -20,30 +20,30 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://patrnco.de'),
+  metadataBase: new URL('https://sophoco.de'),
   title: {
-    default: 'patrncode — AI Coding Interview Practice',
-    template: '%s | patrncode',
+    default: 'Sophocode — AI Coding Interview Practice with Sophia',
+    template: '%s | Sophocode',
   },
   description:
-    'Practice coding interviews with an AI coach. Pattern-based learning, progressive hints, and process-first sessions.',
+    'Sophocode is an AI-powered coding interview prep platform. Practice DSA problems while Sophia, your wise AI coach, guides you with hints, explanations, and mock interviews.',
   icons: {
     icon: '/favicon.ico',
     apple: '/apple-touch-icon.png',
   },
   openGraph: {
-    title: 'patrncode — AI Coding Interview Practice',
+    title: 'Sophocode — AI DSA Interview Coach & Practice Platform',
     description:
-      'Learn patterns, not just problems. Get coached through Clarify → Plan → Code → Reflect.',
-    url: 'https://patrnco.de',
-    siteName: 'patrncode',
+      'Practice LeetCode-style problems with Sophia, your AI interview coach, in a focused VS Code-like playground.',
+    url: 'https://sophoco.de',
+    siteName: 'sophocode',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'patrncode — AI Coding Interview Practice',
+    title: 'Sophocode — AI Coding Interview Practice with Sophia',
     description:
-      'Practice coding interviews with an AI coach. Pattern-based learning and progressive hints.',
+      'Practice coding interviews with Sophia, your wise AI coach. Pattern-based learning and progressive hints.',
   },
   robots: {
     index: true,
@@ -58,20 +58,20 @@ export const metadata: Metadata = {
 const organizationSchema = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
-  name: 'patrncode',
-  url: 'https://patrnco.de',
-  logo: 'https://patrnco.de/favicon.ico',
-  description: 'AI-coached coding interview practice platform',
+  name: 'sophocode',
+  url: 'https://sophoco.de',
+  logo: 'https://sophoco.de/favicon.ico',
+  description: 'AI-coached coding interview practice platform with Sophia',
   sameAs: [],
 };
 
 const webAppSchema = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
-  name: 'patrncode',
-  url: 'https://patrnco.de',
+  name: 'sophocode',
+  url: 'https://sophoco.de',
   description:
-    'Practice coding interviews with an AI coach. Pattern-based learning, progressive hints, and process-first sessions.',
+    'Practice coding interviews with Sophia, your wise AI coach. Pattern-based learning, progressive hints, and process-first sessions.',
   applicationCategory: 'EducationalApplication',
   operatingSystem: 'Any',
   offers: {
@@ -103,7 +103,7 @@ export default function RootLayout({
             href="/"
             className="text-xl font-bold text-[var(--color-accent)] transition-colors hover:text-[var(--color-accent-hover)]"
           >
-            patrncode
+            sophocode
           </Link>
           <div className="flex items-center gap-6">
             <NavLink href="/practice">Practice</NavLink>

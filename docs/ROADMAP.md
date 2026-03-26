@@ -31,7 +31,7 @@
 #### Browser Extension
 
 - Overlay hints and coaching directly on LeetCode problem pages.
-- Import LeetCode problems into patrncode sessions.
+- Import LeetCode problems into sophocode sessions.
 - Sync progress between extension and main app.
 
 #### Richer Big-O Visualizations

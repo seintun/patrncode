@@ -3,7 +3,7 @@ title: 'Why Progressive Hints Beat Solutions (And How to Use Them)'
 description: "Getting the answer doesn't teach you anything. Here's how progressive hints keep you in the productive struggle zone — where real learning happens."
 publishedAt: '2026-03-18'
 tags: ['learning', 'hints', 'spaced repetition', 'deliberate practice']
-author: 'patrncode'
+author: 'sophocode'
 ---
 
 There's a moment in coding practice that every engineer knows.
@@ -64,7 +64,7 @@ If you can solve it easily on a 2-week revisit, that pattern is well-encoded. Yo
 
 If you struggle on revisit, that's valuable data too. It means you encoded the solution but not the underlying insight. You need more problems in that pattern, not more repetitions of the same problem.
 
-patrncode tracks your performance across sessions and surfaces problems for re-practice at the right intervals. The AI coach adjusts hint timing based on your history with each pattern — giving you more scaffolding on patterns you're weak in and less on ones you've mastered.
+sophocode tracks your performance across sessions and surfaces problems for re-practice at the right intervals. The AI coach adjusts hint timing based on your history with each pattern — giving you more scaffolding on patterns you're weak in and less on ones you've mastered.
 
 ## The Mindset Shift
 

@@ -44,10 +44,10 @@ function CodeEditor({ value, onChange, language = 'python' }: CodeEditorProps) {
       height="100%"
       language={language}
       value={value}
-      theme="patrncode-dark"
+      theme="sophocode-dark"
       onChange={handleChange}
       beforeMount={(monaco) => {
-        monaco.editor.defineTheme('patrncode-dark', {
+        monaco.editor.defineTheme('sophocode-dark', {
           base: 'vs-dark',
           inherit: true,
           rules: [

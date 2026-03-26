@@ -5,7 +5,7 @@
 ### Setup
 
 1. Go to [search.google.com/search-console](https://search.google.com/search-console)
-2. Add property: **URL prefix** → `https://patrnco.de`
+2. Add property: **URL prefix** → `https://sophoco.de`
 3. Verify via one of:
    - **HTML file** — download and place in `public/` (e.g. `public/google<token>.html`)
    - **HTML meta tag** — add `verification` to `metadata` in `src/app/layout.tsx`:
@@ -14,7 +14,7 @@
        google: 'your-token-here';
      }
      ```
-4. Submit sitemap: **Sitemaps** → `https://patrnco.de/sitemap.xml`
+4. Submit sitemap: **Sitemaps** → `https://sophoco.de/sitemap.xml`
 
 ### What to Monitor Weekly
 

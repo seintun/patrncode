@@ -11,7 +11,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
   const blogPosts = getAllPosts('blog');
   const docs = getAllPosts('docs');
-  const baseUrl = 'https://patrnco.de';
+  const baseUrl = 'https://sophoco.de';
 
   const now = new Date();
 

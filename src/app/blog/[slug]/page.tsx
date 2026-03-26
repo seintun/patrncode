@@ -57,9 +57,9 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
     dateModified: new Date(
       post.frontmatter.updatedAt ?? post.frontmatter.publishedAt,
     ).toISOString(),
-    author: { '@type': 'Organization', name: 'patrncode', url: 'https://patrnco.de' },
-    publisher: { '@type': 'Organization', name: 'patrncode', url: 'https://patrnco.de' },
-    mainEntityOfPage: { '@type': 'WebPage', '@id': `https://patrnco.de/blog/${slug}` },
+    author: { '@type': 'Organization', name: 'sophocode', url: 'https://sophoco.de' },
+    publisher: { '@type': 'Organization', name: 'sophocode', url: 'https://sophoco.de' },
+    mainEntityOfPage: { '@type': 'WebPage', '@id': `https://sophoco.de/blog/${slug}` },
   };
 
   return (

@@ -2,7 +2,7 @@
 
 ## Overview
 
-patrncode's AI coaching is powered by **OpenRouter** (model-agnostic gateway) with the **Vercel AI SDK** for streaming. Five specialized prompt contexts enforce strict no-spoiler rules — the AI teaches patterns and thinking, never solutions.
+sophocode's AI coaching is powered by **OpenRouter** (model-agnostic gateway) with the **Vercel AI SDK** for streaming. Five specialized prompt contexts enforce strict no-spoiler rules — the AI teaches patterns and thinking, never solutions.
 
 ---
 

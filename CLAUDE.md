@@ -1,6 +1,6 @@
 @AGENTS.md
 
-# patrncode Project Context
+# sophocode Project Context
 
 ## Architecture
 
@@ -29,7 +29,7 @@
 - Pyodide: ~20MB lazy load, 5s timeout per test case
 - OPENROUTER_API_KEY NOT in .env.local yet — AI routes built structurally, won't stream until key added
 - Obsidian CLI: /Applications/Obsidian.app/Contents/MacOS/obsidian vault="Obsidian Vault" (full path required)
-- Obsidian vault dir: "AI Interview Playground (PatrnCode)" — note the parenthetical suffix
+- Obsidian vault dir: "AI Interview Playground (SophoCode)" — note the parenthetical suffix
 
 ## File Structure
 

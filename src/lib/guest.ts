@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 
-const GUEST_ID_KEY = 'patrncode_guest_id';
+const GUEST_ID_KEY = 'sophocode_guest_id';
 
 export function getGuestId(): string {
   if (typeof window === 'undefined') return '';

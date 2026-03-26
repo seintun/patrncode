@@ -12,7 +12,7 @@
 - [ ] Run DB migration: `bunx prisma migrate deploy` (from CI or locally with DIRECT_URL)
 - [ ] Run seed: `bunx prisma db seed`
 - [ ] Enable GitHub + Google OAuth in Supabase dashboard
-- [ ] Add Supabase redirect URL: `https://patrnco.de/auth/callback`
+- [ ] Add Supabase redirect URL: `https://sophoco.de/auth/callback`
 
 ## Deploy to Vercel
 
@@ -31,7 +31,7 @@
 - [ ] Test AI hints (requires OPENROUTER_API_KEY)
 - [ ] Test auth (requires Supabase OAuth config)
 - [ ] Run Lighthouse audit (target 90+)
-- [ ] Configure custom domain: `patrnco.de`
+- [ ] Configure custom domain: `sophoco.de`
 
 ## Known Limitations (MVP)
 

@@ -1,23 +1,23 @@
 ---
-title: 'Getting Started with patrncode'
-description: 'Learn how to use patrncode to practice coding interviews with an AI coach. No sign-up required.'
+title: 'Getting Started with Sophocode'
+description: 'Learn how to use Sophocode to practice coding interviews with Sophia, your wise AI coach. No sign-up required.'
 publishedAt: '2026-03-01'
 ---
 
-## What is patrncode?
+## What is Sophocode?
 
-patrncode is an AI-powered coding interview practice platform built around one idea: **learn patterns, not just problems**.
+Sophocode is an AI-powered coding interview practice platform built around one idea: **wisdom over grinding**.
 
-Instead of grinding random LeetCode problems, patrncode helps you systematically master the 14 foundational coding patterns that appear in virtually every technical interview.
+The name comes from the Greek _sophos_ (σοφός) — wisdom. Where LeetCode-style grinding builds muscle memory, Sophocode builds understanding. You'll practice with **Sophia**, your AI coach who guides you through the Clarify → Plan → Code → Reflect process.
 
 ## How a Session Works
 
 Every practice session follows the Clarify → Plan → Code → Reflect loop:
 
-1. **Clarify** — Read the problem and ask clarifying questions. The AI coach will prompt you if you skip this step.
+1. **Clarify** — Read the problem and ask clarifying questions. Sophia will prompt you if you skip this step.
 2. **Plan** — Describe your approach before coding. Identify the pattern, state your complexity, and outline the algorithm.
 3. **Code** — Write your solution in the browser editor. Python runs in your browser via Pyodide — no server needed.
-4. **Reflect** — Review your solution. The AI coach gives feedback on your approach, complexity, and what to work on next.
+4. **Reflect** — Review your solution. Sophia gives feedback on your approach, complexity, and what to work on next.
 
 ## Choosing a Problem
 
@@ -40,7 +40,7 @@ Wait at least 10-15 minutes before using a hint. The struggle before the hint is
 
 ## Your Progress
 
-patrncode tracks:
+Sophocode tracks:
 
 - Which problems you've attempted and solved
 - How many hints you needed

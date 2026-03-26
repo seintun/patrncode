@@ -73,7 +73,7 @@ function WelcomeStep({ onNext, onSkip }: StepProps) {
   ] as const;
 
   function selectLevel(level: string) {
-    localStorage.setItem('patrncode_experience_level', level);
+    localStorage.setItem('sophocode_experience_level', level);
     onNext();
   }
 
@@ -81,7 +81,7 @@ function WelcomeStep({ onNext, onSkip }: StepProps) {
     <div className="space-y-6 text-center">
       <div>
         <h1 className="text-3xl font-bold text-[var(--color-text-primary)]">
-          Welcome to patrncode
+          Welcome to sophocode
         </h1>
         <p className="mt-2 text-lg text-[var(--color-text-secondary)]">What brings you here?</p>
       </div>
@@ -251,7 +251,7 @@ function BigOStep({ onNext, onSkip }: StepProps) {
 // Step 5: Try First Problem
 function TryFirstStep({ onSkip }: { onSkip: () => void }) {
   function handleStart() {
-    localStorage.setItem('patrncode_onboarding_completed', 'true');
+    localStorage.setItem('sophocode_onboarding_completed', 'true');
     window.location.href = '/practice';
   }
 
@@ -267,7 +267,7 @@ function TryFirstStep({ onSkip }: { onSkip: () => void }) {
         <div className="space-y-4">
           <p className="text-sm text-[var(--color-text-secondary)]">
             You&rsquo;ll work through the problem using the Clarify → Plan → Code → Reflect process
-            with an AI coach guiding you every step of the way.
+            with Sophia guiding you every step of the way.
           </p>
           <Button onClick={handleStart} size="lg" className="w-full">
             Start Practicing
@@ -285,7 +285,7 @@ export default function OnboardingPage() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    const completed = localStorage.getItem('patrncode_onboarding_completed');
+    const completed = localStorage.getItem('sophocode_onboarding_completed');
     if (completed === 'true') {
       router.replace('/practice');
     }
@@ -297,7 +297,7 @@ export default function OnboardingPage() {
   }, []);
 
   function handleSkip() {
-    localStorage.setItem('patrncode_onboarding_completed', 'true');
+    localStorage.setItem('sophocode_onboarding_completed', 'true');
     router.push('/practice');
   }
 

@@ -1,6 +1,6 @@
 # Architecture
 
-patrncode is a session-based Python algorithm practice platform with integrated AI coaching. Users work through curated problems, run Python in-browser via Pyodide (WASM), receive progressive AI hints that never spoil solutions, and track mastery through spaced repetition.
+sophocode is a session-based Python algorithm practice platform with integrated AI coaching. Users work through curated problems, run Python in-browser via Pyodide (WASM), receive progressive AI hints that never spoil solutions, and track mastery through spaced repetition.
 
 **Two guiding principles:** zero-friction entry (anonymous guests start immediately, no sign-up) and no server-side code execution (Python runs in-browser, eliminating sandbox complexity).
 

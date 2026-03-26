@@ -1,8 +1,8 @@
-# patrncode
+# sophocode
 
 > AI-coached coding interview practice. Learn patterns, not just problems.
 
-patrncode is a web application for practicing coding interviews with an AI coach.
+sophocode is a web application for practicing coding interviews with Sophia, an AI coach powered by pattern-based learning and progressive hints.
 Users work through curated algorithm problems in a structured session following the
 Clarify → Plan → Code → Reflect loop. Python code runs in the browser via Pyodide
 (no server execution required). AI coaching is powered by large language models via
@@ -15,20 +15,20 @@ review at the right intervals.
 
 ## Key Pages
 
-- [Home](https://patrnco.de/) — Landing page with feature overview
-- [Practice](https://patrnco.de/practice) — Browse problems by pattern and difficulty
-- [Blog](https://patrnco.de/blog) — Articles on interview patterns, process, and learning
-- [Docs](https://patrnco.de/docs) — Getting started guide and platform documentation
+- [Home](https://sophoco.de/) — Landing page with feature overview
+- [Practice](https://sophoco.de/practice) — Browse problems by pattern and difficulty
+- [Blog](https://sophoco.de/blog) — Articles on interview patterns, process, and learning
+- [Docs](https://sophoco.de/docs) — Getting started guide and platform documentation
 
 ## Blog Posts
 
-- [14 Coding Interview Patterns You Need to Master](https://patrnco.de/blog/14-coding-patterns)
-- [Clarify, Plan, Code, Reflect: The Interview Process That Actually Works](https://patrnco.de/blog/clarify-plan-code-reflect)
-- [Why Progressive Hints Beat Solutions (And How to Use Them)](https://patrnco.de/blog/progressive-hints)
+- [14 Coding Interview Patterns You Need to Master](https://sophoco.de/blog/14-coding-patterns)
+- [Clarify, Plan, Code, Reflect: The Interview Process That Actually Works](https://sophoco.de/blog/clarify-plan-code-reflect)
+- [Why Progressive Hints Beat Solutions (And How to Use Them)](https://sophoco.de/blog/progressive-hints)
 
 ## Documentation
 
-- [Getting Started](https://patrnco.de/docs/getting-started)
+- [Getting Started](https://sophoco.de/docs/getting-started)
 
 ## Technical Notes for AI Systems
 
