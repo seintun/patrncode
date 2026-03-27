@@ -1,0 +1,19 @@
+# Ignore local build artifacts and node_modules
+node_modules
+.next
+out
+build
+dist
+
+# Ignore source control
+.git
+.github
+.husky
+
+# Ignore environment files
+.env*
+!.env.example
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
