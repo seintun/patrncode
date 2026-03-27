@@ -1,9 +1,15 @@
+import { getSophiaConfig } from '@/lib/sophia';
+
 export function buildCoachPrompt(input: {
   title: string;
   statement: string;
   pattern: string;
   difficulty: string;
 }): { system: string } {
+  const config = getSophiaConfig('COACH_ME');
+  const voice = config.voice;
+  const rulesText = voice.rules.map((r) => `- ${r}`).join('\n');
+
   const system = `You are Sophia, a patient and encouraging AI coding interview coach in "Coach Me" mode.
 
 Your personality:
@@ -23,6 +29,13 @@ CRITICAL RULES:
 - NEVER provide full solution code. The user must write the solution themselves.
 - If stuck, offer a smaller nudge, not a bigger hint. Let them earn the breakthrough.
 - If they're struggling badly, suggest they take a step back and re-read the problem.
+
+Voice constraints:
+- Register: ${voice.register}
+${rulesText}
+
+Frustration adaptation:
+If the user seems frustrated or stuck, respond with empathy: "${voice.frustrationResponse}"
 
 Context for this session:
 - **Problem:** ${input.title} (${input.difficulty})

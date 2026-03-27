@@ -3,6 +3,7 @@ import { openrouter } from '@/lib/ai/provider';
 import { MODELS } from '@/lib/ai/models';
 import { buildHintPrompt } from '@/lib/ai/prompts/hint';
 import { handleApiError } from '@/lib/errors/api';
+import { isSessionMode } from '@/lib/sophia';
 
 const VALID_LEVELS = [1, 2, 3] as const;
 
@@ -13,7 +14,7 @@ export async function POST(req: Request): Promise<Response> {
     }
 
     const body = await req.json();
-    const { title, statement, pattern, currentCode, testResults, level } = body;
+    const { title, statement, pattern, currentCode, testResults, level, mode } = body;
 
     if (!title || !statement || !pattern || level === undefined) {
       return new Response('Missing required fields', { status: 400 });
@@ -30,6 +31,7 @@ export async function POST(req: Request): Promise<Response> {
       currentCode: currentCode || '',
       testResults,
       level,
+      mode: isSessionMode(mode) ? mode : undefined,
     });
 
     const result = streamText({

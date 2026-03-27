@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/Button';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { getGuestId } from '@/lib/guest';
 import JsonLdSchema from '@/components/seo/JsonLdSchema';
+import { SOPHIA_MODES } from '@/lib/sophia';
 
 interface ProblemDetail {
   id: string;
@@ -54,6 +55,12 @@ const MODES: Array<{ id: SessionMode; title: string; description: string }> = [
     description: 'Simulate a real interview with Sophia as your interviewer.',
   },
 ];
+
+const MODE_IMAGES: Record<SessionMode, string> = {
+  SELF_PRACTICE: SOPHIA_MODES.SELF_PRACTICE.sceneImage,
+  COACH_ME: SOPHIA_MODES.COACH_ME.sceneImage,
+  MOCK_INTERVIEW: SOPHIA_MODES.MOCK_INTERVIEW.sceneImage,
+};
 
 function formatPattern(pattern: string): string {
   return pattern
@@ -135,10 +142,14 @@ function ProblemDetailContent({
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
-      <div className="mb-6 flex items-center gap-3">
-        <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">{problem.title}</h1>
-        <Badge variant="difficulty" value={difficultyLabel} />
-        <Badge variant="pattern" value={formatPattern(problem.pattern)} />
+      <div className="mb-6">
+        <h1 className="mb-2 text-2xl font-bold text-[var(--color-text-primary)]">
+          {problem.title}
+        </h1>
+        <div className="flex flex-wrap items-center gap-2">
+          <Badge variant="difficulty" value={difficultyLabel} />
+          <Badge variant="pattern" value={formatPattern(problem.pattern)} />
+        </div>
       </div>
 
       <div className="mb-8">
@@ -187,26 +198,62 @@ function ProblemDetailContent({
       <div className="mb-8">
         <h2 className="mb-3 text-lg font-semibold text-[var(--color-text-primary)]">Select Mode</h2>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          {MODES.map((mode) => (
-            <Card
-              key={mode.id}
-              onClick={() => setSelectedMode(mode.id)}
-              className={
-                selectedMode === mode.id
-                  ? 'border-[var(--color-accent)] bg-[var(--color-bg-elevated)]'
-                  : ''
-              }
-            >
-              <h3 className="mb-1 font-semibold text-[var(--color-text-primary)]">{mode.title}</h3>
-              <p className="text-sm text-[var(--color-text-secondary)]">{mode.description}</p>
-            </Card>
-          ))}
+          {MODES.map((mode) => {
+            const sophiaConfig = SOPHIA_MODES[mode.id];
+            const isSelected = selectedMode === mode.id;
+            return (
+              <Card
+                key={mode.id}
+                onClick={() => setSelectedMode(mode.id)}
+                className="cursor-pointer overflow-hidden p-0 transition-transform active:scale-[0.98] sm:hover:scale-[1.02]"
+                style={
+                  isSelected
+                    ? {
+                        borderColor: sophiaConfig.colors.primary,
+                        backgroundColor: sophiaConfig.colors.bg,
+                      }
+                    : {}
+                }
+              >
+                {/* Mobile: image left, text right. sm+: image top, text below */}
+                <div className="flex flex-row sm:flex-col">
+                  <div className="relative h-28 w-28 shrink-0 sm:h-36 sm:w-full overflow-hidden">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={MODE_IMAGES[mode.id]}
+                      alt={mode.title}
+                      className="h-full w-full object-cover"
+                    />
+                    {isSelected && (
+                      <div
+                        className="absolute inset-0"
+                        style={{ backgroundColor: `${sophiaConfig.colors.primary}22` }}
+                      />
+                    )}
+                  </div>
+                  <div className="flex flex-1 flex-col justify-center p-3">
+                    <h3
+                      className="mb-1 font-semibold"
+                      style={{
+                        color: isSelected ? sophiaConfig.colors.text : 'var(--color-text-primary)',
+                      }}
+                    >
+                      {mode.title}
+                    </h3>
+                    <p className="text-sm text-[var(--color-text-secondary)]">{mode.description}</p>
+                  </div>
+                </div>
+              </Card>
+            );
+          })}
         </div>
       </div>
 
-      <Button onClick={handleStartSession} disabled={starting} size="lg">
-        {starting ? 'Starting...' : 'Start Session'}
-      </Button>
+      <div className="flex justify-center">
+        <Button onClick={handleStartSession} disabled={starting} size="lg">
+          {starting ? 'Starting...' : 'Start Session'}
+        </Button>
+      </div>
     </div>
   );
 }

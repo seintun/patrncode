@@ -3,6 +3,7 @@ import { openrouter } from '@/lib/ai/provider';
 import { MODELS } from '@/lib/ai/models';
 import { buildSummaryPrompt } from '@/lib/ai/prompts/summary';
 import { handleApiError } from '@/lib/errors/api';
+import { isSessionMode } from '@/lib/sophia';
 
 export async function POST(req: Request): Promise<Response> {
   try {
@@ -11,7 +12,7 @@ export async function POST(req: Request): Promise<Response> {
     }
 
     const body = await req.json();
-    const { title, pattern, finalCode, testResults, hintsUsed, timeSpentSeconds } = body;
+    const { title, pattern, finalCode, testResults, hintsUsed, timeSpentSeconds, mode } = body;
 
     if (
       !title ||
@@ -31,6 +32,7 @@ export async function POST(req: Request): Promise<Response> {
       testResults,
       hintsUsed,
       timeSpentSeconds,
+      mode: isSessionMode(mode) ? mode : undefined,
     });
 
     const result = streamText({

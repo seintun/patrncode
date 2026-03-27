@@ -23,7 +23,11 @@ export const metadata: Metadata = {
   description:
     'Sophocode is an AI-powered coding interview prep platform. Practice DSA problems while Sophia, your wise AI coach, guides you with hints, explanations, and mock interviews.',
   icons: {
-    icon: '/favicon.ico',
+    icon: [
+      { url: '/icons/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/icons/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon.ico', sizes: 'any' },
+    ],
     apple: '/icons/apple-touch-icon.png',
   },
   openGraph: {
@@ -55,7 +59,7 @@ const organizationSchema = {
   '@type': 'Organization',
   name: 'sophocode',
   url: 'https://sophoco.de',
-  logo: 'https://sophoco.de/favicon.ico',
+  logo: 'https://sophoco.de/icons/icon-512.png',
   description: 'AI-coached coding interview practice platform with Sophia',
   sameAs: [],
 };

@@ -6,7 +6,7 @@ export default function LandingPage() {
   return (
     <div className="mx-auto max-w-5xl px-4">
       {/* Hero */}
-      <section className="mb-20 py-16 text-center">
+      <section className="mb-10 py-12 text-center sm:mb-20 sm:py-16">
         <div
           className="mx-auto mb-6 inline-flex items-center rounded-full border border-[var(--color-accent)]/20 bg-[var(--color-accent)]/10 px-3 py-1 text-xs font-medium text-[var(--color-accent)]"
           style={{ animation: 'slideUp 0.4s ease-out' }}

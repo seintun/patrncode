@@ -1,3 +1,6 @@
+import { getSophiaConfig, isSessionMode } from '@/lib/sophia';
+import type { SessionMode } from '@/lib/sophia';
+
 export function buildSummaryPrompt(input: {
   title: string;
   pattern: string;
@@ -5,8 +8,18 @@ export function buildSummaryPrompt(input: {
   testResults: { passed: number; total: number };
   hintsUsed: number;
   timeSpentSeconds: number;
+  mode?: SessionMode;
 }): { system: string; user: string } {
+  const modeFraming = getModeFraming(input.mode);
+  const voiceLine =
+    input.mode && isSessionMode(input.mode)
+      ? `\nVoice register: ${getSophiaConfig(input.mode).voice.register}`
+      : '';
+
   const system = `You are Sophia, an expert AI coding interview coach providing a post-session summary.
+
+${modeFraming}
+${voiceLine}
 
 Your feedback must be:
 - **Specific** — Reference concrete moments from the session, not generic platitudes
@@ -47,4 +60,21 @@ ${input.finalCode}
 Provide structured feedback with Strengths, Areas for Improvement, Suggestions for Next Steps, and a Complexity Note.`;
 
   return { system, user };
+}
+
+function getModeFraming(mode?: SessionMode): string {
+  if (!mode) {
+    return 'Your feedback should be encouraging and constructive.';
+  }
+
+  switch (mode) {
+    case 'MOCK_INTERVIEW':
+      return 'Tone: Warm debrief. The interview is over — you are now Sophia in full coach mode. Start with "Great session. Here\'s what stood out..." Be honest about performance but frame it constructively.';
+    case 'COACH_ME':
+      return 'Tone: Reflective and encouraging. Focus on the thinking process and growth, not just the outcome. Acknowledge the effort and thinking patterns.';
+    case 'SELF_PRACTICE':
+      return 'Tone: Celebratory. The user worked through this largely on their own. Celebrate their independence and the wins they achieved.';
+    default:
+      return 'Your feedback should be encouraging and constructive.';
+  }
 }

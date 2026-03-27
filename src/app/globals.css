@@ -15,6 +15,24 @@
   /* AI Coach — lavender */
   --color-ai-coach: #818cf8;
 
+  /* Sophia — Solo Practice (teal) */
+  --color-sophia-solo: #2dd4bf;
+  --color-sophia-solo-soft: #2dd4bf33;
+  --color-sophia-solo-bg: #0d3d38;
+  --color-sophia-solo-text: #99f6e4;
+
+  /* Sophia — Coach Me (lavender) */
+  --color-sophia-coach: #818cf8;
+  --color-sophia-coach-soft: #818cf833;
+  --color-sophia-coach-bg: #2e2b5e;
+  --color-sophia-coach-text: #c4b5fd;
+
+  /* Sophia — Mock Interview (rose) */
+  --color-sophia-mock: #fb7185;
+  --color-sophia-mock-soft: #fb718533;
+  --color-sophia-mock-bg: #3d1520;
+  --color-sophia-mock-text: #f9a8d4;
+
   /* Feedback */
   --color-success: #10b981;
   --color-warning: #f59e0b;

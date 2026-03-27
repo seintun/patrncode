@@ -1,8 +1,10 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
+import { getSophiaConfig, SOPHIA_AVATAR } from '@/lib/sophia';
 import type { SessionMode } from '@/generated/prisma/enums';
 import type { UIMessage } from 'ai';
 
@@ -17,12 +19,6 @@ interface CoachingPanelProps {
   onAskAboutFailure?: () => void;
   showFailureButton?: boolean;
 }
-
-const modeLabels: Record<SessionMode, string> = {
-  SELF_PRACTICE: 'Solo Practice',
-  COACH_ME: 'Coach Me (Sophia)',
-  MOCK_INTERVIEW: 'Mock Interview with Sophia',
-};
 
 function extractTextFromMessage(msg: UIMessage): string {
   if (!msg.parts) return '';
@@ -44,9 +40,11 @@ export function CoachingPanel({
   showFailureButton,
 }: CoachingPanelProps) {
   const [input, setInput] = useState('');
+  const [avatarError, setAvatarError] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const config = getSophiaConfig(mode);
   const canChat = mode === 'COACH_ME' || mode === 'MOCK_INTERVIEW';
 
   useEffect(() => {
@@ -68,15 +66,29 @@ export function CoachingPanel({
   };
 
   const nextHintLevel = Math.min(hintLevel + 1, 3);
-  const canGetHint = hintLevel < 3;
+  const canGetHint = hintLevel < 3 && mode !== 'MOCK_INTERVIEW';
+
+  const statusText = hintStream.isLoading
+    ? config.vocabulary.generatingHint
+    : isLoading
+      ? config.vocabulary.aiProcessing
+      : config.vocabulary.idle;
 
   return (
     <div className="flex h-full flex-col">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-[var(--color-border)] px-4 py-3">
-        <h3 className="text-sm font-semibold text-[var(--color-text-primary)]">Sophia</h3>
-        <span className="inline-flex items-center rounded-full bg-[var(--color-ai-coach)]/20 px-2.5 py-0.5 text-xs font-medium text-[var(--color-ai-coach)]">
-          {modeLabels[mode]}
+        <div>
+          <h3 className="text-sm font-semibold text-[var(--color-text-primary)]">Sophia</h3>
+          <p className="text-xs" style={{ color: config.colors.text }}>
+            {statusText}
+          </p>
+        </div>
+        <span
+          className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium"
+          style={{ backgroundColor: config.colors.soft, color: config.colors.primary }}
+        >
+          {config.label}
         </span>
       </div>
 
@@ -84,24 +96,20 @@ export function CoachingPanel({
       <div className="flex-1 overflow-y-auto p-4" aria-live="polite" aria-atomic="false">
         {messages.length === 0 && !hintStream.text ? (
           <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
-            <p className="text-sm text-[var(--color-text-muted)]">
-              {mode === 'SELF_PRACTICE'
-                ? 'Ask Sophia for hints as you work through the problem'
-                : mode === 'COACH_ME'
-                  ? "Tell Sophia how you're thinking about the problem"
-                  : 'Sophia will guide you through the interview process'}
-            </p>
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => onHintRequest(nextHintLevel)}
-              disabled={!canGetHint || hintStream.isLoading}
-              aria-label={`Ask Sophia for a hint level ${nextHintLevel}`}
-            >
-              {hintStream.isLoading
-                ? 'Getting hint...'
-                : `Ask Sophia for a hint (Level ${nextHintLevel})`}
-            </Button>
+            <p className="text-sm text-[var(--color-text-muted)]">{config.emptyStateText}</p>
+            {canGetHint && (
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => onHintRequest(nextHintLevel)}
+                disabled={!canGetHint || hintStream.isLoading}
+                aria-label={`Ask Sophia for a hint level ${nextHintLevel}`}
+              >
+                {hintStream.isLoading
+                  ? 'Getting hint...'
+                  : `Ask Sophia for a hint (Level ${nextHintLevel})`}
+              </Button>
+            )}
           </div>
         ) : (
           <div className="space-y-3">
@@ -109,36 +117,101 @@ export function CoachingPanel({
             {messages.map((msg) => {
               const text = extractTextFromMessage(msg);
               if (!text) return null;
+              const isAssistant = msg.role === 'assistant';
+
               return (
                 <div
                   key={msg.id}
                   style={{ animation: 'slideUp 0.2s ease-out' }}
-                  className={cn(
-                    'rounded-lg px-3 py-2 text-sm',
-                    msg.role === 'assistant'
-                      ? 'bg-[var(--color-ai-coach)]/10 text-[var(--color-text-primary)]'
-                      : 'bg-[var(--color-bg-elevated)] text-[var(--color-text-primary)]',
-                  )}
+                  className={cn('flex gap-2', isAssistant ? 'justify-start' : 'justify-end')}
                 >
-                  <div className="mb-1 text-xs font-medium text-[var(--color-text-muted)]">
-                    {msg.role === 'assistant' ? 'Sophia' : 'You'}
+                  {isAssistant && (
+                    <div className="shrink-0">
+                      {!avatarError ? (
+                        <div className="relative h-7 w-7 overflow-hidden rounded-full">
+                          <Image
+                            src={SOPHIA_AVATAR}
+                            alt="Sophia"
+                            fill
+                            sizes="28px"
+                            quality={90}
+                            style={{ objectFit: 'contain' }}
+                            onError={() => setAvatarError(true)}
+                          />
+                        </div>
+                      ) : (
+                        <div
+                          className="flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold"
+                          style={{ backgroundColor: config.colors.primary, color: '#fff' }}
+                        >
+                          S
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  <div
+                    className="max-w-[80%] rounded-lg px-3 py-2 text-sm"
+                    style={
+                      isAssistant
+                        ? { backgroundColor: config.colors.bg, color: 'var(--color-text-primary)' }
+                        : undefined
+                    }
+                  >
+                    <div
+                      className="mb-1 text-xs font-medium"
+                      style={
+                        isAssistant
+                          ? { color: config.colors.text }
+                          : { color: 'var(--color-text-muted)' }
+                      }
+                    >
+                      {isAssistant ? 'Sophia' : 'You'}
+                    </div>
+                    <div className="whitespace-pre-wrap">{text}</div>
                   </div>
-                  <div className="whitespace-pre-wrap">{text}</div>
                 </div>
               );
             })}
 
             {/* Hint stream */}
             {hintStream.text && (
-              <div className="rounded-lg bg-[var(--color-ai-coach)]/10 px-3 py-2 text-sm text-[var(--color-text-primary)]">
-                <div className="mb-1 text-xs font-medium text-[var(--color-ai-coach)]">
-                  Hint (Level {hintLevel})
-                </div>
-                <div className="whitespace-pre-wrap">
-                  {hintStream.text}
-                  {hintStream.isLoading && (
-                    <span className="ml-1 inline-block h-3 w-3 animate-pulse rounded-full bg-[var(--color-ai-coach)]" />
-                  )}
+              <div className="flex gap-2">
+                {!avatarError ? (
+                  <div className="relative h-7 w-7 shrink-0 overflow-hidden rounded-full">
+                    <Image
+                      src={SOPHIA_AVATAR}
+                      alt="Sophia"
+                      fill
+                      sizes="28px"
+                      quality={90}
+                      style={{ objectFit: 'contain' }}
+                      onError={() => setAvatarError(true)}
+                    />
+                  </div>
+                ) : (
+                  <div
+                    className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold"
+                    style={{ backgroundColor: config.colors.primary, color: '#fff' }}
+                  >
+                    S
+                  </div>
+                )}
+                <div
+                  className="rounded-lg px-3 py-2 text-sm text-[var(--color-text-primary)]"
+                  style={{ backgroundColor: config.colors.bg }}
+                >
+                  <div className="mb-1 text-xs font-medium" style={{ color: config.colors.text }}>
+                    Hint (Level {hintLevel})
+                  </div>
+                  <div className="whitespace-pre-wrap">
+                    {hintStream.text}
+                    {hintStream.isLoading && (
+                      <span
+                        className="ml-1 inline-block h-3 w-3 animate-pulse rounded-full"
+                        style={{ backgroundColor: config.colors.primary }}
+                      />
+                    )}
+                  </div>
                 </div>
               </div>
             )}
@@ -146,8 +219,11 @@ export function CoachingPanel({
             {/* Loading indicator for chat */}
             {isLoading && !hintStream.isLoading && (
               <div className="flex items-center gap-2 text-sm text-[var(--color-text-muted)]">
-                <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-[var(--color-ai-coach)] border-t-transparent" />
-                Sophia is thinking...
+                <span
+                  className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-t-transparent"
+                  style={{ borderColor: config.colors.primary, borderTopColor: 'transparent' }}
+                />
+                {config.vocabulary.aiProcessing}
               </div>
             )}
 
