@@ -14,8 +14,19 @@ export async function POST(req: Request): Promise<Response> {
     const body = await req.json();
     const { messages, mode, title, statement, pattern, difficulty } = body;
 
-    if (!messages || !mode || !title || !statement || !pattern || !difficulty) {
-      return new Response('Missing required fields', { status: 400 });
+    // Validate required problem context fields
+    const missingFields: string[] = [];
+    if (!title || typeof title !== 'string') missingFields.push('title');
+    if (!statement || typeof statement !== 'string') missingFields.push('statement');
+    if (!pattern || typeof pattern !== 'string') missingFields.push('pattern');
+    if (!difficulty || typeof difficulty !== 'string') missingFields.push('difficulty');
+
+    if (missingFields.length > 0) {
+      const errorMsg = `Missing required problem context fields: ${missingFields.join(', ')}`;
+      return new Response(JSON.stringify({ error: errorMsg, missingFields }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
 
     if (mode !== 'coach' && mode !== 'interviewer') {

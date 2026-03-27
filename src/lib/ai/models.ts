@@ -1,4 +1,4 @@
 export const MODELS = {
-  reasoning: 'stepfun/step-3.5-flash:free',
-  summary: 'stepfun/step-3.5-flash:free',
+  reasoning: 'openrouter/free',
+  summary: 'openrouter/free',
 } as const;
