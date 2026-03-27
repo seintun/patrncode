@@ -96,16 +96,6 @@ export function CoachingPanel({
       <div className="flex-1 overflow-y-auto p-4" aria-live="polite" aria-atomic="false">
         {messages.length === 0 && !hintStream.text ? (
           <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
-            <div className="relative h-[180px] w-[280px]">
-              <Image
-                src={config.sceneImage}
-                alt={`${config.label} scene`}
-                fill
-                className="rounded-lg object-contain"
-                sizes="280px"
-                priority={false}
-              />
-            </div>
             <p className="text-sm text-[var(--color-text-muted)]">{config.emptyStateText}</p>
             {canGetHint && (
               <Button
