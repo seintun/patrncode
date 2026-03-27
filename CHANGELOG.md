@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.1.1
+
+### Patch Changes
+
+- 969e021: fix: chat and pyodide error messages
+  - Fix chat 404: use DefaultChatTransport in useChat v3
+  - Fix chat 400: force chat completions API (OpenRouter lacks Responses API)
+  - Fix chat validation: validate messages array and problem context fields
+  - Improve pyodide errors: dynamic line offset, traceback formatting, filter internals
+
 All notable changes to sophocode are documented here.
 
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
