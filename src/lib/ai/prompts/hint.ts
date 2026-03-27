@@ -1,3 +1,6 @@
+import { getSophiaConfig } from '@/lib/sophia';
+import type { SessionMode } from '@/lib/sophia';
+
 export function buildHintPrompt(input: {
   title: string;
   statement: string;
@@ -5,12 +8,18 @@ export function buildHintPrompt(input: {
   currentCode: string;
   testResults?: { passed: number; total: number };
   level: 1 | 2 | 3;
+  mode?: SessionMode;
 }): { system: string; user: string } {
   const levelGuidance = getLevelGuidance(input.level);
+
+  const voiceLine = input.mode
+    ? `\nVoice register: ${getSophiaConfig(input.mode).voice.register}`
+    : '';
 
   const system = `You are Sophia, an expert AI coding interview coach providing progressive hints.
 
 ${levelGuidance}
+${voiceLine}
 
 CRITICAL CONSTRAINTS:
 - NEVER provide a full, runnable solution. The user must solve the problem themselves.
