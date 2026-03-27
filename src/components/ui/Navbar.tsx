@@ -26,6 +26,7 @@ export default function Navbar() {
   }, [open]);
 
   const close = () => setOpen(false);
+  const isActive = (href: string) => pathname === href || pathname?.startsWith(href + '/') === true;
 
   return (
     <nav
@@ -44,7 +45,7 @@ export default function Navbar() {
         {/* Desktop nav */}
         <div className="hidden items-center gap-6 sm:flex">
           {NAV_LINKS.map(({ href, label }) => (
-            <NavLink key={href} href={href} active={pathname === href}>
+            <NavLink key={href} href={href} active={isActive(href)}>
               {label}
             </NavLink>
           ))}
@@ -95,36 +96,42 @@ export default function Navbar() {
       {open && (
         <div
           id="mobile-menu"
-          role="menu"
           className="absolute left-0 right-0 top-full z-50 border-b border-[var(--color-border)] bg-[var(--color-bg-secondary)] px-4 pb-4 pt-2 sm:hidden"
           style={{ animation: 'fadeIn 0.15s ease-out' }}
         >
-          <div className="flex flex-col gap-1">
-            {NAV_LINKS.map(({ href, label }) => (
+          <ul className="flex flex-col gap-1">
+            {NAV_LINKS.map(({ href, label }) => {
+              const active = isActive(href);
+              return (
+                <li key={href}>
+                  <Link
+                    href={href}
+                    onClick={close}
+                    aria-current={active ? 'page' : undefined}
+                    className={`block rounded-md px-3 py-2.5 text-sm font-medium transition-colors ${
+                      active
+                        ? 'bg-[var(--color-bg-elevated)] text-[var(--color-accent)]'
+                        : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-elevated)] hover:text-[var(--color-text-primary)]'
+                    }`}
+                  >
+                    {label}
+                  </Link>
+                </li>
+              );
+            })}
+            <li aria-hidden="true">
+              <div className="my-1 border-t border-[var(--color-border)]" />
+            </li>
+            <li>
               <Link
-                key={href}
-                href={href}
-                role="menuitem"
+                href="/login"
                 onClick={close}
-                className={`rounded-md px-3 py-2.5 text-sm font-medium transition-colors ${
-                  pathname === href
-                    ? 'bg-[var(--color-bg-elevated)] text-[var(--color-accent)]'
-                    : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-elevated)] hover:text-[var(--color-text-primary)]'
-                }`}
+                className="block rounded-md px-3 py-2.5 text-sm font-medium text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-elevated)] hover:text-[var(--color-accent)]"
               >
-                {label}
+                Sign in
               </Link>
-            ))}
-            <div className="my-1 border-t border-[var(--color-border)]" />
-            <Link
-              href="/login"
-              role="menuitem"
-              onClick={close}
-              className="rounded-md px-3 py-2.5 text-sm font-medium text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-elevated)] hover:text-[var(--color-accent)]"
-            >
-              Sign in
-            </Link>
-          </div>
+            </li>
+          </ul>
         </div>
       )}
     </nav>
