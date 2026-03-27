@@ -45,7 +45,7 @@ function StepIndicator({
 
 function SkipLink({ onSkip }: { onSkip: () => void }) {
   return (
-    <div className="mt-8 block w-full text-center">
+    <div className="mt-4 block w-full text-center sm:mt-8">
       <button
         onClick={onSkip}
         className="group inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium text-[var(--color-text-muted)] transition-all hover:bg-[var(--color-bg-elevated)] hover:text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]"
@@ -65,27 +65,27 @@ function SkipLink({ onSkip }: { onSkip: () => void }) {
 // Step 1: Meet Sophia (new)
 function MeetSophiaStep({ onNext, onSkip }: StepProps) {
   return (
-    <div className="space-y-6 text-center">
-      <div className="flex flex-col items-center gap-5">
+    <div className="space-y-5 text-center">
+      <div className="flex flex-col items-center gap-4">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/sophia/modes_sophia.avif"
           alt="Sophia, your AI coding coach"
-          className="rounded-xl object-cover"
+          className="h-[180px] w-[180px] rounded-xl object-cover sm:h-[260px] sm:w-[260px]"
           style={{
-            width: 260,
-            height: 260,
             outline: '2px solid #2dd4bf',
             outlineOffset: '3px',
           }}
         />
         <div>
-          <h1 className="text-3xl font-bold text-[var(--color-text-primary)]">Meet Sophia</h1>
+          <h1 className="text-2xl font-bold text-[var(--color-text-primary)] sm:text-3xl">
+            Meet Sophia
+          </h1>
           <p className="mt-1 text-sm font-medium" style={{ color: '#2dd4bf' }}>
             Your AI Coding Coach
           </p>
         </div>
-        <p className="mx-auto max-w-md text-lg text-[var(--color-text-secondary)]">
+        <p className="mx-auto max-w-md text-base text-[var(--color-text-secondary)] sm:text-lg">
           &ldquo;Hey, I&rsquo;m Sophia. Think of me as the senior engineer sitting right next to
           you. I won&rsquo;t just hand you the answer, but I&rsquo;ll never let you stay stuck
           either.&rdquo;
@@ -125,7 +125,7 @@ function WelcomeStep({ onNext, onSkip, stepKey }: StepProps) {
   }
 
   return (
-    <div className="space-y-6 text-center">
+    <div className="space-y-4 text-center sm:space-y-6">
       <SophiaBubble
         text="First things first, where are you starting from? No wrong answer here."
         stepKey={stepKey}
@@ -163,7 +163,7 @@ function InterviewTestStep({ onNext, onSkip, stepKey }: StepProps) {
   ];
 
   return (
-    <div className="space-y-6 text-center">
+    <div className="space-y-4 text-center sm:space-y-6">
       <SophiaBubble
         text="Here's what most people get wrong: interviews aren't testing if you know the answer. They're testing how you think."
         stepKey={stepKey}
@@ -223,18 +223,42 @@ function ProcessStep({ onNext, onSkip, stepKey }: StepProps) {
   ];
 
   return (
-    <div className="space-y-6 text-center">
+    <div className="space-y-4 text-center sm:space-y-6">
       <SophiaBubble
         text="I'll be coaching you through this same four-step process every session. It works for any problem, any company."
         stepKey={stepKey}
       />
       <div>
-        <h2 className="text-3xl font-bold text-[var(--color-text-primary)]">The Process</h2>
-        <p className="mt-2 text-lg text-[var(--color-text-secondary)]">
+        <h2 className="text-2xl font-bold text-[var(--color-text-primary)] sm:text-3xl">
+          The Process
+        </h2>
+        <p className="mt-1 text-base text-[var(--color-text-secondary)] sm:mt-2 sm:text-lg">
           Every problem follows the same four-phase process.
         </p>
       </div>
-      <div className="mx-auto flex max-w-3xl flex-col items-start gap-0 sm:flex-row">
+
+      {/* Mobile: compact vertical list */}
+      <div className="mx-auto flex max-w-sm flex-col gap-2 sm:hidden">
+        {phases.map((phase) => (
+          <div
+            key={phase.title}
+            className="flex items-center gap-3 rounded-lg bg-[var(--color-bg-elevated)] px-4 py-3 text-left"
+          >
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--color-bg-primary)] text-sm font-bold text-[var(--color-accent)]">
+              {phase.num}
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-[var(--color-text-primary)]">
+                {phase.title}
+              </p>
+              <p className="text-xs text-[var(--color-text-secondary)]">{phase.desc}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop: horizontal flow with connectors */}
+      <div className="mx-auto hidden max-w-3xl sm:flex sm:flex-row sm:items-start">
         {phases.map((phase, i) => (
           <div key={phase.title} className="flex flex-1 items-start">
             <div className="flex flex-col items-center text-center">
@@ -250,6 +274,7 @@ function ProcessStep({ onNext, onSkip, stepKey }: StepProps) {
           </div>
         ))}
       </div>
+
       <Button onClick={onNext} size="lg">
         Continue
       </Button>
@@ -269,19 +294,21 @@ function BigOStep({ onNext, onSkip, stepKey }: StepProps) {
   ];
 
   return (
-    <div className="space-y-6 text-center">
+    <div className="space-y-4 text-center sm:space-y-6">
       <SophiaBubble
         text="One thing interviewers always ask about: how efficient is your solution? Here's what that means."
         stepKey={stepKey}
       />
       <div>
-        <h2 className="text-3xl font-bold text-[var(--color-text-primary)]">Big-O Made Simple</h2>
-        <p className="mt-2 text-lg text-[var(--color-text-secondary)]">
+        <h2 className="text-2xl font-bold text-[var(--color-text-primary)] sm:text-3xl">
+          Big-O Made Simple
+        </h2>
+        <p className="mt-1 text-base text-[var(--color-text-secondary)] sm:mt-2 sm:text-lg">
           Big-O tells you how your solution scales as input grows.
         </p>
       </div>
-      <div className="mx-auto max-w-2xl">
-        <div className="flex items-stretch justify-center overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-secondary)]">
+      <div className="mx-auto max-w-2xl overflow-x-auto">
+        <div className="flex min-w-[300px] items-stretch justify-center overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-secondary)]">
           {complexities.map((c, i) => (
             <div
               key={c.label}
@@ -327,14 +354,16 @@ function TryFirstStep({ onSkip, stepKey }: { onSkip: () => void; stepKey: number
   }
 
   return (
-    <div className="space-y-6 text-center">
+    <div className="space-y-4 text-center sm:space-y-6">
       <SophiaBubble
         text="That's everything you need to get started. I'll be right there with you. Let's go."
         stepKey={stepKey}
       />
       <div>
-        <h2 className="text-3xl font-bold text-[var(--color-text-primary)]">You&rsquo;re ready!</h2>
-        <p className="mt-2 text-lg text-[var(--color-text-secondary)]">
+        <h2 className="text-2xl font-bold text-[var(--color-text-primary)] sm:text-3xl">
+          You&rsquo;re ready!
+        </h2>
+        <p className="mt-1 text-base text-[var(--color-text-secondary)] sm:mt-2 sm:text-lg">
           Let&rsquo;s start with an easy problem.
         </p>
       </div>
@@ -342,10 +371,14 @@ function TryFirstStep({ onSkip, stepKey }: { onSkip: () => void; stepKey: number
         <div className="space-y-4">
           <p className="text-sm leading-relaxed text-[var(--color-text-secondary)]">
             You&rsquo;ll work through the problem using the{' '}
-            <span className="inline-flex items-center rounded-md bg-[var(--color-bg-elevated)] px-2 py-0.5 text-xs font-semibold text-[var(--color-accent)] ring-1 ring-inset ring-[var(--color-border)]">
-              Clarify <span className="mx-1.5 text-[var(--color-text-muted)]">→</span> Plan{' '}
-              <span className="mx-1.5 text-[var(--color-text-muted)]">→</span> Code{' '}
-              <span className="mx-1.5 text-[var(--color-text-muted)]">→</span> Reflect
+            <span className="inline-flex flex-wrap items-center gap-x-0.5 rounded-md bg-[var(--color-bg-elevated)] px-2 py-0.5 text-xs font-semibold text-[var(--color-accent)] ring-1 ring-inset ring-[var(--color-border)]">
+              <span>Clarify</span>
+              <span className="text-[var(--color-text-muted)]">→</span>
+              <span>Plan</span>
+              <span className="text-[var(--color-text-muted)]">→</span>
+              <span>Code</span>
+              <span className="text-[var(--color-text-muted)]">→</span>
+              <span>Reflect</span>
             </span>{' '}
             process with Sophia guiding you every step of the way.
           </p>
@@ -401,7 +434,7 @@ export default function OnboardingPage() {
   ];
 
   return (
-    <div className="flex min-h-[calc(100vh-57px)] flex-col items-center justify-center bg-[var(--color-bg-primary)] px-4 py-12">
+    <div className="flex min-h-[calc(100vh-57px)] flex-col items-center justify-start overflow-y-auto bg-[var(--color-bg-primary)] px-4 py-6 sm:justify-center sm:py-12">
       <div
         key={step}
         className="w-full animate-[fadeIn_0.3s_ease-out]"
