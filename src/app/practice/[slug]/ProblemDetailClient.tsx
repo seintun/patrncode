@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Card } from '@/components/ui/Card';
@@ -214,14 +213,12 @@ function ProblemDetailContent({
               >
                 {/* Mobile: image left, text right. sm+: image top, text below */}
                 <div className="flex flex-row sm:flex-col">
-                  <div className="relative h-24 w-24 shrink-0 sm:h-36 sm:w-full">
-                    <Image
+                  <div className="relative h-24 w-24 shrink-0 sm:h-36 sm:w-full overflow-hidden">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
                       src={MODE_IMAGES[mode.id]}
                       alt={mode.title}
-                      fill
-                      unoptimized
-                      className="object-cover"
-                      priority={false}
+                      className="h-full w-full object-cover"
                     />
                     {isSelected && (
                       <div
@@ -248,9 +245,11 @@ function ProblemDetailContent({
         </div>
       </div>
 
-      <Button onClick={handleStartSession} disabled={starting} size="lg">
-        {starting ? 'Starting...' : 'Start Session'}
-      </Button>
+      <div className="flex justify-center">
+        <Button onClick={handleStartSession} disabled={starting} size="lg">
+          {starting ? 'Starting...' : 'Start Session'}
+        </Button>
+      </div>
     </div>
   );
 }
