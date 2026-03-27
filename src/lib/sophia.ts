@@ -33,7 +33,7 @@ export interface SophiaModeConfig {
   voice: SophiaVoice;
 }
 
-export const SOPHIA_AVATAR = '/sophia/avatar.png';
+export const SOPHIA_AVATAR = '/sophia/avatar.svg';
 
 export const SOPHIA_MODES: Record<SessionMode, SophiaModeConfig> = {
   SELF_PRACTICE: {
