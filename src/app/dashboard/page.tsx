@@ -78,7 +78,7 @@ export default function DashboardPage() {
         <h1 className="mb-6 text-3xl font-bold text-[var(--color-text-primary)]">Dashboard</h1>
 
         {/* Quick Stats */}
-        <div className="mb-8 grid gap-6 md:grid-cols-3">
+        <div className="mb-8 grid gap-6 grid-cols-1 md:grid-cols-3">
           <Card className="p-6">
             <div className="text-sm text-[var(--color-text-muted)]">Problems Solved</div>
             <div className="text-4xl font-bold text-[var(--color-accent)]">

@@ -43,12 +43,20 @@ function StepIndicator({
 
 function SkipLink({ onSkip }: { onSkip: () => void }) {
   return (
-    <button
-      onClick={onSkip}
-      className="mt-4 text-sm text-[var(--color-text-muted)] transition-colors hover:text-[var(--color-text-secondary)]"
-    >
-      Skip to practice
-    </button>
+    <div className="mt-8 block w-full text-center">
+      <button
+        onClick={onSkip}
+        className="group inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium text-[var(--color-text-muted)] transition-all hover:bg-[var(--color-bg-elevated)] hover:text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]"
+      >
+        <span>Skip to practice</span>
+        <span
+          className="opacity-70 transition-transform group-hover:translate-x-1"
+          aria-hidden="true"
+        >
+          →
+        </span>
+      </button>
+    </div>
   );
 }
 
@@ -175,7 +183,7 @@ function ProcessStep({ onNext, onSkip }: StepProps) {
           Every problem follows the same four-phase process.
         </p>
       </div>
-      <div className="mx-auto flex max-w-3xl items-start gap-0">
+      <div className="mx-auto flex max-w-3xl flex-col items-start gap-0 sm:flex-row">
         {phases.map((phase, i) => (
           <div key={phase.title} className="flex flex-1 items-start">
             <div className="flex flex-col items-center text-center">
@@ -217,22 +225,30 @@ function BigOStep({ onNext, onSkip }: StepProps) {
           Big-O tells you how your solution scales as input grows.
         </p>
       </div>
-      <div className="mx-auto max-w-lg">
-        <div className="flex items-end justify-center gap-4 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-secondary)] p-6">
+      <div className="mx-auto max-w-2xl">
+        <div className="flex items-stretch justify-center rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-secondary)] overflow-hidden">
           {complexities.map((c, i) => (
-            <div key={c.label} className="flex flex-1 flex-col items-center gap-1">
+            <div
+              key={c.label}
+              className={cn(
+                'flex flex-1 flex-col items-center pt-6 pb-4 transition-colors',
+                i % 2 === 1 ? 'bg-[var(--color-bg-elevated)]/30' : 'bg-transparent',
+              )}
+            >
               <span className="text-xs font-medium text-[var(--color-text-muted)]">{c.name}</span>
-              <div
-                className="w-full max-w-16 rounded-t-md transition-all"
-                style={
-                  {
-                    backgroundColor: c.color,
-                    animationDelay: `${i * 0.2}s`,
-                    animation: 'bar-grow 1s ease-out forwards',
-                    '--bar-height': `${c.height}%`,
-                  } as React.CSSProperties
-                }
-              />
+              <div className="flex h-[120px] w-full items-end justify-center mt-4 mb-2">
+                <div
+                  className="w-full max-w-16 rounded-t-md transition-all"
+                  style={
+                    {
+                      backgroundColor: c.color,
+                      animationDelay: `${i * 0.2}s`,
+                      animation: 'bar-grow 1s ease-out forwards',
+                      '--bar-height': `${c.height}%`,
+                    } as React.CSSProperties
+                  }
+                />
+              </div>
               <span className="text-xs font-semibold text-[var(--color-text-secondary)]">
                 {c.label}
               </span>
@@ -265,9 +281,14 @@ function TryFirstStep({ onSkip }: { onSkip: () => void }) {
       </div>
       <Card className="mx-auto max-w-md">
         <div className="space-y-4">
-          <p className="text-sm text-[var(--color-text-secondary)]">
-            You&rsquo;ll work through the problem using the Clarify → Plan → Code → Reflect process
-            with Sophia guiding you every step of the way.
+          <p className="text-sm leading-relaxed text-[var(--color-text-secondary)]">
+            You&rsquo;ll work through the problem using the{' '}
+            <span className="inline-flex items-center rounded-md bg-[var(--color-bg-elevated)] px-2 py-0.5 text-xs font-semibold text-[var(--color-accent)] ring-1 ring-inset ring-[var(--color-border)]">
+              Clarify <span className="mx-1.5 text-[var(--color-text-muted)]">→</span> Plan{' '}
+              <span className="mx-1.5 text-[var(--color-text-muted)]">→</span> Code{' '}
+              <span className="mx-1.5 text-[var(--color-text-muted)]">→</span> Reflect
+            </span>{' '}
+            process with Sophia guiding you every step of the way.
           </p>
           <Button onClick={handleStart} size="lg" className="w-full">
             Start Practicing

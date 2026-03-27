@@ -105,7 +105,11 @@ export default function ProblemList() {
 
       <div className="mb-6 flex flex-wrap items-center gap-3">
         <div className="min-w-[200px] flex-1">
+          <label htmlFor="problem-search" className="sr-only">
+            Search problems
+          </label>
           <Input
+            id="problem-search"
             type="search"
             placeholder="Search problems..."
             value={search}
@@ -113,14 +117,22 @@ export default function ProblemList() {
             aria-label="Search problems"
           />
         </div>
+        <label htmlFor="pattern-filter" className="sr-only">
+          Filter by pattern
+        </label>
         <Select
+          id="pattern-filter"
           options={PATTERN_OPTIONS}
           value={pattern}
           onChange={(v) => setPattern(v)}
           className="w-44"
           aria-label="Filter by pattern"
         />
+        <label htmlFor="sort-select" className="sr-only">
+          Sort problems
+        </label>
         <Select
+          id="sort-select"
           options={SORT_OPTIONS}
           value={sortBy}
           onChange={setSortBy}
@@ -129,14 +141,31 @@ export default function ProblemList() {
         />
       </div>
 
-      <div className="mb-6 flex gap-2" role="group" aria-label="Filter by difficulty">
+      <div
+        className="mb-6 flex gap-2"
+        role="radiogroup"
+        aria-label="Filter by difficulty"
+        onKeyDown={(e) => {
+          const currentIndex = DIFFICULTIES.indexOf(difficultyFilter as Difficulty);
+          if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+            e.preventDefault();
+            const next = currentIndex < DIFFICULTIES.length - 1 ? currentIndex + 1 : 0;
+            setDifficultyFilter(DIFFICULTIES[next]);
+          } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+            e.preventDefault();
+            const prev = currentIndex > 0 ? currentIndex - 1 : DIFFICULTIES.length - 1;
+            setDifficultyFilter(DIFFICULTIES[prev]);
+          }
+        }}
+      >
         {DIFFICULTIES.map((d) => (
           <button
             key={d}
+            role="radio"
             onClick={() => setDifficultyFilter(difficultyFilter === d ? '' : d)}
-            aria-pressed={difficultyFilter === d}
+            aria-checked={difficultyFilter === d}
             aria-label={`Filter by ${d.toLowerCase()} difficulty`}
-            className="cursor-pointer rounded-full transition-opacity"
+            className="cursor-pointer rounded-full transition-opacity min-h-11"
             style={{ opacity: difficultyFilter === d || !difficultyFilter ? 1 : 0.4 }}
           >
             <Badge

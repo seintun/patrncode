@@ -156,11 +156,11 @@ function ProblemDetailContent({
                 <p className="mb-1 text-sm font-medium text-[var(--color-text-muted)]">
                   Example {i + 1}
                 </p>
-                <div className="mb-2 font-mono text-sm">
+                <div className="mb-2 font-[family-name:var(--font-geist-mono)] text-sm">
                   <span className="text-[var(--color-text-muted)]">Input: </span>
                   <span className="text-[var(--color-text-primary)]">{ex.input}</span>
                 </div>
-                <div className="mb-2 font-mono text-sm">
+                <div className="mb-2 font-[family-name:var(--font-geist-mono)] text-sm">
                   <span className="text-[var(--color-text-muted)]">Output: </span>
                   <span className="text-[var(--color-text-primary)]">{ex.output}</span>
                 </div>
@@ -177,7 +177,7 @@ function ProblemDetailContent({
         <h2 className="mb-3 text-lg font-semibold text-[var(--color-text-primary)]">Constraints</h2>
         <ul className="list-disc space-y-1 pl-5 text-sm text-[var(--color-text-secondary)]">
           {problem.constraints.map((c, i) => (
-            <li key={i} className="font-mono">
+            <li key={i} className="font-[family-name:var(--font-geist-mono)]">
               {c}
             </li>
           ))}

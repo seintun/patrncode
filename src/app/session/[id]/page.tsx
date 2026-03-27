@@ -231,20 +231,20 @@ export default function SessionPage() {
 
   if (loading) {
     return (
-      <div className="h-[calc(100vh-57px)]">
+      <div className="h-[calc(100vh-57px)]" aria-busy="true" aria-live="polite">
         <div className="hidden h-full md:grid md:grid-cols-[30%_40%_30%]">
           <div className="border-r border-[var(--color-border)] p-4">
-            <Skeleton className="mb-4 h-8 w-3/4" />
+            <Skeleton className="mb-4 h-8 w-3/4" aria-label="Loading problem panel" />
             <Skeleton className="mb-2 h-4 w-full" />
             <Skeleton className="mb-2 h-4 w-5/6" />
             <Skeleton className="h-4 w-4/5" />
           </div>
           <div className="border-r border-[var(--color-border)] p-4">
-            <Skeleton className="h-full w-full" />
+            <Skeleton className="h-full w-full" aria-label="Loading code editor" />
           </div>
           <div className="p-4">
             <Skeleton className="mb-4 h-8 w-1/2" />
-            <Skeleton className="h-full w-full" />
+            <Skeleton className="h-full w-full" aria-label="Loading coaching panel" />
           </div>
         </div>
         {/* Mobile skeleton */}
@@ -255,7 +255,7 @@ export default function SessionPage() {
             <Skeleton className="mx-1 my-2 h-8 flex-1" />
           </div>
           <div className="flex-1 p-4">
-            <Skeleton className="mb-4 h-8 w-3/4" />
+            <Skeleton className="mb-4 h-8 w-3/4" aria-label="Loading content" />
             <Skeleton className="mb-2 h-4 w-full" />
             <Skeleton className="h-4 w-2/3" />
           </div>

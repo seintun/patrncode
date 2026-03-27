@@ -21,6 +21,7 @@ interface CodeEditorProps {
 
 function CodeEditor({ value, onChange, language = 'python' }: CodeEditorProps) {
   const timerRef = useRef<ReturnType<typeof setTimeout>>(null);
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
   const handleChange = useCallback(
     (newValue: string | undefined) => {
@@ -40,60 +41,66 @@ function CodeEditor({ value, onChange, language = 'python' }: CodeEditorProps) {
   }, []);
 
   return (
-    <MonacoEditor
-      height="100%"
-      language={language}
-      value={value}
-      theme="sophocode-dark"
-      onChange={handleChange}
-      beforeMount={(monaco) => {
-        monaco.editor.defineTheme('sophocode-dark', {
-          base: 'vs-dark',
-          inherit: true,
-          rules: [
-            { token: '', foreground: 'F1F5F9', background: '0F172A' },
-            { token: 'comment', foreground: '64748B' },
-            { token: 'keyword', foreground: '22D3EE' },
-            { token: 'string', foreground: '10B981' },
-            { token: 'number', foreground: 'F59E0B' },
-            { token: 'type', foreground: '818CF8' },
-            { token: 'function', foreground: '818CF8' },
-          ],
-          colors: {
-            'editor.background': '#0F172A',
-            'editor.foreground': '#F1F5F9',
-            'editor.lineHighlightBackground': '#1E293B',
-            'editor.selectionBackground': '#33415580',
-            'editorCursor.foreground': '#22D3EE',
-            'editorLineNumber.foreground': '#64748B',
-            'editorLineNumber.activeForeground': '#94A3B8',
-            'editor.inactiveSelectionBackground': '#33415540',
-            'editorIndentGuide.background': '#1E293B',
-            'editorIndentGuide.activeBackground': '#334155',
+    <div aria-label="Code editor" className="h-full">
+      <MonacoEditor
+        height="100%"
+        language={language}
+        value={value}
+        theme="sophocode-dark"
+        onChange={handleChange}
+        beforeMount={(monaco) => {
+          monaco.editor.defineTheme('sophocode-dark', {
+            base: 'vs-dark',
+            inherit: true,
+            rules: [
+              { token: '', foreground: 'E8ECF4', background: '080C18' },
+              { token: 'comment', foreground: '5C6578' },
+              { token: 'keyword', foreground: '2DD4BF' },
+              { token: 'string', foreground: '10B981' },
+              { token: 'number', foreground: 'F59E0B' },
+              { token: 'type', foreground: '818CF8' },
+              { token: 'function', foreground: '818CF8' },
+            ],
+            colors: {
+              'editor.background': '#080C18',
+              'editor.foreground': '#E8ECF4',
+              'editor.lineHighlightBackground': '#111827',
+              'editor.selectionBackground': '#1C243980',
+              'editorCursor.foreground': '#2DD4BF',
+              'editorLineNumber.foreground': '#5C6578',
+              'editorLineNumber.activeForeground': '#8B95A8',
+              'editor.inactiveSelectionBackground': '#1C243940',
+              'editorIndentGuide.background': '#111827',
+              'editorIndentGuide.activeBackground': '#1E2A3E',
+            },
+          });
+        }}
+        options={{
+          fontFamily: 'var(--font-geist-mono), Geist Mono, monospace',
+          fontSize: isMobile ? 16 : 14,
+          lineHeight: 22,
+          minimap: { enabled: false },
+          scrollBeyondLastLine: false,
+          padding: { top: 12 },
+          tabSize: 4,
+          insertSpaces: true,
+          wordWrap: 'on',
+          automaticLayout: true,
+          renderLineHighlight: 'line',
+          cursorBlinking: 'smooth',
+          cursorSmoothCaretAnimation: 'on',
+          smoothScrolling: true,
+          lineNumbers: isMobile ? 'off' : 'on',
+          folding: !isMobile,
+          accessibilitySupport: 'on',
+          ariaLabel: 'Python code editor for solving the current problem',
+          suggest: {
+            showKeywords: true,
+            showSnippets: true,
           },
-        });
-      }}
-      options={{
-        fontFamily: 'var(--font-jetbrains-mono), JetBrains Mono, monospace',
-        fontSize: 14,
-        lineHeight: 22,
-        minimap: { enabled: false },
-        scrollBeyondLastLine: false,
-        padding: { top: 12 },
-        tabSize: 4,
-        insertSpaces: true,
-        wordWrap: 'on',
-        automaticLayout: true,
-        renderLineHighlight: 'line',
-        cursorBlinking: 'smooth',
-        cursorSmoothCaretAnimation: 'on',
-        smoothScrolling: true,
-        suggest: {
-          showKeywords: true,
-          showSnippets: true,
-        },
-      }}
-    />
+        }}
+      />
+    </div>
   );
 }
 

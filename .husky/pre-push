@@ -15,6 +15,6 @@ if [ $? -ne 0 ]; then
   echo "🦋 Missing changeset detected before push. Auto-generating an empty changeset..."
   bunx changeset add --empty
   git add .changeset/
-  git commit -m "chore: auto-add empty changeset before push"
+  git commit --no-verify -m "chore: add empty changeset before push"
   echo "✅ Empty changeset added and committed! Pushing now..."
 fi

@@ -81,7 +81,7 @@ export function TestResults({
       </div>
 
       {/* Results list */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto" aria-relevant="additions">
         {visibleResults.length === 0 && hiddenResults.length === 0 && (
           <div className="flex h-full items-center justify-center text-sm text-[var(--color-text-muted)]">
             Run your code to see test results
@@ -89,19 +89,33 @@ export function TestResults({
         )}
 
         {visibleResults.map((result, i) => (
-          <div key={i} className="border-b border-[var(--color-border-subtle)] px-4 py-3">
+          <div
+            key={i}
+            className="border-b border-[var(--color-border-subtle)] px-4 py-3"
+            style={{
+              animation: 'slideUp 0.3s ease-out',
+              animationDelay: `${i * 60}ms`,
+              animationFillMode: 'backwards',
+            }}
+          >
             <div className="mb-2 flex items-center gap-2">
               {result.passed ? (
-                <span className="text-[var(--color-success)]">&#10003;</span>
+                <>
+                  <span className="text-[var(--color-success)]">&#10003;</span>
+                  <span className="sr-only">Passed</span>
+                </>
               ) : (
-                <span className="text-[var(--color-error)]">&#10007;</span>
+                <>
+                  <span className="text-[var(--color-error)]">&#10007;</span>
+                  <span className="sr-only">Failed</span>
+                </>
               )}
               <span className="text-xs font-medium text-[var(--color-text-muted)]">
                 Test {i + 1}
               </span>
             </div>
 
-            <div className="space-y-1 font-[family-name:var(--font-jetbrains-mono)] text-xs">
+            <div className="space-y-1 font-[family-name:var(--font-geist-mono)] text-xs">
               <div>
                 <span className="text-[var(--color-text-muted)]">Input: </span>
                 <span className="text-[var(--color-text-primary)]">{result.input}</span>

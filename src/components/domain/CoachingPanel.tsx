@@ -81,7 +81,7 @@ export function CoachingPanel({
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4" aria-live="polite">
+      <div className="flex-1 overflow-y-auto p-4" aria-live="polite" aria-atomic="false">
         {messages.length === 0 && !hintStream.text ? (
           <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
             <p className="text-sm text-[var(--color-text-muted)]">
@@ -112,6 +112,7 @@ export function CoachingPanel({
               return (
                 <div
                   key={msg.id}
+                  style={{ animation: 'slideUp 0.2s ease-out' }}
                   className={cn(
                     'rounded-lg px-3 py-2 text-sm',
                     msg.role === 'assistant'
@@ -188,6 +189,9 @@ export function CoachingPanel({
           onSubmit={handleSubmit}
           className="flex items-center gap-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-primary)] px-3 py-2"
         >
+          <label htmlFor="coach-input" className="sr-only">
+            Ask Sophia a question
+          </label>
           <input
             ref={inputRef}
             id="coach-input"

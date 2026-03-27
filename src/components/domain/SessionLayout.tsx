@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type ReactNode } from 'react';
+import { useState, useRef, type ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 
 type TabKey = 'problem' | 'code' | 'coach';
@@ -20,6 +20,15 @@ const tabs: Array<{ key: TabKey; label: string }> = [
 
 export function SessionLayout({ problem, editor, testResults, coach }: SessionLayoutProps) {
   const [activeTab, setActiveTab] = useState<TabKey>('problem');
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  const handleTabChange = (tab: TabKey) => {
+    setActiveTab(tab);
+    // Focus the panel content after tab switch
+    requestAnimationFrame(() => {
+      panelRef.current?.focus();
+    });
+  };
 
   return (
     <>
@@ -49,7 +58,7 @@ export function SessionLayout({ problem, editor, testResults, coach }: SessionLa
               aria-selected={activeTab === tab.key}
               aria-controls={`panel-${tab.key}`}
               id={`tab-${tab.key}`}
-              onClick={() => setActiveTab(tab.key)}
+              onClick={() => handleTabChange(tab.key)}
               className={cn(
                 'flex-1 px-4 py-2 text-sm font-medium transition-colors',
                 activeTab === tab.key
@@ -61,14 +70,16 @@ export function SessionLayout({ problem, editor, testResults, coach }: SessionLa
             </button>
           ))}
         </div>
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto" ref={panelRef} tabIndex={-1}>
           <div
             role="tabpanel"
             id="panel-problem"
             aria-labelledby="tab-problem"
             hidden={activeTab !== 'problem'}
           >
-            {activeTab === 'problem' && problem}
+            {activeTab === 'problem' && (
+              <div style={{ animation: 'fadeIn 0.15s ease-out' }}>{problem}</div>
+            )}
           </div>
           <div
             role="tabpanel"
@@ -77,7 +88,7 @@ export function SessionLayout({ problem, editor, testResults, coach }: SessionLa
             hidden={activeTab !== 'code'}
           >
             {activeTab === 'code' && (
-              <div className="flex h-full flex-col">
+              <div className="flex h-full flex-col" style={{ animation: 'fadeIn 0.15s ease-out' }}>
                 <div className="flex-1 min-h-[18.75rem]">{editor}</div>
                 <div className="border-t border-[var(--color-border)] min-h-[9.375rem] max-h-[40vh] overflow-y-auto">
                   {testResults}
@@ -91,7 +102,9 @@ export function SessionLayout({ problem, editor, testResults, coach }: SessionLa
             aria-labelledby="tab-coach"
             hidden={activeTab !== 'coach'}
           >
-            {activeTab === 'coach' && coach}
+            {activeTab === 'coach' && (
+              <div style={{ animation: 'fadeIn 0.15s ease-out' }}>{coach}</div>
+            )}
           </div>
         </div>
       </div>

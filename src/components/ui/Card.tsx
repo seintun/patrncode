@@ -26,7 +26,8 @@ function Card({ children, className, onClick, ...rest }: CardProps) {
       }
       className={cn(
         'rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-secondary)] p-4',
-        onClick && 'cursor-pointer transition-colors hover:bg-[var(--color-bg-elevated)]',
+        onClick &&
+          'cursor-pointer transition-colors hover:bg-[var(--color-bg-elevated)] hover:border-[var(--color-accent)]/20',
         className,
       )}
       {...rest}

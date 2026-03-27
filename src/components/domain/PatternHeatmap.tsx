@@ -90,6 +90,11 @@ export function PatternHeatmap({ stats }: PatternHeatmapProps) {
               'rounded-lg border border-[var(--color-border)] p-3 text-center transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-bg-primary)] hover:border-[var(--color-accent)]/50',
               stateColors[dominant],
             )}
+            style={{
+              animation: 'scaleIn 0.3s ease-out',
+              animationDelay: `${allPatterns.indexOf(pattern) * 40}ms`,
+              animationFillMode: 'backwards',
+            }}
           >
             <p className="text-xs font-medium leading-tight">
               {patternLabels[pattern] ?? pattern.replace(/_/g, ' ')}
@@ -100,6 +105,15 @@ export function PatternHeatmap({ stats }: PatternHeatmapProps) {
             <p className="text-[10px] uppercase tracking-wider opacity-70">
               {dominant.replace(/_/g, ' ')}
             </p>
+            <span className="sr-only">
+              {dominant === 'MASTERED'
+                ? 'Mastered'
+                : dominant === 'IN_PROGRESS'
+                  ? 'In progress'
+                  : dominant === 'NEEDS_REFRESH'
+                    ? 'Needs refresh'
+                    : 'Unseen'}
+            </span>
           </button>
         );
       })}

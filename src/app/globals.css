@@ -2,15 +2,17 @@
 @plugin "@tailwindcss/typography";
 
 @theme {
-  /* 60-30-10 Dark System */
-  --color-bg-primary: #0f172a;
-  --color-bg-secondary: #1e293b;
-  --color-bg-elevated: #334155;
-  --color-bg-editor: #0f172a;
+  /* Backgrounds — deeper, custom */
+  --color-bg-primary: #080c18;
+  --color-bg-secondary: #111827;
+  --color-bg-elevated: #1c2439;
+  --color-bg-editor: #080c18;
 
-  /* Accent */
-  --color-accent: #22d3ee;
-  --color-accent-hover: #06b6d4;
+  /* Accent — teal */
+  --color-accent: #2dd4bf;
+  --color-accent-hover: #14b8a6;
+
+  /* AI Coach — lavender */
   --color-ai-coach: #818cf8;
 
   /* Feedback */
@@ -24,19 +26,21 @@
   --color-bigo-yellow: var(--color-warning);
   --color-bigo-red: var(--color-error);
 
-  /* Text */
-  --color-text-primary: #f1f5f9;
-  --color-text-secondary: #94a3b8;
-  --color-text-muted: #64748b;
+  /* Text — warmer */
+  --color-text-primary: #e8ecf4;
+  --color-text-secondary: #8b95a8;
+  --color-text-muted: #5c6578;
 
   /* Borders */
-  --color-border: #334155;
-  --color-border-subtle: #1e293b;
+  --color-border: #1e2a3e;
+  --color-border-subtle: #141c2d;
 }
 
 body {
   background-color: var(--color-bg-primary);
   color: var(--color-text-primary);
+  background-image: radial-gradient(circle, var(--color-border-subtle) 1px, transparent 1px);
+  background-size: 32px 32px;
 }
 
 /* ── Interactive element baseline ────────────────────────────────────────── */
@@ -88,5 +92,48 @@ body {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+  50% {
+    box-shadow: 0 0 20px -4px color-mix(in srgb, var(--color-accent) 25%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

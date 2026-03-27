@@ -96,7 +96,7 @@ export function ProblemPanel({
         >
           {activeTab === 'statement' && (
             <div className="space-y-4">
-              <pre className="whitespace-pre-wrap font-[family-name:var(--font-inter)] text-sm leading-relaxed text-[var(--color-text-primary)]">
+              <pre className="whitespace-pre-wrap font-[family-name:var(--font-geist-sans)] text-sm leading-relaxed text-[var(--color-text-primary)]">
                 {problem.statement}
               </pre>
               {problem.constraints.length > 0 && (
@@ -131,7 +131,7 @@ export function ProblemPanel({
                   <div className="mb-1 text-xs font-medium text-[var(--color-text-muted)]">
                     Example {i + 1}
                   </div>
-                  <div className="space-y-2 font-[family-name:var(--font-jetbrains-mono)] text-sm">
+                  <div className="space-y-2 font-[family-name:var(--font-geist-mono)] text-sm">
                     <div>
                       <span className="text-[var(--color-text-muted)]">Input: </span>
                       <span className="text-[var(--color-text-primary)]">{example.input}</span>
@@ -171,7 +171,7 @@ export function ProblemPanel({
                   </div>
                 )}
                 {explanationStream?.text && (
-                  <div className="whitespace-pre-wrap font-[family-name:var(--font-inter)] text-sm leading-relaxed text-[var(--color-text-primary)]">
+                  <div className="whitespace-pre-wrap font-[family-name:var(--font-geist-sans)] text-sm leading-relaxed text-[var(--color-text-primary)]">
                     {explanationStream.text}
                     {explanationStream.isLoading && (
                       <span className="inline-block h-3 w-3 animate-pulse rounded-full bg-[var(--color-ai-coach)]" />
@@ -201,13 +201,19 @@ export function ProblemPanel({
           hidden={activeTab !== 'notes'}
         >
           {activeTab === 'notes' && (
-            <textarea
-              value={notes}
-              onChange={(e) => onNotesChange(e.target.value)}
-              aria-label="Personal notes for this problem"
-              placeholder="Jot down your thoughts, approach, or edge cases..."
-              className="h-full w-full min-h-[300px] resize-none rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-primary)] p-3 text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-accent)] focus:outline-none"
-            />
+            <>
+              <label htmlFor="notes-textarea" className="sr-only">
+                Personal notes for this problem
+              </label>
+              <textarea
+                id="notes-textarea"
+                value={notes}
+                onChange={(e) => onNotesChange(e.target.value)}
+                aria-label="Personal notes for this problem"
+                placeholder="Jot down your thoughts, approach, or edge cases..."
+                className="h-full w-full min-h-[300px] resize-none rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-primary)] p-3 text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-accent)] focus:outline-none"
+              />
+            </>
           )}
         </div>
       </div>
