@@ -41,7 +41,7 @@ export const SOPHIA_MODES: Record<SessionMode, SophiaModeConfig> = {
     idleLabel: 'Watching...',
     emptyStateText:
       'Work through the problem at your own pace. Ask Sophia for hints when you need them.',
-    sceneImage: '/sophia/solo_mode.png',
+    sceneImage: '/sophia/solo_mode.avif',
     colors: {
       primary: '#2dd4bf',
       soft: '#2dd4bf33',
@@ -75,7 +75,7 @@ export const SOPHIA_MODES: Record<SessionMode, SophiaModeConfig> = {
     idleLabel: 'Thinking with you...',
     emptyStateText:
       "Tell Sophia how you're thinking about the problem. She'll ask questions to sharpen your approach.",
-    sceneImage: '/sophia/coach_mode.png',
+    sceneImage: '/sophia/coach_mode.avif',
     colors: {
       primary: '#818cf8',
       soft: '#818cf833',
@@ -110,7 +110,7 @@ export const SOPHIA_MODES: Record<SessionMode, SophiaModeConfig> = {
     idleLabel: 'Considering...',
     emptyStateText:
       "Sophia will present the problem and conduct a realistic technical interview. She won't give hints freely.",
-    sceneImage: '/sophia/mock_mode.png',
+    sceneImage: '/sophia/mock_mode.avif',
     colors: {
       primary: '#fb7185',
       soft: '#fb718533',

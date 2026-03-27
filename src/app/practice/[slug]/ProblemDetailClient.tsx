@@ -58,9 +58,9 @@ const MODES: Array<{ id: SessionMode; title: string; description: string }> = [
 ];
 
 const MODE_IMAGES: Record<SessionMode, string> = {
-  SELF_PRACTICE: '/sophia/solo_mode.png',
-  COACH_ME: '/sophia/coach_mode.png',
-  MOCK_INTERVIEW: '/sophia/mock_mode.png',
+  SELF_PRACTICE: '/sophia/solo_mode.avif',
+  COACH_ME: '/sophia/coach_mode.avif',
+  MOCK_INTERVIEW: '/sophia/mock_mode.avif',
 };
 
 function formatPattern(pattern: string): string {
