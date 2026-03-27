@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Card } from '@/components/ui/Card';
@@ -10,6 +11,7 @@ import { Button } from '@/components/ui/Button';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { getGuestId } from '@/lib/guest';
 import JsonLdSchema from '@/components/seo/JsonLdSchema';
+import { SOPHIA_MODES } from '@/lib/sophia';
 
 interface ProblemDetail {
   id: string;
@@ -54,6 +56,12 @@ const MODES: Array<{ id: SessionMode; title: string; description: string }> = [
     description: 'Simulate a real interview with Sophia as your interviewer.',
   },
 ];
+
+const MODE_IMAGES: Record<SessionMode, string> = {
+  SELF_PRACTICE: '/sophia/solo_mode.png',
+  COACH_ME: '/sophia/coach_mode.png',
+  MOCK_INTERVIEW: '/sophia/mock_mode.png',
+};
 
 function formatPattern(pattern: string): string {
   return pattern
@@ -187,20 +195,53 @@ function ProblemDetailContent({
       <div className="mb-8">
         <h2 className="mb-3 text-lg font-semibold text-[var(--color-text-primary)]">Select Mode</h2>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          {MODES.map((mode) => (
-            <Card
-              key={mode.id}
-              onClick={() => setSelectedMode(mode.id)}
-              className={
-                selectedMode === mode.id
-                  ? 'border-[var(--color-accent)] bg-[var(--color-bg-elevated)]'
-                  : ''
-              }
-            >
-              <h3 className="mb-1 font-semibold text-[var(--color-text-primary)]">{mode.title}</h3>
-              <p className="text-sm text-[var(--color-text-secondary)]">{mode.description}</p>
-            </Card>
-          ))}
+          {MODES.map((mode) => {
+            const sophiaConfig = SOPHIA_MODES[mode.id];
+            const isSelected = selectedMode === mode.id;
+            return (
+              <Card
+                key={mode.id}
+                onClick={() => setSelectedMode(mode.id)}
+                className="cursor-pointer overflow-hidden p-0 transition-transform hover:scale-[1.02]"
+                style={
+                  isSelected
+                    ? {
+                        borderColor: sophiaConfig.colors.primary,
+                        backgroundColor: sophiaConfig.colors.bg,
+                      }
+                    : {}
+                }
+              >
+                <div className="relative h-36 w-full">
+                  <Image
+                    src={MODE_IMAGES[mode.id]}
+                    alt={mode.title}
+                    fill
+                    sizes="(max-width: 640px) 100vw, 33vw"
+                    className="object-cover"
+                    priority={false}
+                  />
+                  {isSelected && (
+                    <div
+                      className="absolute inset-0"
+                      style={{ backgroundColor: `${sophiaConfig.colors.primary}22` }}
+                    />
+                  )}
+                </div>
+                <div className="p-3">
+                  <h3
+                    className="mb-1 font-semibold"
+                    style={{
+                      color: isSelected ? sophiaConfig.colors.text : 'var(--color-text-primary)',
+                    }}
+                  >
+                    {mode.title}
+                  </h3>
+                  <p className="text-sm text-[var(--color-text-secondary)]">{mode.description}</p>
+                </div>
+              </Card>
+            );
+          })}
         </div>
       </div>
 
