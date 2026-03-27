@@ -219,7 +219,7 @@ function ProblemDetailContent({
                       src={MODE_IMAGES[mode.id]}
                       alt={mode.title}
                       fill
-                      sizes="(max-width: 640px) 96px, 33vw"
+                      unoptimized
                       className="object-cover"
                       priority={false}
                     />
