@@ -23,6 +23,11 @@ async function loadPyodideInstance() {
 }
 
 function runTestCase(py, code, input) {
+  const indentedCode = code
+    .split('\n')
+    .map((line) => '    ' + line)
+    .join('\n');
+
   const setup = `
 import sys, io
 
@@ -43,10 +48,16 @@ try:
             return ''
 `;
 
+  // Compute offset dynamically: count lines in the combined script
+  // before user code starts (setup + "except Exception" line)
+  const setupLineCount = setup.split('\n').length;
+  const codeLineOffset = setupLineCount + 1; // +1 for the blank line before user code
+
   const execution = `
-    ${code}
+${indentedCode}
 except Exception as _e:
-    _error_msg = str(type(_e).__name__) + ': ' + str(_e)
+    import traceback as _tb
+    _error_msg = _tb.format_exc()
 else:
     _error_msg = None
 finally:
@@ -57,17 +68,36 @@ _actual = _stdout_capture.getvalue().strip()
 _errors = _stderr_capture.getvalue().strip()
 `;
 
-  py.run(setup + '\n' + execution);
+  function cleanError(raw) {
+    if (!raw) return raw;
+    return raw
+      .split('\n')
+      .filter(
+        (line) =>
+          !line.includes('/lib/python') &&
+          !line.includes('pyodide') &&
+          line.trim() !== 'Traceback (most recent call last):',
+      )
+      .join('\n')
+      .replace(/line (\d+)/g, (_, n) => `line ${Math.max(1, parseInt(n, 10) - codeLineOffset)}`)
+      .trim();
+  }
+
+  try {
+    py.runPython(setup + '\n' + execution);
+  } catch (syntaxErr) {
+    return { actual: '', error: cleanError(syntaxErr.message) };
+  }
 
   const actual = py.globals.get('_actual') || '';
   const errorMsg = py.globals.get('_error_msg');
   const stderr = py.globals.get('_errors') || '';
 
   if (errorMsg) {
-    return { actual: '', error: errorMsg };
+    return { actual: '', error: cleanError(errorMsg) };
   }
   if (stderr) {
-    return { actual: '', error: stderr };
+    return { actual: '', error: cleanError(stderr) };
   }
   return { actual, error: undefined };
 }
