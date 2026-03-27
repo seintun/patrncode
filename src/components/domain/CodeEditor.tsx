@@ -75,10 +75,6 @@ export function CodeEditor({ value, onChange, language = 'python' }: CodeEditorP
     });
   }, []);
 
-  const handleEditorWillUnmount = useCallback(() => {
-    editorRef.current = null;
-  }, []);
-
   const options = useMemo(
     () => ({
       fontFamily: 'var(--font-geist-mono), Geist Mono, monospace',
@@ -89,15 +85,15 @@ export function CodeEditor({ value, onChange, language = 'python' }: CodeEditorP
       padding: { top: 12 },
       tabSize: 4,
       insertSpaces: true,
-      wordWrap: 'on',
+      wordWrap: 'on' as const,
       automaticLayout: true,
-      renderLineHighlight: 'line',
-      cursorBlinking: 'smooth',
-      cursorSmoothCaretAnimation: 'on',
+      renderLineHighlight: 'line' as const,
+      cursorBlinking: 'smooth' as const,
+      cursorSmoothCaretAnimation: 'on' as const,
       smoothScrolling: true,
-      lineNumbers: isMobile ? 'off' : 'on',
+      lineNumbers: (isMobile ? 'off' : 'on') as 'on' | 'off',
       folding: !isMobile,
-      accessibilitySupport: 'on',
+      accessibilitySupport: 'on' as const,
       ariaLabel: 'Python code editor for solving the current problem',
       suggest: {
         showKeywords: true,
@@ -125,7 +121,6 @@ export function CodeEditor({ value, onChange, language = 'python' }: CodeEditorP
         theme="sophocode-dark"
         onChange={handleChange}
         onMount={handleEditorDidMount}
-        onWillUnmount={handleEditorWillUnmount}
         options={options}
       />
     </div>
