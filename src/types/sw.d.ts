@@ -1,3 +1,5 @@
-declare const self: ServiceWorkerGlobalScope & {
-  __SW_MANIFEST: Array<string | RequestInfo>;
-};
+export {};
+
+declare global {
+  var __SW_MANIFEST: Array<string | RequestInfo>;
+}
