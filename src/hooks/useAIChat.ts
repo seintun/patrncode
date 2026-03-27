@@ -118,6 +118,7 @@ export function useAIChat({ mode, problem, currentCode, testResults }: UseAIChat
             currentCode: currentCode || '',
             testResults,
             level,
+            mode,
           }),
         });
 
@@ -145,7 +146,7 @@ export function useAIChat({ mode, problem, currentCode, testResults }: UseAIChat
         return errorMsg;
       }
     },
-    [problem, currentCode, testResults],
+    [problem, currentCode, testResults, mode],
   );
 
   const getExplanation = useCallback(async () => {

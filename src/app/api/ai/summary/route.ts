@@ -11,7 +11,7 @@ export async function POST(req: Request): Promise<Response> {
     }
 
     const body = await req.json();
-    const { title, pattern, finalCode, testResults, hintsUsed, timeSpentSeconds } = body;
+    const { title, pattern, finalCode, testResults, hintsUsed, timeSpentSeconds, mode } = body;
 
     if (
       !title ||
@@ -31,6 +31,7 @@ export async function POST(req: Request): Promise<Response> {
       testResults,
       hintsUsed,
       timeSpentSeconds,
+      mode,
     });
 
     const result = streamText({

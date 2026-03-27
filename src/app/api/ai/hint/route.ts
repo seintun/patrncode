@@ -13,7 +13,7 @@ export async function POST(req: Request): Promise<Response> {
     }
 
     const body = await req.json();
-    const { title, statement, pattern, currentCode, testResults, level } = body;
+    const { title, statement, pattern, currentCode, testResults, level, mode } = body;
 
     if (!title || !statement || !pattern || level === undefined) {
       return new Response('Missing required fields', { status: 400 });
@@ -30,6 +30,7 @@ export async function POST(req: Request): Promise<Response> {
       currentCode: currentCode || '',
       testResults,
       level,
+      mode,
     });
 
     const result = streamText({
