@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
+import { Input } from '@/components/ui/Input';
 import Link from 'next/link';
 
 export default function LoginPage() {
@@ -76,14 +77,20 @@ export default function LoginPage() {
           </p>
         ) : (
           <form onSubmit={signInWithMagicLink} className="space-y-3">
-            <input
-              type="email"
-              required
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-primary)] px-4 py-2 text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
-            />
+            <div>
+              <label htmlFor="email-input" className="sr-only">
+                Email address
+              </label>
+              <Input
+                id="email-input"
+                type="email"
+                required
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
+              />
+            </div>
             {error && <p className="text-sm text-[var(--color-error)]">{error}</p>}
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? 'Sending...' : 'Send magic link'}

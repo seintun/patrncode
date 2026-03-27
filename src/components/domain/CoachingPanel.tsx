@@ -81,7 +81,7 @@ export function CoachingPanel({
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4">
+      <div className="flex-1 overflow-y-auto p-4" aria-live="polite">
         {messages.length === 0 && !hintStream.text ? (
           <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
             <p className="text-sm text-[var(--color-text-muted)]">
@@ -190,12 +190,13 @@ export function CoachingPanel({
         >
           <input
             ref={inputRef}
+            id="coach-input"
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             disabled={!canChat || isLoading}
-            aria-label="Chat message input"
+            aria-label="Ask Sophia a question"
             placeholder={
               !canChat
                 ? 'Use hints to get guidance'

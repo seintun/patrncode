@@ -47,7 +47,10 @@ export function TestResults({
   return (
     <div className="flex h-full flex-col">
       {/* Summary bar */}
-      <div className="flex items-center justify-between border-b border-[var(--color-border)] px-4 py-2">
+      <div
+        className="flex items-center justify-between border-b border-[var(--color-border)] px-4 py-2"
+        aria-live="polite"
+      >
         <span
           className={cn(
             'text-sm font-medium',
