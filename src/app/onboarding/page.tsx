@@ -49,7 +49,12 @@ function SkipLink({ onSkip }: { onSkip: () => void }) {
         className="group inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium text-[var(--color-text-muted)] transition-all hover:bg-[var(--color-bg-elevated)] hover:text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]"
       >
         <span>Skip to practice</span>
-        <span className="opacity-70 transition-transform group-hover:translate-x-1" aria-hidden="true">→</span>
+        <span
+          className="opacity-70 transition-transform group-hover:translate-x-1"
+          aria-hidden="true"
+        >
+          →
+        </span>
       </button>
     </div>
   );
@@ -223,11 +228,11 @@ function BigOStep({ onNext, onSkip }: StepProps) {
       <div className="mx-auto max-w-2xl">
         <div className="flex items-stretch justify-center rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-secondary)] overflow-hidden">
           {complexities.map((c, i) => (
-            <div 
-              key={c.label} 
+            <div
+              key={c.label}
               className={cn(
-                "flex flex-1 flex-col items-center pt-6 pb-4 transition-colors",
-                i % 2 === 1 ? "bg-[var(--color-bg-elevated)]/30" : "bg-transparent"
+                'flex flex-1 flex-col items-center pt-6 pb-4 transition-colors',
+                i % 2 === 1 ? 'bg-[var(--color-bg-elevated)]/30' : 'bg-transparent',
               )}
             >
               <span className="text-xs font-medium text-[var(--color-text-muted)]">{c.name}</span>
@@ -279,7 +284,9 @@ function TryFirstStep({ onSkip }: { onSkip: () => void }) {
           <p className="text-sm leading-relaxed text-[var(--color-text-secondary)]">
             You&rsquo;ll work through the problem using the{' '}
             <span className="inline-flex items-center rounded-md bg-[var(--color-bg-elevated)] px-2 py-0.5 text-xs font-semibold text-[var(--color-accent)] ring-1 ring-inset ring-[var(--color-border)]">
-              Clarify <span className="mx-1.5 text-[var(--color-text-muted)]">→</span> Plan <span className="mx-1.5 text-[var(--color-text-muted)]">→</span> Code <span className="mx-1.5 text-[var(--color-text-muted)]">→</span> Reflect
+              Clarify <span className="mx-1.5 text-[var(--color-text-muted)]">→</span> Plan{' '}
+              <span className="mx-1.5 text-[var(--color-text-muted)]">→</span> Code{' '}
+              <span className="mx-1.5 text-[var(--color-text-muted)]">→</span> Reflect
             </span>{' '}
             process with Sophia guiding you every step of the way.
           </p>
