@@ -202,7 +202,7 @@ function ProblemDetailContent({
               <Card
                 key={mode.id}
                 onClick={() => setSelectedMode(mode.id)}
-                className="cursor-pointer overflow-hidden p-0 transition-transform hover:scale-[1.02]"
+                className="cursor-pointer overflow-hidden p-0 transition-transform active:scale-[0.98] sm:hover:scale-[1.02]"
                 style={
                   isSelected
                     ? {
@@ -212,32 +212,35 @@ function ProblemDetailContent({
                     : {}
                 }
               >
-                <div className="relative h-36 w-full">
-                  <Image
-                    src={MODE_IMAGES[mode.id]}
-                    alt={mode.title}
-                    fill
-                    sizes="(max-width: 640px) 100vw, 33vw"
-                    className="object-cover"
-                    priority={false}
-                  />
-                  {isSelected && (
-                    <div
-                      className="absolute inset-0"
-                      style={{ backgroundColor: `${sophiaConfig.colors.primary}22` }}
+                {/* Mobile: image left, text right. sm+: image top, text below */}
+                <div className="flex flex-row sm:flex-col">
+                  <div className="relative h-24 w-24 shrink-0 sm:h-36 sm:w-full">
+                    <Image
+                      src={MODE_IMAGES[mode.id]}
+                      alt={mode.title}
+                      fill
+                      sizes="(max-width: 640px) 96px, 33vw"
+                      className="object-cover"
+                      priority={false}
                     />
-                  )}
-                </div>
-                <div className="p-3">
-                  <h3
-                    className="mb-1 font-semibold"
-                    style={{
-                      color: isSelected ? sophiaConfig.colors.text : 'var(--color-text-primary)',
-                    }}
-                  >
-                    {mode.title}
-                  </h3>
-                  <p className="text-sm text-[var(--color-text-secondary)]">{mode.description}</p>
+                    {isSelected && (
+                      <div
+                        className="absolute inset-0"
+                        style={{ backgroundColor: `${sophiaConfig.colors.primary}22` }}
+                      />
+                    )}
+                  </div>
+                  <div className="flex flex-1 flex-col justify-center p-3">
+                    <h3
+                      className="mb-1 font-semibold"
+                      style={{
+                        color: isSelected ? sophiaConfig.colors.text : 'var(--color-text-primary)',
+                      }}
+                    >
+                      {mode.title}
+                    </h3>
+                    <p className="text-sm text-[var(--color-text-secondary)]">{mode.description}</p>
+                  </div>
                 </div>
               </Card>
             );
