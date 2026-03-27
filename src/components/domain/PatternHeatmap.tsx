@@ -82,10 +82,11 @@ export function PatternHeatmap({ stats }: PatternHeatmapProps) {
         const dominant = getDominantState(stat);
 
         return (
-          <div
+          <button
             key={pattern}
+            aria-label={`${patternLabels[pattern] ?? pattern.replace(/_/g, ' ')}: ${stat.total > 0 ? `${stat.mastered} of ${stat.total} mastered` : 'Not started'}. Status: ${dominant.replace(/_/g, ' ')}`}
             className={cn(
-              'rounded-lg border border-[var(--color-border)] p-3 text-center transition-colors',
+              'rounded-lg border border-[var(--color-border)] p-3 text-center transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-bg-primary)] hover:border-[var(--color-accent)]/50',
               stateColors[dominant],
             )}
           >
@@ -98,7 +99,7 @@ export function PatternHeatmap({ stats }: PatternHeatmapProps) {
             <p className="text-[10px] uppercase tracking-wider opacity-70">
               {dominant.replace(/_/g, ' ')}
             </p>
-          </div>
+          </button>
         );
       })}
     </div>
