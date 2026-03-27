@@ -5,6 +5,7 @@ import './globals.css';
 import { Analytics } from '@vercel/analytics/next';
 import JsonLdSchema from '@/components/seo/JsonLdSchema';
 import Navbar from '@/components/ui/Navbar';
+import { OfflineBanner } from '@/components/ui/OfflineBanner';
 
 export const viewport: Viewport = {
   themeColor: '#080c18',
@@ -23,7 +24,7 @@ export const metadata: Metadata = {
     'Sophocode is an AI-powered coding interview prep platform. Practice DSA problems while Sophia, your wise AI coach, guides you with hints, explanations, and mock interviews.',
   icons: {
     icon: '/favicon.ico',
-    apple: '/apple-touch-icon.png',
+    apple: '/icons/apple-touch-icon.png',
   },
   openGraph: {
     title: 'Sophocode — AI DSA Interview Coach & Practice Platform',
@@ -96,6 +97,7 @@ export default function RootLayout({
           Skip to editor
         </a>
         <Navbar />
+        <OfflineBanner />
         <main id="main-content" className="flex-1">
           {children}
         </main>
