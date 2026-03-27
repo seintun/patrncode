@@ -1,8 +1,0 @@
-{
-  "mode": "pre",
-  "tag": "beta",
-  "initialVersions": {
-    "sophocode": "0.1.0"
-  },
-  "changesets": []
-}
