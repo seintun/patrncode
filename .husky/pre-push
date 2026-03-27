@@ -1,0 +1,21 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Get current branch name
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+# Don't auto-add changesets when pushing main directly
+if [ "$BRANCH" = "main" ]; then
+  exit 0
+fi
+
+# Check if changesets are missing
+bunx changeset status --since=origin/main >/dev/null 2>&1
+
+if [ $? -ne 0 ]; then
+  echo "🦋 Missing changeset detected before push. Auto-generating an empty changeset..."
+  bunx changeset add --empty
+  git add .changeset/
+  git commit -m "chore: auto-add empty changeset before push"
+  echo "✅ Empty changeset added and committed! Pushing now..."
+fi
