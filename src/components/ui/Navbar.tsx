@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 
 const NAV_LINKS = [
@@ -14,18 +14,28 @@ const NAV_LINKS = [
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const hamburgerRef = useRef<HTMLButtonElement>(null);
+  const firstLinkRef = useRef<HTMLAnchorElement>(null);
 
-  // Close menu on Escape key
+  // Close menu on Escape key + focus management
   useEffect(() => {
     if (!open) return;
     const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setOpen(false);
+      if (e.key === 'Escape') {
+        setOpen(false);
+        hamburgerRef.current?.focus();
+      }
     };
     document.addEventListener('keydown', handler);
+    // Focus first link when menu opens
+    firstLinkRef.current?.focus();
     return () => document.removeEventListener('keydown', handler);
   }, [open]);
 
-  const close = () => setOpen(false);
+  const close = () => {
+    setOpen(false);
+    hamburgerRef.current?.focus();
+  };
   const isActive = (href: string) => pathname === href || pathname?.startsWith(href + '/') === true;
 
   return (
@@ -61,6 +71,7 @@ export default function Navbar() {
 
         {/* Mobile hamburger */}
         <button
+          ref={hamburgerRef}
           id="mobile-menu-toggle"
           aria-label={open ? 'Close menu' : 'Open menu'}
           aria-expanded={open}
@@ -100,11 +111,12 @@ export default function Navbar() {
           style={{ animation: 'fadeIn 0.15s ease-out' }}
         >
           <ul className="flex flex-col gap-1">
-            {NAV_LINKS.map(({ href, label }) => {
+            {NAV_LINKS.map(({ href, label }, i) => {
               const active = isActive(href);
               return (
                 <li key={href}>
                   <Link
+                    ref={i === 0 ? firstLinkRef : undefined}
                     href={href}
                     onClick={close}
                     aria-current={active ? 'page' : undefined}

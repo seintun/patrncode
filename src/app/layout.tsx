@@ -89,6 +89,12 @@ export default function RootLayout({
         >
           Skip to content
         </a>
+        <a
+          href="#code-editor"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-40 focus:z-50 focus:rounded-lg focus:bg-[var(--color-accent)] focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-[var(--color-bg-primary)]"
+        >
+          Skip to editor
+        </a>
         <Navbar />
         <main id="main-content" className="flex-1">
           {children}

@@ -201,13 +201,19 @@ export function ProblemPanel({
           hidden={activeTab !== 'notes'}
         >
           {activeTab === 'notes' && (
-            <textarea
-              value={notes}
-              onChange={(e) => onNotesChange(e.target.value)}
-              aria-label="Personal notes for this problem"
-              placeholder="Jot down your thoughts, approach, or edge cases..."
-              className="h-full w-full min-h-[300px] resize-none rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-primary)] p-3 text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-accent)] focus:outline-none"
-            />
+            <>
+              <label htmlFor="notes-textarea" className="sr-only">
+                Personal notes for this problem
+              </label>
+              <textarea
+                id="notes-textarea"
+                value={notes}
+                onChange={(e) => onNotesChange(e.target.value)}
+                aria-label="Personal notes for this problem"
+                placeholder="Jot down your thoughts, approach, or edge cases..."
+                className="h-full w-full min-h-[300px] resize-none rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-primary)] p-3 text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-accent)] focus:outline-none"
+              />
+            </>
           )}
         </div>
       </div>

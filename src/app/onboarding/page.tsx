@@ -175,7 +175,7 @@ function ProcessStep({ onNext, onSkip }: StepProps) {
           Every problem follows the same four-phase process.
         </p>
       </div>
-      <div className="mx-auto flex max-w-3xl items-start gap-0">
+      <div className="mx-auto flex max-w-3xl flex-col items-start gap-0 sm:flex-row">
         {phases.map((phase, i) => (
           <div key={phase.title} className="flex flex-1 items-start">
             <div className="flex flex-col items-center text-center">

@@ -116,7 +116,7 @@ export default function SessionSummaryPage() {
         </div>
       </div>
 
-      <div className="mb-6 grid grid-cols-3 gap-4">
+      <div className="mb-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card className="text-center">
           <p className="text-2xl font-bold text-[var(--color-accent)]">{timeMinutes}m</p>
           <p className="text-xs text-[var(--color-text-muted)]">Time Spent</p>

@@ -144,7 +144,7 @@ export default function ProgressPage() {
                   Problem History
                 </h2>
                 <Card className="overflow-x-auto">
-                  <table className="w-full text-left text-sm">
+                  <table className="w-full min-w-[500px] text-left text-sm">
                     <thead>
                       <tr className="border-b border-[var(--color-border)] text-xs text-[var(--color-text-muted)]">
                         <th className="pb-2 pr-4 font-medium">Problem</th>

@@ -189,6 +189,9 @@ export function CoachingPanel({
           onSubmit={handleSubmit}
           className="flex items-center gap-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-primary)] px-3 py-2"
         >
+          <label htmlFor="coach-input" className="sr-only">
+            Ask Sophia a question
+          </label>
           <input
             ref={inputRef}
             id="coach-input"
