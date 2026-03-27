@@ -1,4 +1,4 @@
 export const MODELS = {
-  reasoning: 'stepfun/step-3.5-flash:free',
-  summary: 'stepfun/step-3.5-flash:free',
+  reasoning: 'nvidia/nemotron-3-super-120b-a12b:free',
+  summary: 'nvidia/nemotron-3-super-120b-a12b:free',
 } as const;
