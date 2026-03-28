@@ -153,11 +153,6 @@ function SessionContent({ session, sessionId }: { session: SessionData; sessionI
 
   const { run: runTests, results: testRunResults, isRunning } = useCodeExecution();
 
-  useKeyboardShortcuts({
-    onRun: handleRunTests,
-    onHint: () => handleHintRequest(Math.min(hintLevel + 1, 3)),
-  });
-
   const functionName = useMemo(() => {
     if (!session?.problem.starterCode) return null;
     const match = session.problem.starterCode.match(/def\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(/);
@@ -264,6 +259,11 @@ function SessionContent({ session, sessionId }: { session: SessionData; sessionI
       setPyodideLoading(false);
     }
   }, [session, code, runTests, sessionId, pyodideReady, functionName]);
+
+  useKeyboardShortcuts({
+    onRunTests: handleRunTests,
+    onGetHint: () => handleHintRequest(Math.min(hintLevel + 1, 3)),
+  });
 
   const handleAskAboutFailure = useCallback(
     (failedSummary: string) => {

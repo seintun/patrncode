@@ -103,7 +103,7 @@ _errors = _stderr_capture.getvalue().strip()
     if (!raw) return raw;
     // Log the full traceback to console for developer debugging
     console.error('[PyodideWorker] Python Traceback:', raw);
-    
+
     return raw
       .split('\n')
       .filter(
@@ -148,9 +148,7 @@ self.onmessage = async function (event) {
 
     // Fallback if functionName wasn't passed from the UI
     const finalFunctionName =
-      functionName ||
-      (code.match(/^[ \t]*def\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(/m) || [])[1] ||
-      null;
+      functionName || (code.match(/^[ \t]*def\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(/m) || [])[1] || null;
 
     const results = [];
     const timeoutMs = timeout || 5000;
@@ -189,12 +187,12 @@ self.onmessage = async function (event) {
         function normalize(val) {
           if (!val) return '';
           const trimmed = val.trim();
-          
+
           // Helper for Python values that don't match JSON
           if (trimmed === 'True') return 'true';
           if (trimmed === 'False') return 'false';
           if (trimmed === 'None') return 'null';
-          
+
           try {
             // Attempt to parse and re-stringify to normalize spacing/formatting
             return JSON.stringify(JSON.parse(trimmed));

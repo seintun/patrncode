@@ -39,10 +39,13 @@ if (
 
   // 2. Intercept unhandled promise rejections
   window.addEventListener('unhandledrejection', (event) => {
-    const reason = event.reason as Record<string, unknown> | null;
+    const reason = event.reason;
     if (
       reason &&
-      (reason === 'Canceled' || reason.name === 'Canceled' || reason.message === 'Canceled')
+      (reason === 'Canceled' ||
+        reason.name === 'Canceled' ||
+        reason.message === 'Canceled' ||
+        reason.message?.includes('Canceled'))
     ) {
       event.preventDefault(); // Stop Next.js dev overlay from catching it
     }

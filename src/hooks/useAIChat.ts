@@ -136,7 +136,10 @@ export function useAIChat({ mode, problem, currentCode, testResults }: UseAIChat
           const text = await res.text();
           const errorMsg = `Server returned ${res.status}: ${text || 'Unknown error'}`;
           console.error('[useAIChat] getHint API failure:', errorMsg);
-          setHintStream({ text: 'Sorry, I couldn\'t generate a hint right now. Please try again.', isLoading: false });
+          setHintStream({
+            text: "Sorry, I couldn't generate a hint right now. Please try again.",
+            isLoading: false,
+          });
           return '';
         }
 
@@ -146,9 +149,13 @@ export function useAIChat({ mode, problem, currentCode, testResults }: UseAIChat
           return '';
         }
 
-        const fullText = await extractTextFromSse(res, (text) => {
-          setHintStream({ text, isLoading: true });
-        }, 'getHint');
+        const fullText = await extractTextFromSse(
+          res,
+          (text) => {
+            setHintStream({ text, isLoading: true });
+          },
+          'getHint',
+        );
 
         setHintStream({ text: fullText, isLoading: false });
         return fullText;
@@ -180,7 +187,10 @@ export function useAIChat({ mode, problem, currentCode, testResults }: UseAIChat
       if (!res.ok) {
         const text = await res.text();
         console.error('[useAIChat] getExplanation API failure:', { status: res.status, text });
-        setExplanationStream({ text: 'Failed to generate explanation. Please try again.', isLoading: false });
+        setExplanationStream({
+          text: 'Failed to generate explanation. Please try again.',
+          isLoading: false,
+        });
         return;
       }
 
@@ -190,9 +200,13 @@ export function useAIChat({ mode, problem, currentCode, testResults }: UseAIChat
         return;
       }
 
-      const fullText = await extractTextFromSse(res, (text) => {
-        setExplanationStream({ text, isLoading: true });
-      }, 'getExplanation');
+      const fullText = await extractTextFromSse(
+        res,
+        (text) => {
+          setExplanationStream({ text, isLoading: true });
+        },
+        'getExplanation',
+      );
 
       setExplanationStream({ text: fullText, isLoading: false });
     } catch (err) {

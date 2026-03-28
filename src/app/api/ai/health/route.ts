@@ -15,8 +15,8 @@ export async function GET() {
     );
   }
 
-  // Optional: In the future, we could add a cached check to OpenRouter's 
-  // status endpoint here if needed, but we keep it light to avoid 
+  // Optional: In the future, we could add a cached check to OpenRouter's
+  // status endpoint here if needed, but we keep it light to avoid
   // blocking the main thread.
 
   return NextResponse.json({

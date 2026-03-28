@@ -19,35 +19,39 @@ export function useCodeExecution() {
     };
   }, []);
 
-  const run = useCallback(async (code: string, testCases: TestCase[], functionName?: string | null) => {
-    setIsRunning(true);
-    setError(null);
-    setResults(null);
+  const run = useCallback(
+    async (code: string, testCases: TestCase[], functionName?: string | null) => {
+      setIsRunning(true);
+      setError(null);
+      setResults(null);
 
-    try {
-      const result = await runTests(code, testCases, functionName);
-      if (mountedRef.current) {
-        setResults(result);
-      }
-      return result;
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred during execution';
-      console.error('[useCodeExecution] Execution failed:', {
-        error: err,
-        codeLength: code.length,
-        testCasesCount: testCases.length,
-      });
+      try {
+        const result = await runTests(code, testCases, functionName);
+        if (mountedRef.current) {
+          setResults(result);
+        }
+        return result;
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : 'An unexpected error occurred during execution';
+        console.error('[useCodeExecution] Execution failed:', {
+          error: err,
+          codeLength: code.length,
+          testCasesCount: testCases.length,
+        });
 
-      if (mountedRef.current) {
-        setError(errorMessage);
+        if (mountedRef.current) {
+          setError(errorMessage);
+        }
+        throw err;
+      } finally {
+        if (mountedRef.current) {
+          setIsRunning(false);
+        }
       }
-      throw err;
-    } finally {
-      if (mountedRef.current) {
-        setIsRunning(false);
-      }
-    }
-  }, []);
+    },
+    [],
+  );
 
   return { run, results, isRunning, error };
 }
