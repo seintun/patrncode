@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.3
+
+### Patch Changes
+
+- fix: resolve hidden bottom tab bar on mobile browsers by switching to dvh units
+
 ## 0.1.2
 
 ### Patch Changes
