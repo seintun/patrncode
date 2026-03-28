@@ -16,7 +16,11 @@ const MonacoEditor = dynamic(() => import('@monaco-editor/react'), {
 });
 
 // ── Hack to Ignore Harmless Monaco Cancellation Errors ───────────────────────
-if (typeof window !== 'undefined') {
+if (
+  typeof window !== 'undefined' &&
+  !(window as any as Record<string, any>).__monaco_hack_applied
+) {
+  (window as any as Record<string, any>).__monaco_hack_applied = true;
   // 1. Intercept console.error
   const originalError = console.error;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -64,7 +68,7 @@ export function CodeEditor({
   onFocus,
   onBlur,
 }: CodeEditorProps) {
-  const timerRef = useRef<ReturnType<typeof setTimeout>>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const editorRef = useRef<any>(null);
@@ -125,7 +129,7 @@ export function CodeEditor({
 
   const handleEditorDidMount = useCallback(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (editor: any, _monaco: any) => {
+    (editor: any) => {
       editorRef.current = editor;
 
       editor.onDidFocusEditorWidget(() => {

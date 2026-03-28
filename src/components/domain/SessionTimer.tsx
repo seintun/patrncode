@@ -13,7 +13,7 @@ export function SessionTimer({ startTime, className }: SessionTimerProps) {
 
   useEffect(() => {
     const start = new Date(startTime).getTime();
-    
+
     const updateElapsed = () => {
       const now = Date.now();
       setElapsed(Math.max(0, Math.floor((now - start) / 1000)));
@@ -32,14 +32,24 @@ export function SessionTimer({ startTime, className }: SessionTimerProps) {
   const pad = (n: number) => n.toString().padStart(2, '0');
 
   return (
-    <div 
+    <div
       className={cn(
-        "flex items-center gap-1.5 font-mono text-[11px] md:text-xs font-medium tracking-tight bg-[var(--color-bg-elevated)] border border-[var(--color-border)] px-2 py-1 rounded-full shadow-sm",
-        className
+        'flex items-center gap-1.5 font-mono text-[11px] md:text-xs font-medium tracking-tight bg-[var(--color-bg-elevated)] border border-[var(--color-border)] px-2 py-1 rounded-full shadow-sm',
+        className,
       )}
       title="Session Duration"
     >
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--color-text-muted)]">
+      <svg
+        width="12"
+        height="12"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="text-[var(--color-text-muted)]"
+      >
         <circle cx="12" cy="12" r="10" />
         <polyline points="12 6 12 12 16 14" />
       </svg>

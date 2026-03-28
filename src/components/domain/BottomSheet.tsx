@@ -55,13 +55,6 @@ function vhToPx(vh: string): number {
   return (parseFloat(vh) / 100) * window.innerHeight;
 }
 
-/** CSS translateY that positions the sheet top edge at the correct height. */
-function sheetTranslateForHeight(_h: SheetHeight): string {
-  // We explicitly set the CSS height to SNAP_HEIGHTS[h] on the sheet element,
-  // so when it's natively at bottom-0, translateY(0) is perfectly open.
-  return `translateY(0px)`;
-}
-
 // ── Component ────────────────────────────────────────────────────────────────
 
 export const BottomSheet: FC<BottomSheetProps> = ({
@@ -152,7 +145,7 @@ export const BottomSheet: FC<BottomSheetProps> = ({
       // Animate in
       sheet.style.transition = transitionStyle;
       backdrop.style.transition = reducedMotion ? 'none' : 'opacity 0.3s ease';
-      sheet.style.transform = sheetTranslateForHeight(height);
+      sheet.style.transform = 'translateY(0px)';
       backdrop.style.opacity = '1';
     } else if (mounted) {
       // ── Closing (only animate out if we were visible) ──

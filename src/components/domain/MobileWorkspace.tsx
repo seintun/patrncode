@@ -172,7 +172,6 @@ export const MobileWorkspace = forwardRef<MobileWorkspaceHandle, MobileWorkspace
 
     // ── Dismiss pill visibility ─────────────────────────────────────────────
     const [showDismissPill, setShowDismissPill] = useState(false);
-    const dismissPillShouldShow = useRef(false);
     const dismissPillTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const autoCollapseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -218,6 +217,22 @@ export const MobileWorkspace = forwardRef<MobileWorkspaceHandle, MobileWorkspace
       [activeTab, problemSheet, coachSheet, testResultsSheet, onRunTests],
     );
 
+    // ── Handlers for closing sheets via backdrop/drag ───────────────────────
+    const handleCloseProblem = useCallback(() => {
+      problemSheet.close();
+      if (activeTab === 'problem') setActiveTab('code');
+    }, [problemSheet, activeTab]);
+
+    const handleCloseTestResults = useCallback(() => {
+      testResultsSheet.close();
+      if (activeTab === 'run') setActiveTab('code');
+    }, [testResultsSheet, activeTab]);
+
+    const handleCloseCoach = useCallback(() => {
+      coachSheet.close();
+      if (activeTab === 'coach') setActiveTab('code');
+    }, [coachSheet, activeTab]);
+
     // ── Editor focus / blur → immersive mode ────────────────────────────────
     // Exposed via ref so the parent can wire Monaco's onFocus/onBlur callbacks.
 
@@ -234,7 +249,6 @@ export const MobileWorkspace = forwardRef<MobileWorkspaceHandle, MobileWorkspace
     const handleEditorBlur = useCallback(() => {
       onEditorBlur?.();
       exitImmersive();
-      dismissPillShouldShow.current = false;
       setShowDismissPill(false);
       if (dismissPillTimerRef.current) {
         clearTimeout(dismissPillTimerRef.current);
@@ -243,7 +257,6 @@ export const MobileWorkspace = forwardRef<MobileWorkspaceHandle, MobileWorkspace
 
     const handleExitImmersive = useCallback(() => {
       exitImmersive();
-      dismissPillShouldShow.current = false;
       setShowDismissPill(false);
       if (dismissPillTimerRef.current) {
         clearTimeout(dismissPillTimerRef.current);
@@ -255,10 +268,13 @@ export const MobileWorkspace = forwardRef<MobileWorkspaceHandle, MobileWorkspace
       () => ({
         focusEditor: handleEditorFocus,
         blurEditor: handleEditorBlur,
-        openTestResults: testResultsSheet.open,
+        openTestResults: () => {
+          setActiveTab('run');
+          testResultsSheet.open();
+        },
         openCoach: () => handleTabChange('coach'),
       }),
-      [handleEditorFocus, handleEditorBlur, testResultsSheet.open, handleTabChange],
+      [handleEditorFocus, handleEditorBlur, testResultsSheet, handleTabChange],
     );
 
     // ── Dismiss pill: show after 1s of entering immersive mode ──────────────
@@ -266,7 +282,6 @@ export const MobileWorkspace = forwardRef<MobileWorkspaceHandle, MobileWorkspace
     useEffect(() => {
       if (!isImmersive) {
         // Exiting immersive — cancel pending timer.
-        dismissPillShouldShow.current = false;
         if (dismissPillTimerRef.current) {
           clearTimeout(dismissPillTimerRef.current);
         }
@@ -274,9 +289,7 @@ export const MobileWorkspace = forwardRef<MobileWorkspaceHandle, MobileWorkspace
       }
 
       // Entering immersive — show dismiss pill after 1s of inactivity.
-      dismissPillShouldShow.current = false;
       dismissPillTimerRef.current = setTimeout(() => {
-        dismissPillShouldShow.current = true;
         setShowDismissPill(true);
       }, 1000);
 
@@ -299,7 +312,7 @@ export const MobileWorkspace = forwardRef<MobileWorkspaceHandle, MobileWorkspace
         autoCollapseTimerRef.current = setTimeout(() => {
           // Only collapse if no other sheet is on top blocking the view
           if (!coachSheet.isOpen) {
-            testResultsSheet.close();
+            handleCloseTestResults();
           }
         }, 2000);
       }
@@ -309,7 +322,7 @@ export const MobileWorkspace = forwardRef<MobileWorkspaceHandle, MobileWorkspace
           clearTimeout(autoCollapseTimerRef.current);
         }
       };
-    }, [testResultsData, testResultsSheet, coachSheet.isOpen]);
+    }, [testResultsData, testResultsSheet, coachSheet.isOpen, handleCloseTestResults]);
 
     // ── Cleanup all timers on unmount ───────────────────────────────────────
 
@@ -351,7 +364,7 @@ export const MobileWorkspace = forwardRef<MobileWorkspaceHandle, MobileWorkspace
           open={problemSheet.isOpen}
           height="large"
           zIndex={10}
-          onClose={problemSheet.close}
+          onClose={handleCloseProblem}
         >
           <div className={cn('h-full', !isImmersive && 'pb-12')}>{problem}</div>
         </BottomSheet>
@@ -361,13 +374,13 @@ export const MobileWorkspace = forwardRef<MobileWorkspaceHandle, MobileWorkspace
           open={testResultsSheet.isOpen}
           height="large"
           zIndex={20}
-          onClose={testResultsSheet.close}
+          onClose={handleCloseTestResults}
         >
           <div className={cn('h-full', !isImmersive && 'pb-12')}>{testResults}</div>
         </BottomSheet>
 
         {/* ── Coach Bottom Sheet (z:30, 50vh) ────────────────────────────── */}
-        <BottomSheet open={coachSheet.isOpen} height="large" zIndex={30} onClose={coachSheet.close}>
+        <BottomSheet open={coachSheet.isOpen} height="large" zIndex={30} onClose={handleCloseCoach}>
           <div className={cn('h-full', !isImmersive && 'pb-12')}>{coach}</div>
         </BottomSheet>
 

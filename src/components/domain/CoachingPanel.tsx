@@ -77,12 +77,12 @@ export function CoachingPanel({
   return (
     <div className="flex h-full flex-col">
       {/* Header */}
-      <div 
+      <div
         data-bottomsheet-drag="true"
         className="flex items-center justify-between border-b border-[var(--color-border)] px-4 py-3 cursor-grab active:cursor-grabbing touch-none select-none"
       >
         <div className="flex items-center gap-3">
-          <div 
+          <div
             className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full border-2"
             style={{ borderColor: config.colors.soft }}
           >

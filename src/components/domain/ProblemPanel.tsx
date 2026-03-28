@@ -58,7 +58,7 @@ export function ProblemPanel({
 
   return (
     <div className="flex h-full flex-col">
-      <div 
+      <div
         data-bottomsheet-drag="true"
         className="border-b border-[var(--color-border)] px-4 py-3 cursor-grab active:cursor-grabbing touch-none select-none"
       >

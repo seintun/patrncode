@@ -140,7 +140,7 @@ export default function SessionPage() {
 
 function SessionContent({ session, sessionId }: { session: SessionData; sessionId: string }) {
   const router = useRouter();
-  const workspaceRef = useRef<MobileWorkspaceHandle>(null);
+  const workspaceRef = useRef<MobileWorkspaceHandle | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [code, setCode] = useState(session.code ?? session.problem.starterCode ?? '');
   const [notes, setNotes] = useState('');
