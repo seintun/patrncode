@@ -70,26 +70,34 @@ export function SessionLayout({ problem, editor, testResults, coach }: SessionLa
             </button>
           ))}
         </div>
-        <div className="flex-1 overflow-y-auto" ref={panelRef} tabIndex={-1}>
+        <div className="flex-1 flex flex-col min-h-0 overflow-y-auto" ref={panelRef} tabIndex={-1}>
           <div
             role="tabpanel"
             id="panel-problem"
             aria-labelledby="tab-problem"
-            hidden={activeTab !== 'problem'}
+            className={activeTab === 'problem' ? 'flex-1 flex flex-col min-h-0' : 'hidden'}
           >
             {activeTab === 'problem' && (
-              <div style={{ animation: 'fadeIn 0.15s ease-out' }}>{problem}</div>
+              <div
+                className="flex-1 flex flex-col min-h-0"
+                style={{ animation: 'fadeIn 0.15s ease-out' }}
+              >
+                {problem}
+              </div>
             )}
           </div>
           <div
             role="tabpanel"
             id="panel-code"
             aria-labelledby="tab-code"
-            hidden={activeTab !== 'code'}
+            className={activeTab === 'code' ? 'flex-1 flex flex-col min-h-0' : 'hidden'}
           >
             {activeTab === 'code' && (
-              <div className="flex h-full flex-col" style={{ animation: 'fadeIn 0.15s ease-out' }}>
-                <div className="flex-1 min-h-[18.75rem]">{editor}</div>
+              <div
+                className="flex-1 flex flex-col min-h-0"
+                style={{ animation: 'fadeIn 0.15s ease-out' }}
+              >
+                <div className="flex-1 flex flex-col min-h-[18.75rem]">{editor}</div>
                 <div className="border-t border-[var(--color-border)] min-h-[9.375rem] max-h-[40vh] overflow-y-auto">
                   {testResults}
                 </div>
@@ -100,10 +108,15 @@ export function SessionLayout({ problem, editor, testResults, coach }: SessionLa
             role="tabpanel"
             id="panel-coach"
             aria-labelledby="tab-coach"
-            hidden={activeTab !== 'coach'}
+            className={activeTab === 'coach' ? 'flex-1 flex flex-col min-h-0' : 'hidden'}
           >
             {activeTab === 'coach' && (
-              <div style={{ animation: 'fadeIn 0.15s ease-out' }}>{coach}</div>
+              <div
+                className="flex-1 flex flex-col min-h-0"
+                style={{ animation: 'fadeIn 0.15s ease-out' }}
+              >
+                {coach}
+              </div>
             )}
           </div>
         </div>

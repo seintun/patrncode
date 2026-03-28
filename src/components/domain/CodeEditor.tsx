@@ -117,17 +117,19 @@ export function CodeEditor({ value, onChange, language = 'python' }: CodeEditorP
   }
 
   return (
-    <div aria-label="Code editor" className="h-full">
-      <MonacoEditor
-        key="monaco-editor-instance"
-        height="100%"
-        language={language}
-        value={value}
-        theme="sophocode-dark"
-        onChange={handleChange}
-        onMount={handleEditorDidMount}
-        options={options}
-      />
+    <div aria-label="Code editor" className="relative h-full w-full">
+      <div className="absolute inset-0">
+        <MonacoEditor
+          key="monaco-editor-instance"
+          height="100%"
+          language={language}
+          value={value}
+          theme="sophocode-dark"
+          onChange={handleChange}
+          onMount={handleEditorDidMount}
+          options={options}
+        />
+      </div>
     </div>
   );
 }
