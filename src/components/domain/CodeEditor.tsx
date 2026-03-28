@@ -15,6 +15,25 @@ const MonacoEditor = dynamic(() => import('@monaco-editor/react'), {
   ),
 });
 
+// ── Hack to Ignore Harmless Monaco Cancellation Errors ───────────────────────
+if (typeof window !== 'undefined') {
+  const originalError = console.error;
+  console.error = (...args: any[]) => {
+    const arg = args[0];
+    const isMonacoCanceledError =
+      arg &&
+      ((typeof arg === 'string' && (arg.includes('Canceled') || arg.includes('ERR Canceled'))) ||
+        (typeof arg === 'object' && (arg.name === 'Canceled' || arg.message?.includes('Canceled'))));
+
+    if (isMonacoCanceledError) {
+      return; // Suppress harmless Monaco internal promise cancellations
+    }
+
+    originalError.apply(console, args);
+  };
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 interface CodeEditorProps {
   value: string;
   onChange: (value: string) => void;

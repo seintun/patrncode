@@ -256,7 +256,7 @@ export const MobileWorkspace = forwardRef<MobileWorkspaceHandle, MobileWorkspace
         {/* ── Problem Bottom Sheet (z:10) ────────────────────────────────── */}
         <BottomSheet
           open={problemSheet.isOpen}
-          height="peek"
+          height="large"
           zIndex={10}
           onClose={problemSheet.close}
         >
@@ -274,12 +274,12 @@ export const MobileWorkspace = forwardRef<MobileWorkspaceHandle, MobileWorkspace
         </BottomSheet>
 
         {/* ── Coach Bottom Sheet (z:30, 50vh) ────────────────────────────── */}
-        <BottomSheet open={coachSheet.isOpen} height="half" zIndex={30} onClose={coachSheet.close}>
+        <BottomSheet open={coachSheet.isOpen} height="large" zIndex={30} onClose={coachSheet.close}>
           {coach}
         </BottomSheet>
 
         {/* ── Floating Action Bar ────────────────────────────────────────── */}
-        {!isImmersive && (
+        {!isImmersive && activeTab === 'code' && (
           <div
             className="pointer-events-none absolute left-0 right-0 z-40 flex items-center justify-center gap-3 px-4"
             style={{ bottom: ACTION_BAR_BOTTOM }}
