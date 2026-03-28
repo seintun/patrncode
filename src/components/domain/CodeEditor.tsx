@@ -95,6 +95,7 @@ export function CodeEditor({
   const handleEditorWillMount = useCallback((monaco: Monaco) => {
     // Configure Monaco to use blob workers to avoid network cancellation errors
     monaco.editor.defineTheme('sophocode-dark', {
+      base: 'vs-dark',
       inherit: true,
       rules: [
         { token: '', foreground: 'E8ECF4', background: '080C18' },

@@ -338,9 +338,9 @@ export const MobileWorkspace = forwardRef<MobileWorkspaceHandle, MobileWorkspace
     return (
       <div
         className="relative flex h-full flex-col overflow-hidden md:hidden"
-        style={{ touchAction: 'pan-y' }}
+        style={{ touchAction: isImmersive ? 'auto' : 'pan-y' }}
         data-immersive={isImmersive ? 'true' : undefined}
-        {...swipeHandlers}
+        {...(isImmersive ? {} : swipeHandlers)}
       >
         {/* ── Editor (persistent base layer) ─────────────────────────────── */}
         <div

@@ -277,8 +277,8 @@ export const BottomSheet: FC<BottomSheetProps> = ({
           </div>
         )}
 
-        {/* Scrollable content */}
-        <div id={labelId} className="flex-1 overflow-y-auto overscroll-contain">
+        {/* Content wrapper */}
+        <div id={labelId} className="flex-1 min-h-0">
           {children}
         </div>
       </div>
