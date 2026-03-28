@@ -31,6 +31,7 @@ interface MobileWorkspaceProps {
   onEditorFocus?: () => void;
   onEditorBlur?: () => void;
   problemTitle?: string;
+  constraints?: string[];
 }
 
 export interface MobileWorkspaceHandle {
@@ -67,6 +68,7 @@ export const MobileWorkspace = forwardRef<MobileWorkspaceHandle, MobileWorkspace
       onEditorFocus,
       onEditorBlur,
       problemTitle,
+      constraints = [],
     },
     ref,
   ) {
@@ -379,7 +381,7 @@ export const MobileWorkspace = forwardRef<MobileWorkspaceHandle, MobileWorkspace
 
         {/* ── Quick Peek Badge (z:50, immersive only) ────────────────────── */}
         {isImmersive && problemTitle && (
-          <QuickPeekBadge problemTitle={problemTitle} constraints={[]} />
+          <QuickPeekBadge problemTitle={problemTitle} constraints={constraints} />
         )}
       </div>
     );

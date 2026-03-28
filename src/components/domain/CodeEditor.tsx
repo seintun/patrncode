@@ -57,6 +57,35 @@ export function CodeEditor({
     [onChange],
   );
 
+  const handleEditorWillMount = useCallback((monaco: any) => {
+    // Configure Monaco to use blob workers to avoid network cancellation errors
+    monaco.editor.defineTheme('sophocode-dark', {
+      base: 'vs-dark',
+      inherit: true,
+      rules: [
+        { token: '', foreground: 'E8ECF4', background: '080C18' },
+        { token: 'comment', foreground: '5C6578' },
+        { token: 'keyword', foreground: '2DD4BF' },
+        { token: 'string', foreground: '10B981' },
+        { token: 'number', foreground: 'F59E0B' },
+        { token: 'type', foreground: '818CF8' },
+        { token: 'function', foreground: '818CF8' },
+      ],
+      colors: {
+        'editor.background': '#080C18',
+        'editor.foreground': '#E8ECF4',
+        'editor.lineHighlightBackground': '#111827',
+        'editor.selectionBackground': '#1C243980',
+        'editorCursor.foreground': '#2DD4BF',
+        'editorLineNumber.foreground': '#5C6578',
+        'editorLineNumber.activeForeground': '#8B95A8',
+        'editor.inactiveSelectionBackground': '#1C243940',
+        'editorIndentGuide.background': '#111827',
+        'editorIndentGuide.activeBackground': '#1E2A3E',
+      },
+    });
+  }, []);
+
   const handleEditorDidMount = useCallback(
     (editor: any, monaco: any) => {
       editorRef.current = editor;
@@ -67,33 +96,6 @@ export function CodeEditor({
 
       editor.onDidBlurEditorWidget(() => {
         onBlur?.();
-      });
-
-      // Configure Monaco to use blob workers to avoid network cancellation errors
-      monaco.editor.defineTheme('sophocode-dark', {
-        base: 'vs-dark',
-        inherit: true,
-        rules: [
-          { token: '', foreground: 'E8ECF4', background: '080C18' },
-          { token: 'comment', foreground: '5C6578' },
-          { token: 'keyword', foreground: '2DD4BF' },
-          { token: 'string', foreground: '10B981' },
-          { token: 'number', foreground: 'F59E0B' },
-          { token: 'type', foreground: '818CF8' },
-          { token: 'function', foreground: '818CF8' },
-        ],
-        colors: {
-          'editor.background': '#080C18',
-          'editor.foreground': '#E8ECF4',
-          'editor.lineHighlightBackground': '#111827',
-          'editor.selectionBackground': '#1C243980',
-          'editorCursor.foreground': '#2DD4BF',
-          'editorLineNumber.foreground': '#5C6578',
-          'editorLineNumber.activeForeground': '#8B95A8',
-          'editor.inactiveSelectionBackground': '#1C243940',
-          'editorIndentGuide.background': '#111827',
-          'editorIndentGuide.activeBackground': '#1E2A3E',
-        },
       });
     },
     [onFocus, onBlur],
@@ -144,6 +146,7 @@ export function CodeEditor({
         value={value}
         theme="sophocode-dark"
         onChange={handleChange}
+        beforeMount={handleEditorWillMount}
         onMount={handleEditorDidMount}
         options={options}
       />
