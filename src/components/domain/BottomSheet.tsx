@@ -19,6 +19,7 @@ interface BottomSheetProps {
   open: boolean;
   height?: SheetHeight;
   onClose: () => void;
+  title?: string;
   dragHandle?: boolean;
   zIndex?: number;
   children: ReactNode;
@@ -60,6 +61,7 @@ export const BottomSheet: FC<BottomSheetProps> = ({
   open,
   height = 'peek',
   onClose,
+  title,
   dragHandle = true,
   zIndex = 10,
   children,
@@ -79,6 +81,14 @@ export const BottomSheet: FC<BottomSheetProps> = ({
   });
 
   const labelId = useId();
+
+  // ── Sync open prop → mounted state ─────────────────────────────────────
+  // Move state update outside of render to avoid React warnings
+  useEffect(() => {
+    if (open && !mounted) {
+      setMounted(true);
+    }
+  }, [open, mounted]);
 
   // ── Reduced-motion detection ───────────────────────────────────────────
   useEffect(() => {
@@ -119,11 +129,6 @@ export const BottomSheet: FC<BottomSheetProps> = ({
 
   // ── Sync open prop → animate in/out ────────────────────────────────────
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  // Immediately ensure DOM is mounted when open becomes true
-  if (open && !mounted) {
-    setMounted(true);
-  }
 
   const prevOpenRef = useRef(open);
 
@@ -243,7 +248,8 @@ export const BottomSheet: FC<BottomSheetProps> = ({
         ref={sheetRef}
         role="dialog"
         aria-modal="true"
-        aria-labelledby={labelId}
+        aria-labelledby={title ? labelId : undefined}
+        aria-label={!title ? 'Bottom Sheet' : undefined}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
@@ -277,10 +283,15 @@ export const BottomSheet: FC<BottomSheetProps> = ({
           </div>
         )}
 
+        {/* Optional Title for ARIA */}
+        {title && (
+          <h2 id={labelId} className="sr-only">
+            {title}
+          </h2>
+        )}
+
         {/* Content wrapper */}
-        <div id={labelId} className="flex-1 flex flex-col min-h-0">
-          {children}
-        </div>
+        <div className="flex-1 flex flex-col min-h-0">{children}</div>
       </div>
     </>
   );

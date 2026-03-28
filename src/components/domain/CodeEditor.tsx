@@ -12,6 +12,7 @@ const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffec
 
 // ── Hack to Ignore Harmless Monaco Cancellation Errors ───────────────────────
 if (
+  process.env.NODE_ENV !== 'production' &&
   typeof window !== 'undefined' &&
   !(window as unknown as Record<string, unknown>).__monaco_hack_applied
 ) {

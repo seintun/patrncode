@@ -66,8 +66,7 @@ ${
     try:
         try:
             _args = json.loads(${JSON.stringify(input)})
-        except Exception as _json_err:
-            print(f"DEBUG: Failed to parse input as JSON: {str(_json_err)}", file=sys.stderr)
+        except Exception:
             _args = ${JSON.stringify(input)} # Fallback to raw string
 
         if isinstance(_args, list):

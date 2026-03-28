@@ -14,6 +14,7 @@ import { AIBanner } from '@/components/ui/AIBanner';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { useAIChat } from '@/hooks/useAIChat';
 import { useCodeExecution } from '@/hooks/useCodeExecution';
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { Button } from '@/components/ui/Button';
 import type { SessionMode } from '@/generated/prisma/enums';
 import type { MobileWorkspaceHandle } from '@/components/domain/MobileWorkspace';
@@ -152,6 +153,11 @@ function SessionContent({ session, sessionId }: { session: SessionData; sessionI
 
   const { run: runTests, results: testRunResults, isRunning } = useCodeExecution();
 
+  useKeyboardShortcuts({
+    onRun: handleRunTests,
+    onHint: () => handleHintRequest(Math.min(hintLevel + 1, 3)),
+  });
+
   const functionName = useMemo(() => {
     if (!session?.problem.starterCode) return null;
     const match = session.problem.starterCode.match(/def\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(/);
@@ -215,7 +221,10 @@ function SessionContent({ session, sessionId }: { session: SessionData; sessionI
   );
 
   const handleRunTests = useCallback(async () => {
-    workspaceRef.current?.openTestResults();
+    // Only open the sheet programmatically on mobile to avoid scroll locking on desktop
+    if (typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches) {
+      workspaceRef.current?.openTestResults();
+    }
 
     if (!pyodideReady) {
       setPyodideLoading(true);
