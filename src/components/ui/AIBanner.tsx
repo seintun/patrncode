@@ -27,7 +27,7 @@ export function AIBanner() {
     <div
       role="alert"
       className={cn(
-        'border-b border-[var(--color-warning)]/30 bg-[var(--color-warning)]/10 px-4 py-2',
+        'border-b border-[var(--color-warning)]/30 bg-[var(--color-warning)]/10 px-4 py-1',
         'text-center text-sm text-[var(--color-warning)]',
       )}
     >

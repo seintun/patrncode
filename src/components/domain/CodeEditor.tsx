@@ -65,10 +65,11 @@ export function CodeEditor({
   onBlur,
 }: CodeEditorProps) {
   const timerRef = useRef<ReturnType<typeof setTimeout>>(null);
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const editorRef = useRef<any>(null);
   const [mounted, setMounted] = useState(false);
-  const isMobile = mounted && window.innerWidth < 768;
+  const isMobile = mounted && (typeof window !== 'undefined' ? window.innerWidth < 768 : false);
 
   useIsomorphicLayoutEffect(() => {
     setMounted(true);
@@ -124,7 +125,7 @@ export function CodeEditor({
 
   const handleEditorDidMount = useCallback(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (editor: any, _monaco: any) => {
+    (editor: any, monaco: any) => {
       editorRef.current = editor;
 
       editor.onDidFocusEditorWidget(() => {

@@ -13,7 +13,6 @@ import { AIBanner } from '@/components/ui/AIBanner';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { useAIChat } from '@/hooks/useAIChat';
 import { useCodeExecution } from '@/hooks/useCodeExecution';
-import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { Button } from '@/components/ui/Button';
 import type { SessionMode } from '@/generated/prisma/enums';
 import type { MobileWorkspaceHandle } from '@/components/domain/MobileWorkspace';
@@ -252,13 +251,6 @@ function SessionContent({ session, sessionId }: { session: SessionData; sessionI
     [askAboutFailure],
   );
 
-  const canGetHint = hintLevel < 3;
-
-  useKeyboardShortcuts({
-    onRunTests: handleRunTests,
-    onGetHint: canGetHint ? () => handleHintRequest(Math.min(hintLevel + 1, 3)) : undefined,
-  });
-
   const handleEndSession = async () => {
     setCompleting(true);
     try {
@@ -295,6 +287,9 @@ function SessionContent({ session, sessionId }: { session: SessionData; sessionI
       </div>
     );
   }
+
+  const isMac = typeof window !== 'undefined' && navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+  const modKey = isMac ? '⌘' : 'Ctrl';
 
   const examples = (session.problem.examples ?? []) as Array<{
     input: string;
@@ -343,28 +338,17 @@ function SessionContent({ session, sessionId }: { session: SessionData; sessionI
   const editorPanel = useMemo(
     () => (
       <div className="flex h-full flex-col">
-        <div className="hidden md:flex items-center gap-2 border-b border-[var(--color-border)] px-4 py-2">
-          <button
-            onClick={handleRunTests}
-            disabled={isRunning}
-            aria-label="Run tests (Ctrl+Enter)"
-            className="rounded-lg bg-[var(--color-accent)] px-4 py-1.5 text-sm font-medium text-[var(--color-bg-primary)] transition-colors hover:bg-[var(--color-accent-hover)] disabled:opacity-50"
-          >
-            {isRunning ? 'Running...' : 'Run Tests'}
-          </button>
-          {pyodideLoading && (
-            <span className="flex items-center gap-2 text-xs text-[var(--color-text-muted)]">
-              <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-[var(--color-accent)] border-t-transparent" />
-              Preparing Python environment...
-            </span>
-          )}
-        </div>
         <div className="flex-1 min-h-0">
-          <CodeEditor value={code} onChange={handleCodeChange} onFocus={() => {}} onBlur={() => {}} />
+          <CodeEditor
+            value={code}
+            onChange={handleCodeChange}
+            onFocus={() => {}}
+            onBlur={() => {}}
+          />
         </div>
       </div>
     ),
-    [handleRunTests, isRunning, pyodideLoading, code, handleCodeChange],
+    [code, handleCodeChange],
   );
 
   const testResultsPanel = useMemo(
@@ -409,14 +393,29 @@ function SessionContent({ session, sessionId }: { session: SessionData; sessionI
   return (
     <div className="flex h-[calc(100vh-57px)] flex-col">
       <AIBanner />
-      <div className="flex items-center justify-between border-b border-[var(--color-border)] bg-[var(--color-bg-secondary)] px-3 py-1.5 md:px-4 md:py-2">
+      <div className="flex items-center justify-between border-b border-[var(--color-border)] bg-[var(--color-bg-secondary)] px-3 py-1 md:px-4 md:py-2">
         <span className="text-sm font-medium text-[var(--color-text-primary)] truncate max-w-[40%] md:max-w-none">
           {session.problem.title}
         </span>
         <div className="flex items-center gap-2 md:gap-3">
-          <span className="hidden text-xs text-[var(--color-text-muted)] md:inline">
-            Ctrl+Enter to run, Ctrl+H for hint
-          </span>
+          <div className="hidden items-center md:flex">
+            <button
+              onClick={handleRunTests}
+              disabled={isRunning}
+              className="rounded-lg bg-[var(--color-accent)] px-3 py-1 text-xs font-medium text-[var(--color-bg-primary)] transition-colors hover:bg-[var(--color-accent-hover)] disabled:opacity-50"
+            >
+              {isRunning ? 'Running...' : 'Run Tests'}
+            </button>
+          </div>
+
+          {pyodideLoading && (
+            <span className="hidden lg:flex items-center gap-2 text-[10px] text-[var(--color-text-muted)] animate-pulse">
+              <span className="inline-block h-2 w-2 animate-spin rounded-full border border-[var(--color-accent)] border-t-transparent" />
+              Preparing...
+            </span>
+          )}
+
+          <div className="h-4 w-px bg-[var(--color-border)] hidden md:block" />
 
           <Button
             variant="ghost"

@@ -43,7 +43,7 @@ export default function Navbar() {
       aria-label="Main navigation"
       className="relative border-b border-[var(--color-border)] bg-[var(--color-bg-secondary)]"
     >
-      <div className="flex items-center justify-between px-4 py-3 sm:px-6">
+      <div className="flex items-center justify-between px-4 py-2 sm:px-6 sm:py-3">
         {/* Logo */}
         <Link
           href="/"
@@ -77,7 +77,7 @@ export default function Navbar() {
           aria-expanded={open}
           aria-controls="mobile-menu"
           onClick={() => setOpen((v) => !v)}
-          className="flex h-9 w-9 items-center justify-center rounded-md text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-elevated)] hover:text-[var(--color-text-primary)] sm:hidden"
+          className="flex h-8 w-8 items-center justify-center rounded-md text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-elevated)] hover:text-[var(--color-text-primary)] sm:hidden"
         >
           {open ? (
             // X icon

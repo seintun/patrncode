@@ -104,8 +104,9 @@ export function useAIChat({ mode, problem, currentCode, testResults }: UseAIChat
   );
 
   const getHint = useCallback(
-    async (level: number): Promise<string> => {
+    async (level: number, codeOverride?: string): Promise<string> => {
       setHintStream({ text: '', isLoading: true });
+      const codeToUse = codeOverride ?? (currentCode || '');
 
       try {
         const res = await fetch('/api/ai/hint', {
@@ -115,7 +116,7 @@ export function useAIChat({ mode, problem, currentCode, testResults }: UseAIChat
             title: problem.title,
             statement: problem.statement,
             pattern: problem.pattern,
-            currentCode: currentCode || '',
+            currentCode: codeToUse,
             testResults,
             level,
             mode,
