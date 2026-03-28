@@ -145,6 +145,74 @@ body {
   }
 }
 
+/* ── Mobile Bottom Sheet & Immersive Mode ───────────────────────────────── */
+
+@keyframes pillPulse {
+  0%,
+  100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes dismissPillIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes dismissPillOut {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(8px) scale(0.95);
+  }
+}
+
+@keyframes swipeHint {
+  0% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-12px);
+  }
+  75% {
+    transform: translateX(12px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* Dismiss pill — floating button to exit immersive mode */
+.dismiss-pill {
+  animation: dismissPillIn 0.2s ease-out;
+}
+
+.dismiss-pill-exit {
+  animation: dismissPillOut 0.15s ease-in forwards;
+}
+
+/* Quick peek badge — subtle pulse to draw attention */
+.quick-peek-badge {
+  animation: pillPulse 3s ease-in-out infinite;
+}
+
+/* Swipe hint — one-time directional animation */
+.swipe-hint-anim {
+  animation: swipeHint 0.6s ease-in-out 2;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
