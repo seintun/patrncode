@@ -20,18 +20,31 @@ export function useSwipeNavigation({ tabs, currentTab, onTabChange }: UseSwipeNa
   const startX = useRef(0);
   const startY = useRef(0);
   const isSwiping = useRef(false);
+  const isConfirmedSwipe = useRef(false);
 
   const onPointerDown = useCallback((e: React.PointerEvent) => {
-    e.preventDefault();
     startX.current = e.clientX;
     startY.current = e.clientY;
     isSwiping.current = true;
+    isConfirmedSwipe.current = false;
   }, []);
 
   const onPointerMove = useCallback((e: React.PointerEvent) => {
     if (!isSwiping.current) return;
-    // no-op during move; we just track state via refs
-    void e;
+
+    const deltaX = Math.abs(e.clientX - startX.current);
+    const deltaY = Math.abs(e.clientY - startY.current);
+
+    // Once horizontal movement exceeds vertical, confirm it's a swipe
+    // and prevent default to block browser back-swipe
+    if (deltaX > 10 && deltaX > deltaY && !isConfirmedSwipe.current) {
+      isConfirmedSwipe.current = true;
+      e.preventDefault();
+    }
+
+    if (isConfirmedSwipe.current) {
+      e.preventDefault();
+    }
   }, []);
 
   const onPointerUp = useCallback(
