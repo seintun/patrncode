@@ -170,7 +170,17 @@ export const BottomSheet: FC<BottomSheetProps> = ({
         setMounted(false);
       }, animDuration);
     }
-  }, [open, height, currentHeight, transitionStyle, reducedMotion, animDuration, mounted, onClose]);
+  }, [
+    open,
+    height,
+    currentHeight,
+    transitionStyle,
+    reducedMotion,
+    animDuration,
+    mounted,
+    onClose,
+    animatingRef,
+  ]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -183,7 +193,7 @@ export const BottomSheet: FC<BottomSheetProps> = ({
   const onBackdropClick = useCallback(() => {
     if (animatingRef.current) return;
     onClose();
-  }, [onClose]);
+  }, [onClose, animatingRef]);
 
   // ── Escape key → dismiss ───────────────────────────────────────────────
   useEffect(() => {
