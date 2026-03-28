@@ -191,6 +191,25 @@ export const BottomSheet: FC<BottomSheetProps> = ({
 
   const onPointerDown = useCallback(
     (e: ReactPointerEvent<HTMLDivElement>) => {
+      const target = e.target as HTMLElement | null;
+      if (!target || !target.closest('[data-bottomsheet-drag="true"]')) {
+        return; // Only allow dragging from marked drag handles
+      }
+
+      // Don't intercept touches if the user is tapping an input or textarea
+      if (target) {
+        const isInteractive =
+          target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.isContentEditable ||
+          target.closest('input') ||
+          target.closest('textarea');
+
+        if (isInteractive) {
+          return; // Skip drag logic to allow native focus
+        }
+      }
+
       if (animating.current) return;
       const sheet = sheetRef.current;
       if (!sheet) return;
@@ -204,7 +223,8 @@ export const BottomSheet: FC<BottomSheetProps> = ({
         backdropRef.current.style.transition = 'none';
       }
 
-      sheet.setPointerCapture(e.pointerId);
+      const dragTarget = e.currentTarget as HTMLDivElement;
+      dragTarget.setPointerCapture(e.pointerId);
     },
     [],
   );
@@ -251,7 +271,8 @@ export const BottomSheet: FC<BottomSheetProps> = ({
       const sheet = sheetRef.current;
       if (!sheet) return;
 
-      sheet.releasePointerCapture(e.pointerId);
+      const dragTarget = e.currentTarget as HTMLDivElement;
+      dragTarget.releasePointerCapture(e.pointerId);
 
       const deltaY = e.clientY - pointerStartY.current;
       const startHeightPx = vhToPx(SNAP_HEIGHTS[currentHeight]);
@@ -359,9 +380,10 @@ export const BottomSheet: FC<BottomSheetProps> = ({
         {/* Drag handle */}
         {dragHandle && (
           <div
-            className="flex items-center justify-center cursor-grab active:cursor-grabbing"
+            data-bottomsheet-drag="true"
+            className="flex items-center justify-center cursor-grab active:cursor-grabbing w-full"
             style={{
-              height: 24,
+              height: 32,
               touchAction: 'none',
               userSelect: 'none',
               WebkitUserSelect: 'none',

@@ -48,7 +48,8 @@ export function TestResults({
     <div className="flex h-full flex-col">
       {/* Summary bar */}
       <div
-        className="flex items-center justify-between border-b border-[var(--color-border)] px-4 py-2"
+        data-bottomsheet-drag="true"
+        className="flex items-center justify-between border-b border-[var(--color-border)] px-4 py-2 cursor-grab active:cursor-grabbing touch-none select-none"
         aria-live="polite"
       >
         <span
