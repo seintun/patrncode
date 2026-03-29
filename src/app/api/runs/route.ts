@@ -1,15 +1,10 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
-import { withErrorHandling, validateId } from '@/lib/errors/api';
-import { getGuestIdFromCookie } from '@/lib/guest';
-import { cookies } from 'next/headers';
+import { withAuth, validateId } from '@/lib/errors/api';
 import { requireOwnership } from '@/lib/auth/session-auth';
 
-async function handler(request: NextRequest): Promise<Response> {
+async function handler(request: NextRequest, { guestId }: { guestId: string }): Promise<Response> {
   try {
-    const cookieStore = await cookies();
-    const guestId = getGuestIdFromCookie(cookieStore);
-
     const body = await request.json();
     const { sessionId, code, results, passed, total } = body as {
       sessionId: string;
@@ -56,4 +51,4 @@ async function handler(request: NextRequest): Promise<Response> {
   }
 }
 
-export const POST = withErrorHandling(handler);
+export const POST = withAuth(handler);

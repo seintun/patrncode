@@ -11,11 +11,27 @@ export const ratelimit = new Ratelimit({
   prefix: 'sophocode_ratelimit',
 });
 
-export async function rateLimit(
-  ip: string,
-): Promise<{ success: boolean; remaining: number; reset: number }> {
-  const { success, remaining, reset } = await ratelimit.limit(ip);
-  return { success, remaining, reset };
+/**
+ * Higher-order function to apply rate limiting to a route handler.
+ */
+export function withRateLimit(handler: (req: NextRequest) => Promise<Response>) {
+  return async (req: NextRequest): Promise<Response> => {
+    const ip = getIP(req) || `fallback_ratelimit_${crypto.randomUUID()}`;
+    const { success, remaining, reset } = await ratelimit.limit(ip);
+
+    if (!success) {
+      return new Response('Too Many Requests', {
+        status: 429,
+        headers: {
+          'X-RateLimit-Limit': '20',
+          'X-RateLimit-Remaining': remaining.toString(),
+          'X-RateLimit-Reset': reset.toString(),
+        },
+      });
+    }
+
+    return handler(req);
+  };
 }
 
 export function getIP(req: NextRequest): string | null {

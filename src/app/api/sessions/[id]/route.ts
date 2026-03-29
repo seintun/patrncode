@@ -1,24 +1,15 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import type { SessionStatus, SessionOutcome } from '@/generated/prisma/enums';
-import { handleApiError, withValidIdParams } from '@/lib/errors/api';
-import { getGuestIdFromCookie } from '@/lib/guest';
-import { cookies } from 'next/headers';
+import { handleApiError, withAuthAndId } from '@/lib/errors/api';
 import { requireOwnership } from '@/lib/auth/session-auth';
 
 async function getHandler(
   _request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params, guestId }: { params: Promise<{ id: string }>; guestId: string },
 ): Promise<Response> {
   try {
     const { id } = await params;
-    const cookieStore = await cookies();
-    const guestId = getGuestIdFromCookie(cookieStore);
-
-    if (!guestId) {
-      return NextResponse.json({ error: 'Unauthorized: Guest ID missing' }, { status: 401 });
-    }
-
     await requireOwnership(id, guestId);
 
     const session = await prisma.session.findUnique({
@@ -59,17 +50,10 @@ async function getHandler(
 
 async function patchHandler(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params, guestId }: { params: Promise<{ id: string }>; guestId: string },
 ): Promise<Response> {
   try {
     const { id } = await params;
-    const cookieStore = await cookies();
-    const guestId = getGuestIdFromCookie(cookieStore);
-
-    if (!guestId) {
-      return NextResponse.json({ error: 'Unauthorized: Guest ID missing' }, { status: 401 });
-    }
-
     await requireOwnership(id, guestId);
 
     const body = await request.json();
@@ -95,5 +79,5 @@ async function patchHandler(
   }
 }
 
-export const GET = withValidIdParams(getHandler);
-export const PATCH = withValidIdParams(patchHandler);
+export const GET = withAuthAndId(getHandler);
+export const PATCH = withAuthAndId(patchHandler);

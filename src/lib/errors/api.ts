@@ -1,4 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
+import { getGuestIdFromCookie } from '@/lib/guest';
 
 export interface ApiError {
   error: string;
@@ -58,7 +60,6 @@ export async function handleApiError(
     status,
   };
 
-  // In development, include stack trace
   if (process.env.NODE_ENV === 'development' && error instanceof Error) {
     apiError.details = {
       stack: error.stack,
@@ -98,32 +99,53 @@ export function withErrorHandlingParams<T extends Record<string, string>>(
     }
   };
 }
+
+/**
+ * Higher-order function for routes requiring a Guest Session.
+ * Injects guestId into the handler context.
+ */
+export function withAuth(
+  handler: (req: NextRequest, context: { guestId: string }) => Promise<Response>,
+) {
+  return async (req: NextRequest): Promise<Response> => {
+    try {
+      const cookieStore = await cookies();
+      const guestId = getGuestIdFromCookie(cookieStore);
+
+      if (!guestId) {
+        return NextResponse.json({ error: 'Unauthorized: Guest ID missing' }, { status: 401 });
+      }
+
+      return await handler(req, { guestId });
+    } catch (error) {
+      return handleApiError(new Response('', { status: 500 }), error);
+    }
+  };
+}
+
 /**
  * CUID/UUID validation regex
- * CUIDs usually start with 'c' and are ~25 chars.
- * CUID v2 starts with any letter and is ~24-32 chars.
  */
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const CUID_REGEX = /^c[a-z0-9]{20,32}$/i;
 
-/**
- * Validates if a string is a valid ID (UUID or CUID)
- */
 export function validateId(id: string): boolean {
   return UUID_REGEX.test(id) || CUID_REGEX.test(id);
 }
 
 /**
- * @deprecated Use validateId instead. Supports both UUID and CUID for backward compatibility.
+ * Higher-order function for routes with dynamic IDs.
  */
-export function validateUUID(id: string): boolean {
-  return validateId(id);
-}
-
 export function withValidIdParams<T extends Record<string, string>>(
-  handler: (req: NextRequest, context: { params: Promise<T> }) => Promise<Response>,
+  handler: (
+    req: NextRequest,
+    context: { params: Promise<T>; guestId?: string },
+  ) => Promise<Response>,
 ) {
-  return async (req: NextRequest, context: { params: Promise<T> }): Promise<Response> => {
+  return async (
+    req: NextRequest,
+    context: { params: Promise<T>; guestId?: string },
+  ): Promise<Response> => {
     const { id } = await context.params;
 
     if (id && !validateId(id)) {
@@ -135,10 +157,31 @@ export function withValidIdParams<T extends Record<string, string>>(
 }
 
 /**
- * @deprecated Use withValidIdParams instead.
+ * Combined Auth + Valid ID Params HOC
  */
-export function withUUIDParams<T extends Record<string, string>>(
-  handler: (req: NextRequest, context: { params: Promise<T> }) => Promise<Response>,
+export function withAuthAndId<T extends Record<string, string>>(
+  handler: (
+    req: NextRequest,
+    context: { params: Promise<T>; guestId: string },
+  ) => Promise<Response>,
 ) {
-  return withValidIdParams(handler);
+  return async (req: NextRequest, context: { params: Promise<T> }): Promise<Response> => {
+    try {
+      const cookieStore = await cookies();
+      const guestId = getGuestIdFromCookie(cookieStore);
+
+      if (!guestId) {
+        return NextResponse.json({ error: 'Unauthorized: Guest ID missing' }, { status: 401 });
+      }
+
+      const { id } = await context.params;
+      if (id && !validateId(id)) {
+        return NextResponse.json({ error: 'Invalid ID format' }, { status: 400 });
+      }
+
+      return await handler(req, { ...context, guestId });
+    } catch (error) {
+      return handleApiError(new Response('', { status: 500 }), error);
+    }
+  };
 }

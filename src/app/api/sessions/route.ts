@@ -1,19 +1,10 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import type { SessionMode } from '@/generated/prisma/enums';
-import { withErrorHandling, validateId } from '@/lib/errors/api';
-import { getGuestIdFromCookie } from '@/lib/guest';
-import { cookies } from 'next/headers';
+import { withAuth, validateId } from '@/lib/errors/api';
 
-async function handler(request: NextRequest): Promise<Response> {
+async function handler(request: NextRequest, { guestId }: { guestId: string }): Promise<Response> {
   try {
-    const cookieStore = await cookies();
-    const guestId = getGuestIdFromCookie(cookieStore);
-
-    if (!guestId) {
-      return NextResponse.json({ error: 'Unauthorized: Guest ID missing' }, { status: 401 });
-    }
-
     const body = await request.json();
     const { problemId, mode } = body as {
       problemId: string;
@@ -47,4 +38,4 @@ async function handler(request: NextRequest): Promise<Response> {
   }
 }
 
-export const POST = withErrorHandling(handler);
+export const POST = withAuth(handler);

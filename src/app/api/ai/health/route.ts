@@ -1,21 +1,7 @@
-import { NextResponse, type NextRequest } from 'next/server';
-import { rateLimit, getIP } from '@/lib/ratelimit';
+import { NextResponse } from 'next/server';
+import { withRateLimit } from '@/lib/ratelimit';
 
-export async function GET(req: NextRequest) {
-  const ip = getIP(req) || `fallback_ratelimit_${crypto.randomUUID()}`;
-  const { success, remaining, reset } = await rateLimit(ip);
-
-  if (!success) {
-    return new Response('Too Many Requests', {
-      status: 429,
-      headers: {
-        'X-RateLimit-Limit': '20',
-        'X-RateLimit-Remaining': remaining.toString(),
-        'X-RateLimit-Reset': reset.toString(),
-      },
-    });
-  }
-
+async function handler() {
   const apiKey = process.env.OPENROUTER_API_KEY;
 
   if (!apiKey || apiKey === 'your_openrouter_api_key_here') {
@@ -35,3 +21,5 @@ export async function GET(req: NextRequest) {
     timestamp: new Date().toISOString(),
   });
 }
+
+export const GET = withRateLimit(handler);

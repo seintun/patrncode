@@ -6,24 +6,15 @@ import { MODELS } from '@/lib/ai/models';
 import { buildSummaryPrompt } from '@/lib/ai/prompts/summary';
 import { computeNextMastery, computeNextReviewDate } from '@/lib/mastery';
 import type { MasteryState } from '@/generated/prisma/enums';
-import { handleApiError, withValidIdParams } from '@/lib/errors/api';
-import { getGuestIdFromCookie } from '@/lib/guest';
-import { cookies } from 'next/headers';
+import { handleApiError, withAuthAndId } from '@/lib/errors/api';
 import { requireOwnership } from '@/lib/auth/session-auth';
 
 async function handler(
   _request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params, guestId }: { params: Promise<{ id: string }>; guestId: string },
 ): Promise<Response> {
   try {
     const { id } = await params;
-    const cookieStore = await cookies();
-    const guestId = getGuestIdFromCookie(cookieStore);
-
-    if (!guestId) {
-      return NextResponse.json({ error: 'Unauthorized: Guest ID missing' }, { status: 401 });
-    }
-
     await requireOwnership(id, guestId);
 
     const session = await prisma.session.findFirst({
@@ -209,4 +200,4 @@ function parseSummarySections(text: string): {
   }
 }
 
-export const POST = withValidIdParams(handler);
+export const POST = withAuthAndId(handler);
