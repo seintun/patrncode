@@ -4,6 +4,7 @@ import { useState, useCallback, cloneElement, isValidElement, type ReactNode } f
 import { MobileWorkspace, type MobileWorkspaceHandle } from './MobileWorkspace';
 import { FloatingSophia } from '@/components/ui/FloatingSophia';
 import { useFloatingSophia } from '@/hooks/useFloatingSophia';
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import type { SessionMode } from '@/lib/sophia';
 
 interface SessionLayoutProps {
@@ -69,6 +70,11 @@ export function SessionLayout({
     totalSeconds,
     codeIsEmpty,
     isCoachOpen,
+  });
+
+  // Cmd+Shift+S to toggle coach panel
+  useKeyboardShortcuts({
+    onToggleCoach: handleCoachToggle,
   });
 
   const handleAvatarClick = useCallback(() => {

@@ -5,14 +5,19 @@ import { useEffect, useCallback, useRef } from 'react';
 interface KeyboardShortcutHandlers {
   onRunTests?: () => void;
   onGetHint?: () => void;
+  onToggleCoach?: () => void;
 }
 
-export function useKeyboardShortcuts({ onRunTests, onGetHint }: KeyboardShortcutHandlers) {
-  const handlersRef = useRef({ onRunTests, onGetHint });
+export function useKeyboardShortcuts({
+  onRunTests,
+  onGetHint,
+  onToggleCoach,
+}: KeyboardShortcutHandlers) {
+  const handlersRef = useRef({ onRunTests, onGetHint, onToggleCoach });
 
   useEffect(() => {
-    handlersRef.current = { onRunTests, onGetHint };
-  }, [onRunTests, onGetHint]);
+    handlersRef.current = { onRunTests, onGetHint, onToggleCoach };
+  }, [onRunTests, onGetHint, onToggleCoach]);
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     const meta = e.metaKey || e.ctrlKey;
@@ -25,6 +30,11 @@ export function useKeyboardShortcuts({ onRunTests, onGetHint }: KeyboardShortcut
     if (meta && e.key === 'h') {
       e.preventDefault();
       handlersRef.current.onGetHint?.();
+    }
+
+    if (meta && e.shiftKey && (e.key === 's' || e.key === 'S')) {
+      e.preventDefault();
+      handlersRef.current.onToggleCoach?.();
     }
   }, []);
 
