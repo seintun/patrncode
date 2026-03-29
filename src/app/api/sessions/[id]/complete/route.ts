@@ -20,7 +20,14 @@ async function handler(
     const session = await prisma.session.findFirst({
       where: { id },
       include: {
-        problem: true,
+        problem: {
+          select: {
+            id: true,
+            title: true,
+            slug: true,
+            pattern: true,
+          },
+        },
         runs: { orderBy: { createdAt: 'desc' }, take: 1 },
         hints: true,
         feedback: true,

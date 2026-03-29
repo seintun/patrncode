@@ -26,6 +26,15 @@ async function getHandler(
             starterCode: true,
             difficulty: true,
             pattern: true,
+            testCases: {
+              select: {
+                id: true,
+                input: true,
+                expected: true,
+                isHidden: true,
+              },
+              orderBy: { order: 'asc' },
+            },
           },
         },
         runs: {
