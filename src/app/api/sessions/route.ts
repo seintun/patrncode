@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import type { SessionMode } from '@/generated/prisma/enums';
-import { withErrorHandling, validateUUID } from '@/lib/errors/api';
+import { withErrorHandling, validateId } from '@/lib/errors/api';
 import { getGuestIdFromCookie } from '@/lib/guest';
 import { cookies } from 'next/headers';
 
@@ -27,7 +27,7 @@ async function handler(request: NextRequest): Promise<Response> {
       );
     }
 
-    if (!validateUUID(problemId)) {
+    if (!validateId(problemId)) {
       return NextResponse.json({ error: 'Invalid problemId format' }, { status: 400 });
     }
 

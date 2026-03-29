@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { rateLimit, getIP } from '@/lib/ratelimit';
 
 export async function GET(req: NextRequest) {
-  const ip = getIP(req);
+  const ip = getIP(req) || `fallback_ratelimit_${crypto.randomUUID()}`;
   const { success, remaining, reset } = await rateLimit(ip);
 
   if (!success) {

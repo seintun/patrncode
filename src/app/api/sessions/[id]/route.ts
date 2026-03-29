@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import type { SessionStatus, SessionOutcome } from '@/generated/prisma/enums';
-import { handleApiError, withUUIDParams } from '@/lib/errors/api';
+import { handleApiError, withValidIdParams } from '@/lib/errors/api';
 import { getGuestIdFromCookie } from '@/lib/guest';
 import { cookies } from 'next/headers';
 import { requireOwnership } from '@/lib/auth/session-auth';
@@ -15,9 +15,13 @@ async function getHandler(
     const cookieStore = await cookies();
     const guestId = getGuestIdFromCookie(cookieStore);
 
+    if (!guestId) {
+      return NextResponse.json({ error: 'Unauthorized: Guest ID missing' }, { status: 401 });
+    }
+
     await requireOwnership(id, guestId);
 
-    const session = await prisma.session.findFirst({
+    const session = await prisma.session.findUnique({
       where: { id },
       include: {
         problem: {
@@ -25,23 +29,19 @@ async function getHandler(
             id: true,
             title: true,
             slug: true,
+            statement: true,
+            constraints: true,
+            starterCode: true,
             difficulty: true,
             pattern: true,
-            testCases: {
-              where: { isHidden: false },
-              select: { id: true, input: true, expected: true },
-              orderBy: { order: 'asc' },
-            },
           },
         },
         runs: {
           orderBy: { createdAt: 'desc' },
-          take: 10,
-          select: { id: true, passed: true, total: true, createdAt: true },
+          take: 5,
         },
         hints: {
           orderBy: { createdAt: 'asc' },
-          select: { id: true, level: true, content: true, createdAt: true },
         },
       },
     });
@@ -65,29 +65,27 @@ async function patchHandler(
     const cookieStore = await cookies();
     const guestId = getGuestIdFromCookie(cookieStore);
 
+    if (!guestId) {
+      return NextResponse.json({ error: 'Unauthorized: Guest ID missing' }, { status: 401 });
+    }
+
     await requireOwnership(id, guestId);
 
     const body = await request.json();
-    const { code, status, outcome } = body as {
-      code?: string;
+    const { status, code, outcome } = body as {
       status?: SessionStatus;
+      code?: string;
       outcome?: SessionOutcome;
     };
 
-    const data: Record<string, unknown> = {};
-    if (code !== undefined) data.code = code;
-    if (status !== undefined) data.status = status;
-    if (outcome !== undefined) data.outcome = outcome;
-    if (status === 'COMPLETED') data.completedAt = new Date();
-
-    if (Object.keys(data).length === 0) {
-      return NextResponse.json({ error: 'No fields to update' }, { status: 400 });
-    }
-
     const session = await prisma.session.update({
       where: { id },
-      data,
-      select: { id: true, status: true, outcome: true },
+      data: {
+        status,
+        code,
+        outcome,
+        completedAt: status === 'COMPLETED' ? new Date() : undefined,
+      },
     });
 
     return NextResponse.json(session);
@@ -96,5 +94,5 @@ async function patchHandler(
   }
 }
 
-export const GET = withUUIDParams(getHandler);
-export const PATCH = withUUIDParams(patchHandler);
+export const GET = withValidIdParams(getHandler);
+export const PATCH = withValidIdParams(patchHandler);

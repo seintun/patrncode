@@ -140,11 +140,16 @@ _errors = _stderr_capture.getvalue().strip()
 }
 
 self.onmessage = async function (event) {
-  const { code, testCases, timeout, functionName } = event.data;
+  const { code, testCases, timeout, functionName, prewarm } = event.data;
 
   try {
     console.log('[PyodideWorker] Initializing execution...');
     const py = await loadPyodideInstance();
+
+    if (prewarm) {
+      console.log('[PyodideWorker] Prewarmed successfully.');
+      return;
+    }
 
     // Fallback if functionName wasn't passed from the UI
     const finalFunctionName =

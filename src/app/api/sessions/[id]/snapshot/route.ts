@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
-import { handleApiError, withUUIDParams } from '@/lib/errors/api';
+import { handleApiError, withValidIdParams } from '@/lib/errors/api';
 import { getGuestIdFromCookie } from '@/lib/guest';
 import { cookies } from 'next/headers';
 import { requireOwnership } from '@/lib/auth/session-auth';
@@ -14,6 +14,10 @@ async function handler(
     const cookieStore = await cookies();
     const guestId = getGuestIdFromCookie(cookieStore);
 
+    if (!guestId) {
+      return NextResponse.json({ error: 'Unauthorized: Guest ID missing' }, { status: 401 });
+    }
+
     await requireOwnership(id, guestId);
 
     const body = await request.json();
@@ -26,7 +30,6 @@ async function handler(
     const session = await prisma.session.update({
       where: { id },
       data: { code },
-      select: { id: true, code: true },
     });
 
     return NextResponse.json(session);
@@ -39,4 +42,4 @@ async function handler(
   }
 }
 
-export const PATCH = withUUIDParams(handler);
+export const PATCH = withValidIdParams(handler);

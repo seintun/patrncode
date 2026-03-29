@@ -18,7 +18,7 @@ export async function rateLimit(
   return { success, remaining, reset };
 }
 
-export function getIP(req: NextRequest): string {
+export function getIP(req: NextRequest): string | null {
   const forwarded = req.headers.get('x-forwarded-for');
   if (forwarded) {
     return forwarded.split(',')[0].trim();
@@ -28,5 +28,5 @@ export function getIP(req: NextRequest): string {
     return realIp;
   }
   // @ts-expect-error ip might not be in the type but exists at runtime on Vercel
-  return req.ip ?? 'unknown';
+  return req.ip ?? null;
 }

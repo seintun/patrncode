@@ -9,7 +9,7 @@ import { type NextRequest } from 'next/server';
 
 export async function POST(req: NextRequest): Promise<Response> {
   try {
-    const ip = getIP(req);
+    const ip = getIP(req) || `fallback_ratelimit_${crypto.randomUUID()}`;
     const { success, remaining, reset } = await rateLimit(ip);
 
     if (!success) {

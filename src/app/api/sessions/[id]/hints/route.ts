@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
-import { handleApiError, withUUIDParams } from '@/lib/errors/api';
+import { handleApiError, withValidIdParams } from '@/lib/errors/api';
 import { getGuestIdFromCookie } from '@/lib/guest';
 import { cookies } from 'next/headers';
 import { requireOwnership } from '@/lib/auth/session-auth';
@@ -14,6 +14,10 @@ async function handler(
     const cookieStore = await cookies();
     const guestId = getGuestIdFromCookie(cookieStore);
 
+    if (!guestId) {
+      return NextResponse.json({ error: 'Unauthorized: Guest ID missing' }, { status: 401 });
+    }
+
     await requireOwnership(sessionId, guestId);
 
     const body = await req.json();
@@ -22,13 +26,6 @@ async function handler(
     if (level === undefined || !content) {
       return NextResponse.json(
         { error: 'Missing required fields: level, content' },
-        { status: 400 },
-      );
-    }
-
-    if (![1, 2, 3].includes(level)) {
-      return NextResponse.json(
-        { error: 'Invalid hint level. Must be 1, 2, or 3.' },
         { status: 400 },
       );
     }
@@ -51,4 +48,4 @@ async function handler(
   }
 }
 
-export const POST = withUUIDParams(handler);
+export const POST = withValidIdParams(handler);
