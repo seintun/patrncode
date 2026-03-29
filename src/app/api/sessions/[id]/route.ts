@@ -30,6 +30,7 @@ async function getHandler(
             title: true,
             slug: true,
             statement: true,
+            examples: true,
             constraints: true,
             starterCode: true,
             difficulty: true,
