@@ -1,7 +1,13 @@
 'use client';
 
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { runTests, terminateWorker, type TestCase, type RunResult } from '@/lib/execution/runner';
+import {
+  runTests,
+  terminateWorker,
+  prewarmWorker as prewarm,
+  type TestCase,
+  type RunResult,
+} from '@/lib/execution/runner';
 
 export { type TestCase, type RunResult } from '@/lib/execution/runner';
 
@@ -17,6 +23,10 @@ export function useCodeExecution() {
       mountedRef.current = false;
       terminateWorker();
     };
+  }, []);
+
+  const prewarmWorker = useCallback(() => {
+    prewarm();
   }, []);
 
   const run = useCallback(
@@ -53,5 +63,5 @@ export function useCodeExecution() {
     [],
   );
 
-  return { run, results, isRunning, error };
+  return { run, results, isRunning, error, prewarmWorker };
 }

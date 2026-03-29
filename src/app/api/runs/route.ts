@@ -1,9 +1,15 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import { withErrorHandling } from '@/lib/errors/api';
+import { getGuestIdFromCookie } from '@/lib/guest';
+import { cookies } from 'next/headers';
+import { requireOwnership } from '@/lib/auth/session-auth';
 
 async function handler(request: NextRequest): Promise<Response> {
   try {
+    const cookieStore = await cookies();
+    const guestId = getGuestIdFromCookie(cookieStore);
+
     const body = await request.json();
     const { sessionId, code, results, passed, total } = body as {
       sessionId: string;
@@ -25,6 +31,9 @@ async function handler(request: NextRequest): Promise<Response> {
         { status: 400 },
       );
     }
+
+    // Validate ownership before creating the run
+    await requireOwnership(sessionId, guestId);
 
     const run = await prisma.testRun.create({
       data: {

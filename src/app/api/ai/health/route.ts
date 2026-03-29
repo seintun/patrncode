@@ -1,6 +1,21 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
+import { rateLimit, getIP } from '@/lib/ratelimit';
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const ip = getIP(req);
+  const { success, remaining, reset } = await rateLimit(ip);
+
+  if (!success) {
+    return new Response('Too Many Requests', {
+      status: 429,
+      headers: {
+        'X-RateLimit-Limit': '20',
+        'X-RateLimit-Remaining': remaining.toString(),
+        'X-RateLimit-Reset': reset.toString(),
+      },
+    });
+  }
+
   const apiKey = process.env.OPENROUTER_API_KEY;
 
   if (!apiKey || apiKey === 'your_openrouter_api_key_here') {
@@ -14,10 +29,6 @@ export async function GET() {
       { status: 503 },
     );
   }
-
-  // Optional: In the future, we could add a cached check to OpenRouter's
-  // status endpoint here if needed, but we keep it light to avoid
-  // blocking the main thread.
 
   return NextResponse.json({
     status: 'ok',

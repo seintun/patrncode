@@ -68,3 +68,22 @@ export function withErrorHandlingParams<T extends Record<string, string>>(
     }
   };
 }
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+export function validateUUID(id: string): boolean {
+  return UUID_REGEX.test(id);
+}
+
+export function withUUIDParams<T extends Record<string, string>>(
+  handler: (req: NextRequest, context: { params: Promise<T> }) => Promise<Response>,
+) {
+  return async (req: NextRequest, context: { params: Promise<T> }): Promise<Response> => {
+    const { id } = await context.params;
+
+    if (id && !validateUUID(id)) {
+      return NextResponse.json({ error: 'Invalid ID format' }, { status: 400 });
+    }
+
+    return handler(req, context);
+  };
+}

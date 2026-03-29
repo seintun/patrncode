@@ -1,13 +1,21 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
-import { handleApiError } from '@/lib/errors/api';
+import { handleApiError, withUUIDParams } from '@/lib/errors/api';
+import { getGuestIdFromCookie } from '@/lib/guest';
+import { cookies } from 'next/headers';
+import { requireOwnership } from '@/lib/auth/session-auth';
 
-export async function PATCH(
+async function handler(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ): Promise<Response> {
   try {
     const { id } = await params;
+    const cookieStore = await cookies();
+    const guestId = getGuestIdFromCookie(cookieStore);
+
+    await requireOwnership(id, guestId);
+
     const body = await request.json();
     const { code } = body as { code: string };
 
@@ -30,3 +38,5 @@ export async function PATCH(
     );
   }
 }
+
+export const PATCH = withUUIDParams(handler);

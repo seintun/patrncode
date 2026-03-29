@@ -23,7 +23,11 @@ export async function GET(
       return NextResponse.json({ error: 'Problem not found' }, { status: 404 });
     }
 
-    return NextResponse.json(problem);
+    return NextResponse.json(problem, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400',
+      },
+    });
   } catch (error) {
     return handleApiError(new Response('', { status: 500 }), error, 'GET /api/problems/[slug]');
   }

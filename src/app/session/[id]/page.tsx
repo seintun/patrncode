@@ -150,8 +150,11 @@ function SessionContent({ session, sessionId }: { session: SessionData; sessionI
   const [completing, setCompleting] = useState(false);
   const [pyodideReady, setPyodideReady] = useState(false);
   const [pyodideLoading, setPyodideLoading] = useState(false);
+  const { run: runTests, results: testRunResults, isRunning, prewarmWorker } = useCodeExecution();
 
-  const { run: runTests, results: testRunResults, isRunning } = useCodeExecution();
+  useEffect(() => {
+    prewarmWorker();
+  }, [prewarmWorker]);
 
   const functionName = useMemo(() => {
     if (!session?.problem.starterCode) return null;

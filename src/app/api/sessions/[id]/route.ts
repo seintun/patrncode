@@ -1,22 +1,35 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import type { SessionStatus, SessionOutcome } from '@/generated/prisma/enums';
-import { handleApiError } from '@/lib/errors/api';
+import { handleApiError, withUUIDParams } from '@/lib/errors/api';
+import { getGuestIdFromCookie } from '@/lib/guest';
+import { cookies } from 'next/headers';
+import { requireOwnership } from '@/lib/auth/session-auth';
 
-export async function GET(
+async function getHandler(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ): Promise<Response> {
   try {
     const { id } = await params;
+    const cookieStore = await cookies();
+    const guestId = getGuestIdFromCookie(cookieStore);
+
+    await requireOwnership(id, guestId);
 
     const session = await prisma.session.findFirst({
       where: { id },
       include: {
         problem: {
-          include: {
+          select: {
+            id: true,
+            title: true,
+            slug: true,
+            difficulty: true,
+            pattern: true,
             testCases: {
               where: { isHidden: false },
+              select: { id: true, input: true, expected: true },
               orderBy: { order: 'asc' },
             },
           },
@@ -24,9 +37,11 @@ export async function GET(
         runs: {
           orderBy: { createdAt: 'desc' },
           take: 10,
+          select: { id: true, passed: true, total: true, createdAt: true },
         },
         hints: {
           orderBy: { createdAt: 'asc' },
+          select: { id: true, level: true, content: true, createdAt: true },
         },
       },
     });
@@ -41,12 +56,17 @@ export async function GET(
   }
 }
 
-export async function PATCH(
+async function patchHandler(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ): Promise<Response> {
   try {
     const { id } = await params;
+    const cookieStore = await cookies();
+    const guestId = getGuestIdFromCookie(cookieStore);
+
+    await requireOwnership(id, guestId);
+
     const body = await request.json();
     const { code, status, outcome } = body as {
       code?: string;
@@ -75,3 +95,6 @@ export async function PATCH(
     return handleApiError(new Response('', { status: 500 }), error, 'PATCH /api/sessions/[id]');
   }
 }
+
+export const GET = withUUIDParams(getHandler);
+export const PATCH = withUUIDParams(patchHandler);

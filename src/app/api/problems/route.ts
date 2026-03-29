@@ -2,6 +2,8 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import type { Pattern, Difficulty } from '@/generated/prisma/enums';
 import { handleApiError } from '@/lib/errors/api';
+import { getGuestIdFromCookie } from '@/lib/guest';
+import { cookies } from 'next/headers';
 
 export async function GET(request: NextRequest): Promise<Response> {
   try {
@@ -9,7 +11,9 @@ export async function GET(request: NextRequest): Promise<Response> {
     const pattern = searchParams.get('pattern') as Pattern | null;
     const difficulty = searchParams.get('difficulty') as Difficulty | null;
     const search = searchParams.get('search') || '';
-    const guestId = searchParams.get('guestId') || '';
+
+    const cookieStore = await cookies();
+    const guestId = getGuestIdFromCookie(cookieStore);
 
     const where: {
       pattern?: Pattern;
@@ -56,7 +60,11 @@ export async function GET(request: NextRequest): Promise<Response> {
       mastery: masteryMap[p.id] ?? null,
     }));
 
-    return NextResponse.json(result);
+    return NextResponse.json(result, {
+      headers: {
+        'Cache-Control': 'private, max-age=60',
+      },
+    });
   } catch (error) {
     return handleApiError(new Response('', { status: 500 }), error, 'GET /api/problems');
   }

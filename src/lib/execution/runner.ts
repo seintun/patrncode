@@ -72,6 +72,12 @@ export function runTests(
   });
 }
 
+export function prewarmWorker(): void {
+  const w = getWorker();
+  // Trigger worker initialization + Pyodide load without running code
+  w.postMessage({ prewarm: true });
+}
+
 export function terminateWorker(): void {
   if (worker) {
     worker.terminate();

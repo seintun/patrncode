@@ -1,7 +1,16 @@
 import { notFound } from 'next/navigation';
 import ProblemDetailClient from './ProblemDetailClient';
-import { getProblemBySlug } from '@/lib/seo/problems';
+import { getProblemBySlug, getAllProblemsPublic } from '@/lib/seo/problems';
 import type { Metadata } from 'next';
+
+export const revalidate = 3600; // 1 hour
+
+export async function generateStaticParams() {
+  const problems = await getAllProblemsPublic();
+  return problems.map((p) => ({
+    slug: p.slug,
+  }));
+}
 
 export async function generateMetadata({
   params,

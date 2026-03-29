@@ -2,19 +2,27 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import type { SessionMode } from '@/generated/prisma/enums';
 import { withErrorHandling } from '@/lib/errors/api';
+import { getGuestIdFromCookie } from '@/lib/guest';
+import { cookies } from 'next/headers';
 
 async function handler(request: NextRequest): Promise<Response> {
   try {
+    const cookieStore = await cookies();
+    const guestId = getGuestIdFromCookie(cookieStore);
+
+    if (!guestId) {
+      return NextResponse.json({ error: 'Unauthorized: Guest ID missing' }, { status: 401 });
+    }
+
     const body = await request.json();
-    const { guestId, problemId, mode } = body as {
-      guestId: string;
+    const { problemId, mode } = body as {
       problemId: string;
       mode: SessionMode;
     };
 
-    if (!guestId || !problemId || !mode) {
+    if (!problemId || !mode) {
       return NextResponse.json(
-        { error: 'Missing required fields: guestId, problemId, mode' },
+        { error: 'Missing required fields: problemId, mode' },
         { status: 400 },
       );
     }
