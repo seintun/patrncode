@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { useUser } from '@/hooks/useUser';
-import { useGuestId } from '@/hooks/useGuestId';
 import Link from 'next/link';
 
 interface Stats {
@@ -33,7 +32,6 @@ interface Session {
 
 export default function DashboardPage() {
   const user = useUser();
-  const guestId = useGuestId();
   const [stats, setStats] = useState<Stats | null>(null);
   const [recentSessions, setRecentSessions] = useState<Session[]>([]);
   const [needsRefresh, setNeedsRefresh] = useState<Problem[]>([]);
@@ -44,7 +42,6 @@ export default function DashboardPage() {
     const fetchData = async () => {
       const params = new URLSearchParams();
       if (user) params.set('userId', user.id);
-      else if (guestId) params.set('guestId', guestId);
 
       const res = await fetch(`/api/progress?${params.toString()}`);
       if (res.ok) {
@@ -57,7 +54,7 @@ export default function DashboardPage() {
       setLoading(false);
     };
     fetchData();
-  }, [user, guestId]);
+  }, [user]);
 
   if (loading) {
     return (

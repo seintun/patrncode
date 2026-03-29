@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -8,9 +8,9 @@ import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
-import { getGuestId } from '@/lib/guest';
 import JsonLdSchema from '@/components/seo/JsonLdSchema';
 import { SOPHIA_MODES } from '@/lib/sophia';
+import { useCodeExecution } from '@/hooks/useCodeExecution';
 
 interface ProblemDetail {
   id: string;
@@ -119,6 +119,11 @@ function ProblemDetailContent({
   const router = useRouter();
   const [selectedMode, setSelectedMode] = useState<SessionMode>('SELF_PRACTICE');
   const [starting, setStarting] = useState(false);
+  const { prewarmWorker } = useCodeExecution();
+
+  useEffect(() => {
+    prewarmWorker();
+  }, [prewarmWorker]);
 
   const handleStartSession = async () => {
     setStarting(true);
@@ -127,7 +132,6 @@ function ProblemDetailContent({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          guestId: getGuestId(),
           problemId: problem.id,
           mode: selectedMode,
         }),

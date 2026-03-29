@@ -62,7 +62,7 @@ export async function GET(request: NextRequest): Promise<Response> {
 
     return NextResponse.json(result, {
       headers: {
-        'Cache-Control': 'private, max-age=60',
+        'Cache-Control': 'private, max-age=300, stale-while-revalidate=3600',
       },
     });
   } catch (error) {

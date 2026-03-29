@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import type { SessionMode } from '@/generated/prisma/enums';
-import { withErrorHandling } from '@/lib/errors/api';
+import { withErrorHandling, validateUUID } from '@/lib/errors/api';
 import { getGuestIdFromCookie } from '@/lib/guest';
 import { cookies } from 'next/headers';
 
@@ -25,6 +25,10 @@ async function handler(request: NextRequest): Promise<Response> {
         { error: 'Missing required fields: problemId, mode' },
         { status: 400 },
       );
+    }
+
+    if (!validateUUID(problemId)) {
+      return NextResponse.json({ error: 'Invalid problemId format' }, { status: 400 });
     }
 
     const session = await prisma.session.create({

@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { PatternHeatmap } from '@/components/domain/PatternHeatmap';
-import { useGuestId } from '@/hooks/useGuestId';
 import type { Pattern, MasteryState } from '@/generated/prisma/enums';
 
 interface ProblemHistoryItem {
@@ -52,16 +51,13 @@ interface ProgressData {
 }
 
 export default function ProgressPage() {
-  const guestId = useGuestId();
   const [data, setData] = useState<ProgressData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!guestId) return;
-
     async function fetchProgress() {
       try {
-        const res = await fetch(`/api/progress?guestId=${guestId}`);
+        const res = await fetch('/api/progress');
         if (!res.ok) throw new Error('Failed to load progress');
         const json = await res.json();
         setData(json);
@@ -73,7 +69,7 @@ export default function ProgressPage() {
     }
 
     fetchProgress();
-  }, [guestId]);
+  }, []);
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">

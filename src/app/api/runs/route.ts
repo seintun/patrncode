@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
-import { withErrorHandling } from '@/lib/errors/api';
+import { withErrorHandling, validateUUID } from '@/lib/errors/api';
 import { getGuestIdFromCookie } from '@/lib/guest';
 import { cookies } from 'next/headers';
 import { requireOwnership } from '@/lib/auth/session-auth';
@@ -30,6 +30,10 @@ async function handler(request: NextRequest): Promise<Response> {
         { error: 'Missing required fields: sessionId, code, results, passed, total' },
         { status: 400 },
       );
+    }
+
+    if (!validateUUID(sessionId)) {
+      return NextResponse.json({ error: 'Invalid sessionId format' }, { status: 400 });
     }
 
     // Validate ownership before creating the run

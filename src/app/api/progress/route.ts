@@ -125,19 +125,26 @@ async function handler(_request: NextRequest): Promise<Response> {
       };
     });
 
-    return NextResponse.json({
-      stats: {
-        totalSolved,
-        patternsPracticed,
-        sessionsThisWeek,
+    return NextResponse.json(
+      {
+        stats: {
+          totalSolved,
+          patternsPracticed,
+          sessionsThisWeek,
+        },
+        recentSessions,
+        needsRefresh,
+        inProgressProblems,
+        recommendedProblem,
+        patternStats,
+        problemHistory,
       },
-      recentSessions,
-      needsRefresh,
-      inProgressProblems,
-      recommendedProblem,
-      patternStats,
-      problemHistory,
-    });
+      {
+        headers: {
+          'Cache-Control': 'private, max-age=300, stale-while-revalidate=3600',
+        },
+      },
+    );
   } catch (error) {
     console.error('Failed to fetch progress:', error);
     return NextResponse.json({ error: 'Failed to fetch progress' }, { status: 500 });
