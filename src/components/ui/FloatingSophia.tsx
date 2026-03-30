@@ -117,53 +117,9 @@ export function FloatingSophia({
   if (isHidden) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 z-40 md:bottom-4 bottom-20" style={{ opacity: 0.8 }}>
+    <div className="fixed bottom-4 left-4 z-40 md:bottom-4 bottom-20" style={{ opacity: 0.8 }}>
       <div className="flex items-end gap-2">
-        {/* Speech bubble (left of avatar) */}
-        {currentMessage && (
-          <div className="relative max-w-[200px]" style={{ animation: 'fadeIn 0.2s ease-out' }}>
-            {/* Tail pointing right toward avatar */}
-            <div
-              className="absolute -right-1.5 bottom-2.5 h-0 w-0"
-              style={{
-                borderTop: '5px solid transparent',
-                borderBottom: '5px solid transparent',
-                borderLeft: `6px solid ${config.colors.primary}`,
-              }}
-            />
-            <div
-              role="region"
-              aria-live="polite"
-              aria-label="Sophia says"
-              onClick={handleBubbleClick}
-              className="relative cursor-pointer rounded-lg px-3 py-2 text-xs leading-relaxed"
-              style={{
-                backgroundColor: config.colors.bg,
-                borderRight: `2px solid ${config.colors.primary}`,
-              }}
-            >
-              {/* Invisible full text reserves height */}
-              <span aria-hidden="true" className="invisible select-none">
-                {currentMessage}
-              </span>
-              <span
-                className="absolute inset-0 px-3 py-2 text-xs leading-relaxed"
-                style={{ color: config.colors.text }}
-              >
-                {displayed}
-                {displayed.length < currentMessage.length && (
-                  <span
-                    className="ml-0.5 inline-block h-2.5 w-0.5 animate-pulse"
-                    style={{ backgroundColor: config.colors.primary }}
-                    aria-hidden="true"
-                  />
-                )}
-              </span>
-            </div>
-          </div>
-        )}
-
-        {/* Avatar circle (right side) */}
+        {/* Avatar circle (left side) */}
         <button
           type="button"
           role="button"
@@ -198,6 +154,50 @@ export function FloatingSophia({
             </div>
           )}
         </button>
+
+        {/* Speech bubble (right of avatar) */}
+        {currentMessage && (
+          <div className="relative max-w-[200px]" style={{ animation: 'fadeIn 0.2s ease-out' }}>
+            {/* Tail pointing left toward avatar */}
+            <div
+              className="absolute -left-1.5 bottom-2.5 h-0 w-0"
+              style={{
+                borderTop: '5px solid transparent',
+                borderBottom: '5px solid transparent',
+                borderRight: `6px solid ${config.colors.primary}`,
+              }}
+            />
+            <div
+              role="region"
+              aria-live="polite"
+              aria-label="Sophia says"
+              onClick={handleBubbleClick}
+              className="relative cursor-pointer rounded-lg px-3 py-2 text-xs leading-relaxed"
+              style={{
+                backgroundColor: config.colors.bg,
+                borderLeft: `2px solid ${config.colors.primary}`,
+              }}
+            >
+              {/* Invisible full text reserves height */}
+              <span aria-hidden="true" className="invisible select-none">
+                {currentMessage}
+              </span>
+              <span
+                className="absolute inset-0 px-3 py-2 text-xs leading-relaxed"
+                style={{ color: config.colors.text }}
+              >
+                {displayed}
+                {displayed.length < currentMessage.length && (
+                  <span
+                    className="ml-0.5 inline-block h-2.5 w-0.5 animate-pulse"
+                    style={{ backgroundColor: config.colors.primary }}
+                    aria-hidden="true"
+                  />
+                )}
+              </span>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
