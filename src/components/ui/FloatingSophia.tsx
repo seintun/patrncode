@@ -117,7 +117,7 @@ export function FloatingSophia({
   if (isHidden) return null;
 
   return (
-    <div className="fixed bottom-4 left-4 z-40 md:bottom-4 bottom-20" style={{ opacity: 0.8 }}>
+    <div className="fixed bottom-4 left-4 z-40 md:bottom-4 bottom-[120px]" style={{ opacity: 0.8 }}>
       <div className="flex items-end gap-2">
         {/* Avatar circle (left side) */}
         <button
