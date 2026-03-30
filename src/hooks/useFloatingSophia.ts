@@ -71,10 +71,7 @@ interface UseFloatingSophiaInput {
 
 interface UseFloatingSophiaOutput {
   currentMessage: string | null;
-  isVisible: boolean;
-  isDimmed: boolean;
   dismiss: () => void;
-  handleClick: () => void;
 }
 
 // ── Hook ─────────────────────────────────────────────────────────────────────
@@ -132,10 +129,6 @@ export function useFloatingSophia({
   );
 
   const dismiss = useCallback(() => {
-    setCurrentMessage(null);
-  }, []);
-
-  const handleClick = useCallback(() => {
     setCurrentMessage(null);
   }, []);
 
@@ -227,10 +220,7 @@ export function useFloatingSophia({
 
   return {
     currentMessage,
-    isVisible: !isCoachOpen,
-    isDimmed: isCoachOpen,
     dismiss,
-    handleClick,
   };
 }
 

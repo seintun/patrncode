@@ -67,7 +67,7 @@ export function SessionLayout({
   // Suppress bubbles whenever any coach surface is open (desktop panel or mobile sheet)
   const isCoachSurfaceOpen = isCoachOpen || isMobileSheetOpen;
 
-  const { currentMessage, isDimmed, dismiss, handleClick } = useFloatingSophia({
+  const { currentMessage, dismiss } = useFloatingSophia({
     mode,
     testResultsData,
     isRunning: isRunning ?? false,
@@ -84,16 +84,14 @@ export function SessionLayout({
 
   const handleAvatarClick = useCallback(() => {
     if (isCoachOpen) {
-      // Desktop: close coach panel
       handleCoachClose();
     } else {
-      // Open coach — dismiss bubble first, then open the appropriate surface
-      handleClick();
+      dismiss();
       handleCoachToggle();
-      // On mobile, also switch to the Coach tab and open its sheet
+      // On mobile, open the coach sheet (no-op on desktop since workspace is hidden)
       workspaceRef?.current?.openCoach();
     }
-  }, [isCoachOpen, handleCoachToggle, handleCoachClose, handleClick, workspaceRef]);
+  }, [isCoachOpen, handleCoachToggle, handleCoachClose, dismiss, workspaceRef]);
 
   // Inject onClose prop into coach component for desktop
   const coachWithClose =
@@ -102,9 +100,6 @@ export function SessionLayout({
           onClose: handleCoachClose,
         })
       : coach;
-
-  // Avatar is hidden whenever a coach surface is open
-  const isAvatarHidden = isCoachSurfaceOpen;
 
   return (
     <>
@@ -144,8 +139,7 @@ export function SessionLayout({
       {/* Floating Sophia avatar — hidden when any coach surface is open */}
       <FloatingSophia
         currentMessage={currentMessage}
-        isDimmed={isDimmed}
-        isHidden={isAvatarHidden}
+        isHidden={isCoachSurfaceOpen}
         mode={mode}
         onClick={handleAvatarClick}
         onDismiss={dismiss}
