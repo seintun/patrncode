@@ -32,6 +32,7 @@ interface MobileWorkspaceProps {
   onRunTests?: () => void;
   isRunning?: boolean;
   onSheetOpenChange?: (isOpen: boolean) => void;
+  onActiveTabChange?: (tab: TabKey) => void;
 }
 
 export interface MobileWorkspaceHandle {
@@ -157,6 +158,7 @@ export const MobileWorkspace = forwardRef<MobileWorkspaceHandle, MobileWorkspace
       onRunTests,
       isRunning,
       onSheetOpenChange,
+      onActiveTabChange,
     },
     ref,
   ) {
@@ -189,6 +191,7 @@ export const MobileWorkspace = forwardRef<MobileWorkspaceHandle, MobileWorkspace
           coachSheet.close();
           testResultsSheet.close();
           setActiveTab('code');
+          onActiveTabChange?.('code');
           onSheetOpenChange?.(false);
           return;
         }
@@ -199,6 +202,7 @@ export const MobileWorkspace = forwardRef<MobileWorkspaceHandle, MobileWorkspace
         testResultsSheet.close();
 
         setActiveTab(tab);
+        onActiveTabChange?.(tab);
 
         if (tab === 'run') {
           onRunTests?.();
@@ -215,7 +219,15 @@ export const MobileWorkspace = forwardRef<MobileWorkspaceHandle, MobileWorkspace
           onSheetOpenChange?.(false);
         }
       },
-      [activeTab, problemSheet, coachSheet, testResultsSheet, onRunTests, onSheetOpenChange],
+      [
+        activeTab,
+        problemSheet,
+        coachSheet,
+        testResultsSheet,
+        onRunTests,
+        onSheetOpenChange,
+        onActiveTabChange,
+      ],
     );
 
     // ── Swipe navigation ────────────────────────────────────────────────────
