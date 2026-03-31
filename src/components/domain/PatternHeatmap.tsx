@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import type { Pattern } from '@/generated/prisma/enums';
 
@@ -49,6 +50,8 @@ function getDominantState(stat: PatternStat): string {
 }
 
 export function PatternHeatmap({ stats }: PatternHeatmapProps) {
+  const router = useRouter();
+
   const allPatterns: Pattern[] = [
     'ARRAYS_STRINGS',
     'HASH_MAPS',
@@ -85,7 +88,9 @@ export function PatternHeatmap({ stats }: PatternHeatmapProps) {
           <button
             type="button"
             key={pattern}
+            onClick={() => router.push(`/practice?pattern=${pattern}`)}
             aria-label={`${patternLabels[pattern] ?? pattern.replace(/_/g, ' ')}: ${stat.total > 0 ? `${stat.mastered} of ${stat.total} mastered` : 'Not started'}. Status: ${dominant.replace(/_/g, ' ')}`}
+            title={`${stat.mastered} mastered, ${stat.inProgress} in progress, ${stat.needsRefresh} needs refresh, ${stat.unseen} unseen`}
             className={cn(
               'rounded-lg border border-[var(--color-border)] p-3 text-center transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-bg-primary)] hover:border-[var(--color-accent)]/50',
               stateColors[dominant],
