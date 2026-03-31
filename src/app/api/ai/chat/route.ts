@@ -6,6 +6,7 @@ import { buildInterviewerPrompt } from '@/lib/ai/prompts/interviewer';
 import { handleApiError } from '@/lib/errors/api';
 import { withRateLimit } from '@/lib/ratelimit';
 import { type NextRequest } from 'next/server';
+import { chatRequestSchema, validateBody } from '@/lib/validations';
 
 async function handler(req: NextRequest): Promise<Response> {
   try {
@@ -14,6 +15,13 @@ async function handler(req: NextRequest): Promise<Response> {
     }
 
     const body = await req.json();
+    const validation = validateBody(chatRequestSchema, body);
+    if (!validation.success) {
+      return new Response(JSON.stringify({ error: validation.error }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
     const {
       messages,
       mode,
@@ -23,23 +31,7 @@ async function handler(req: NextRequest): Promise<Response> {
       difficulty,
       sessionId: _sessionId,
       currentCode,
-    } = body;
-
-    // Validate required fields
-    const missingFields: string[] = [];
-    if (!Array.isArray(messages)) missingFields.push('messages');
-    if (!title || typeof title !== 'string') missingFields.push('title');
-    if (!statement || typeof statement !== 'string') missingFields.push('statement');
-    if (!pattern || typeof pattern !== 'string') missingFields.push('pattern');
-    if (!difficulty || typeof difficulty !== 'string') missingFields.push('difficulty');
-
-    if (missingFields.length > 0) {
-      const errorMsg = `Missing required fields: ${missingFields.join(', ')}`;
-      return new Response(JSON.stringify({ error: errorMsg, missingFields }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      });
-    }
+    } = validation.data;
 
     if (mode !== 'coach' && mode !== 'interviewer') {
       return new Response('Invalid mode. Must be "coach" or "interviewer".', { status: 400 });

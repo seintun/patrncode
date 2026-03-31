@@ -75,7 +75,7 @@ describe('POST /api/sessions', () => {
     const response = await POST(req);
     expect(response.status).toBe(400);
     const data = await response.json();
-    expect(data.error).toMatch(/missing required fields/i);
+    expect(data.error).toBeDefined();
   });
 
   it('returns 400 for an invalid problemId format', async () => {

@@ -8,26 +8,33 @@ datasource db {
 }
 
 model Problem {
-  id          String     @id @default(cuid())
-  title       String
-  slug        String     @unique
-  difficulty  Difficulty
-  pattern     Pattern
-  tags        String[]
-  constraints String[]
-  sourceType  SourceType @default(INTERNAL)
-  externalUrl String?
-  statement   String
-  examples    Json
-  starterCode String     @default("")
-  approaches  Json?
-  sortOrder   Int        @default(0)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  id                 String     @id @default(cuid())
+  title              String
+  slug               String     @unique
+  difficulty         Difficulty
+  pattern            Pattern
+  tags               String[]
+  constraints        String[]
+  sourceType         SourceType @default(INTERNAL)
+  externalUrl        String?
+  statement          String
+  examples           Json
+  starterCode        String     @default("")
+  approaches         Json?
+  sortOrder          Int        @default(0)
+  isCurated          Boolean    @default(false)
+  curatedOrder       Int?
+  dailyChallengeDate DateTime?
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
 
   testCases     TestCase[]
   sessions      Session[]
   problemStates UserProblemState[]
+
+  @@index([difficulty, pattern])
+  @@index([createdAt])
+  @@index([isCurated, curatedOrder])
 }
 
 model TestCase {
@@ -129,6 +136,29 @@ model UserProblemState {
   @@index([guestId])
   @@index([userId])
   @@index([problemId])
+  @@index([lastAttemptedAt, nextReviewAt])
+}
+
+model UserProfile {
+  id               String           @id @default(cuid())
+  guestId          String           @unique
+  userId           String?          @unique
+  currentStreak    Int              @default(0)
+  longestStreak    Int              @default(0)
+  lastActivityAt   DateTime         @default(now())
+  streakLastWonAt  DateTime?
+  coins            Int              @default(0)
+  tier             SubscriptionTier @default(FREE)
+  tokenLimit       Int              @default(100000)
+  tokensUsed       Int              @default(0)
+  theme            ThemePreference  @default(DARK)
+  fontSize         EditorFontSize   @default(MEDIUM)
+  keybindingScheme KeybindingScheme @default(VSCODE)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  @@index([guestId])
+  @@index([userId])
 }
 
 enum Difficulty {
@@ -188,4 +218,28 @@ enum MessageRole {
   USER
   ASSISTANT
   SYSTEM
+}
+
+enum SubscriptionTier {
+  FREE
+  PREMIUM
+}
+
+enum ThemePreference {
+  DARK
+  LIGHT
+  SYSTEM
+}
+
+enum EditorFontSize {
+  SMALL
+  MEDIUM
+  LARGE
+}
+
+enum KeybindingScheme {
+  VSCODE
+  VIM
+  EMACS
+  NONE
 }

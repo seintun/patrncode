@@ -5,6 +5,7 @@ import { buildExplanationPrompt } from '@/lib/ai/prompts/explanation';
 import { handleApiError } from '@/lib/errors/api';
 import { withRateLimit } from '@/lib/ratelimit';
 import { type NextRequest } from 'next/server';
+import { explainRequestSchema, validateBody } from '@/lib/validations';
 
 async function handler(req: NextRequest): Promise<Response> {
   try {
@@ -13,11 +14,14 @@ async function handler(req: NextRequest): Promise<Response> {
     }
 
     const body = await req.json();
-    const { title, statement, pattern, difficulty } = body;
-
-    if (!title || !statement || !pattern || !difficulty) {
-      return new Response('Missing required fields', { status: 400 });
+    const validation = validateBody(explainRequestSchema, body);
+    if (!validation.success) {
+      return new Response(JSON.stringify({ error: validation.error }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
+    const { title, statement, pattern, difficulty } = validation.data;
 
     const { system, user } = buildExplanationPrompt({
       title,

@@ -1,22 +1,16 @@
-import type { SessionMode } from '@/generated/prisma/enums';
 import { prisma } from '@/lib/db/prisma';
 import { validateId, withAuth } from '@/lib/errors/api';
 import { type NextRequest, NextResponse } from 'next/server';
+import { sessionCreateSchema, validateBody } from '@/lib/validations';
 
 async function handler(request: NextRequest, { guestId }: { guestId: string }): Promise<Response> {
   try {
     const body = await request.json();
-    const { problemId, mode } = body as {
-      problemId: string;
-      mode: SessionMode;
-    };
-
-    if (!problemId || !mode) {
-      return NextResponse.json(
-        { error: 'Missing required fields: problemId, mode' },
-        { status: 400 },
-      );
+    const validation = validateBody(sessionCreateSchema, body);
+    if (!validation.success) {
+      return NextResponse.json({ error: validation.error }, { status: 400 });
     }
+    const { problemId, mode } = validation.data;
 
     if (!validateId(problemId)) {
       return NextResponse.json({ error: 'Invalid problemId format' }, { status: 400 });

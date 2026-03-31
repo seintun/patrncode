@@ -6,6 +6,7 @@ import { handleApiError } from '@/lib/errors/api';
 import { isSessionMode } from '@/lib/sophia';
 import { withRateLimit } from '@/lib/ratelimit';
 import { type NextRequest } from 'next/server';
+import { summaryRequestSchema, validateBody } from '@/lib/validations';
 
 async function handler(req: NextRequest): Promise<Response> {
   try {
@@ -14,18 +15,15 @@ async function handler(req: NextRequest): Promise<Response> {
     }
 
     const body = await req.json();
-    const { title, pattern, finalCode, testResults, hintsUsed, timeSpentSeconds, mode } = body;
-
-    if (
-      !title ||
-      !pattern ||
-      finalCode === undefined ||
-      !testResults ||
-      hintsUsed === undefined ||
-      timeSpentSeconds === undefined
-    ) {
-      return new Response('Missing required fields', { status: 400 });
+    const validation = validateBody(summaryRequestSchema, body);
+    if (!validation.success) {
+      return new Response(JSON.stringify({ error: validation.error }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
+    const { title, pattern, finalCode, testResults, hintsUsed, timeSpentSeconds, mode } =
+      validation.data;
 
     const { system, user } = buildSummaryPrompt({
       title,
