@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { useState, useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
+import { StreakCounter } from '@/components/domain/StreakCounter';
+import { CoinBalance } from '@/components/domain/CoinBalance';
 
 const NAV_LINKS = [
   { href: '/practice', label: 'Practice' },
@@ -59,6 +61,12 @@ export default function Navbar() {
               {label}
             </NavLink>
           ))}
+        </div>
+
+        {/* Desktop streak + coins */}
+        <div className="hidden items-center gap-4 sm:flex">
+          <StreakCounter currentStreak={0} longestStreak={0} lastActivityAt={null} />
+          <CoinBalance coins={0} tier="FREE" />
         </div>
 
         {/* Desktop sign-in */}
@@ -133,6 +141,12 @@ export default function Navbar() {
             })}
             <li aria-hidden="true">
               <div className="my-1 border-t border-[var(--color-border)]" />
+            </li>
+            <li>
+              <div className="flex items-center gap-4 px-3 py-2.5">
+                <StreakCounter currentStreak={0} longestStreak={0} lastActivityAt={null} />
+                <CoinBalance coins={0} tier="FREE" />
+              </div>
             </li>
             <li>
               <span className="flex items-center gap-1.5 rounded-md px-3 py-2.5 text-sm font-medium text-[var(--color-text-muted)]">

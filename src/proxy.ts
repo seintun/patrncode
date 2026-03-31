@@ -1,6 +1,12 @@
-import { type NextRequest } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { updateSession } from '@/lib/supabase/middleware';
-import { generateGuestId } from '@/lib/guest';
+import { generateGuestId, getGuestIdFromCookie } from '@/lib/guest';
+
+const PREMIUM_ROUTES = [
+  '/api/ai/generate-problem',
+  '/api/session/report',
+  '/api/recommendations/next',
+];
 
 /**
  * Generate a cryptographically random nonce for CSP.
@@ -29,6 +35,23 @@ export async function proxy(request: NextRequest) {
       sameSite: 'lax',
       maxAge: 60 * 60 * 24 * 365, // 1 year
     });
+  }
+
+  // Premium route gating
+  const { pathname } = request.nextUrl;
+  if (PREMIUM_ROUTES.some((r) => pathname.startsWith(r))) {
+    const guestId = getGuestIdFromCookie(request.cookies);
+    if (!guestId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    const { prisma } = await import('@/lib/db/prisma');
+    const profile = await prisma.userProfile.findUnique({ where: { guestId } });
+    if (!profile || profile.tier !== 'PREMIUM') {
+      return NextResponse.json(
+        { error: 'premium_required', upgradeUrl: '/account/subscribe' },
+        { status: 403 },
+      );
+    }
   }
 
   // CSP enforcement in production, report-only in development

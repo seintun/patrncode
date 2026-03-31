@@ -5,6 +5,7 @@ import { openrouter } from '@/lib/ai/provider';
 import { MODELS } from '@/lib/ai/models';
 import { buildSummaryPrompt } from '@/lib/ai/prompts/summary';
 import { computeNextMastery, computeNextReviewDate } from '@/lib/mastery';
+import { calculateStreak } from '@/lib/streak';
 import type { MasteryState } from '@/generated/prisma/enums';
 import { handleApiError, withAuthAndId } from '@/lib/errors/api';
 import { requireOwnership } from '@/lib/auth/session-auth';
@@ -26,6 +27,7 @@ async function handler(
             title: true,
             slug: true,
             pattern: true,
+            dailyChallengeDate: true,
           },
         },
         runs: { orderBy: { createdAt: 'desc' }, take: 1 },
@@ -145,6 +147,40 @@ async function handler(
       },
     });
 
+    let currentStreak: number | null = null;
+    if (solved) {
+      const profile = await prisma.userProfile.findUnique({ where: { guestId: session.guestId } });
+      const streakResult = calculateStreak(
+        profile?.lastActivityAt ?? null,
+        profile?.streakLastWonAt ?? null,
+        profile?.currentStreak ?? 0,
+        profile?.longestStreak ?? 0,
+      );
+
+      const coinsEarned = 1;
+      const isDailyChallenge = session.problem.dailyChallengeDate != null;
+
+      await prisma.userProfile.upsert({
+        where: { guestId: session.guestId },
+        create: {
+          guestId: session.guestId,
+          currentStreak: streakResult.current,
+          longestStreak: streakResult.longest,
+          lastActivityAt: streakResult.lastActivityAt,
+          streakLastWonAt: new Date(),
+          coins: isDailyChallenge ? coinsEarned + 10 : coinsEarned,
+        },
+        update: {
+          currentStreak: streakResult.current,
+          longestStreak: streakResult.longest,
+          lastActivityAt: streakResult.lastActivityAt,
+          streakLastWonAt: streakResult.wonToday ? undefined : new Date(),
+          coins: { increment: isDailyChallenge ? coinsEarned + 10 : coinsEarned },
+        },
+      });
+      currentStreak = streakResult.current;
+    }
+
     const updatedSession = await prisma.session.update({
       where: { id },
       data: {
@@ -165,6 +201,7 @@ async function handler(
         total,
       },
       mastery: nextMastery,
+      streak: currentStreak != null ? { current: currentStreak } : null,
     });
   } catch (error) {
     return handleApiError(
