@@ -43,18 +43,40 @@ function normalize(val) {
  */
 function cleanError(raw, offset) {
   if (!raw) return raw;
-  console.error('[PyodideWorker] Python Traceback:', raw);
-  return raw
-    .split('\n')
-    .filter(
-      (line) =>
-        !line.includes('/lib/python') &&
-        !line.includes('pyodide') &&
-        line.trim() !== 'Traceback (most recent call last):',
-    )
-    .join('\n')
-    .replace(/line (\d+)/g, (_, n) => `line ${Math.max(1, parseInt(n, 10) - offset)}`)
-    .trim();
+
+  // 1. Map all line numbers back to the editor's perspective
+  const cleaned = raw.replace(/line (\d+)/g, (_, n) => {
+    const actualLine = Math.max(1, parseInt(n, 10) - offset);
+    return `line ${actualLine}`;
+  });
+
+  const lines = cleaned.split('\n');
+
+  // 2. Extract the last meaningful error line (usually the last or second to last)
+  let errorLine = lines[lines.length - 1].trim();
+  if (!errorLine || errorLine.includes('^')) {
+    errorLine = lines[lines.length - 2]?.trim() || errorLine;
+  }
+
+  // 3. Extract the LAST line number in the traceback (closest to the actual error)
+  const lineMatches = cleaned.match(/line (\d+)/g);
+  let lineNum = null;
+  if (lineMatches) {
+    const lastMatch = lineMatches[lineMatches.length - 1];
+    lineNum = lastMatch.match(/(\d+)/)[1];
+  }
+
+  // Handle specific RecursionError/MemoryError for extra clarity
+  if (cleaned.includes('RecursionError')) {
+    return `RecursionError: Maximum recursion depth exceeded (Line ${lineNum || '?'})`;
+  }
+
+  // Return structured string: "Type: Message (Line N)"
+  if (lineNum && !errorLine.includes(`(Line ${lineNum})`)) {
+    return `${errorLine} (Line ${lineNum})`;
+  }
+
+  return errorLine || 'Unknown Error';
 }
 
 /**
@@ -65,20 +87,32 @@ function runTestCase(py, code, input, funcName) {
     .split('\n')
     .map((line) => '    ' + line)
     .join('\n');
-  const setup = `
-import sys, io, json
-_stdout_capture = io.StringIO()
-_stderr_capture = io.StringIO()
-_orig_stdout, _orig_stderr = sys.stdout, sys.stderr
-sys.stdout, sys.stderr = _stdout_capture, _stderr_capture
-try:
-    _inputs = ${JSON.stringify(input.split('\n'))}
-    _input_iter = iter(_inputs)
-    def input(*args):
-        try: return next(_input_iter)
-        except StopIteration: return ''
-`;
-  const codeLineOffset = setup.split('\n').length + 1;
+
+  // Precise setup lines (11 lines)
+  const setupLines = [
+    'import sys, io, json',
+    '_stdout_capture = io.StringIO()',
+    '_stderr_capture = io.StringIO()',
+    '_orig_stdout, _orig_stderr = sys.stdout, sys.stderr',
+    'sys.stderr = _stderr_capture',
+    'sys.stdout = _stdout_capture',
+    'try:',
+    `    _inputs = ${JSON.stringify(input.split('\n'))}`,
+    '    _input_iter = iter(_inputs)',
+    '    def input(*args):',
+    '        try: return next(_input_iter)',
+    "        except StopIteration: return ''",
+  ];
+  const setup = setupLines.join('\n');
+
+  // Offset logic:
+  // 1. setup (12 lines if joined with \n)
+  // 2. The separator newline (\n content)
+  // 3. The first newline in 'execution'
+  // 4. The user code line
+  // Fixed offset for this structure is 14.
+  const codeLineOffset = 14;
+
   const execution = `
 ${indentedCode}
 ${
