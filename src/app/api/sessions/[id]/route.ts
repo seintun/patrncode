@@ -69,20 +69,45 @@ async function patchHandler(
     await requireOwnership(id, guestId);
 
     const body = await request.json();
-    const { status, code, outcome } = body as {
+    const { status, code, outcome, extend } = body as {
       status?: SessionStatus;
       code?: string;
       outcome?: SessionOutcome;
+      extend?: boolean;
     };
+
+    // Prepare update data
+    const data: any = {
+      status,
+      code,
+      outcome,
+      completedAt: status === 'COMPLETED' ? new Date() : undefined,
+    };
+
+    // Handle extension
+    if (extend) {
+      const currentSession = await prisma.session.findUnique({
+        where: { id },
+        select: { expiresAt: true, status: true, duration: true },
+      });
+
+      if (!currentSession) {
+        return NextResponse.json({ error: 'Session not found' }, { status: 404 });
+      }
+
+      if (currentSession.status !== 'IN_PROGRESS') {
+        return NextResponse.json({ error: 'Cannot extend a non-active session' }, { status: 400 });
+      }
+
+      const currentExpiresAt = currentSession.expiresAt || new Date();
+      const baseTime = Math.max(Date.now(), currentExpiresAt.getTime());
+      data.expiresAt = new Date(baseTime + 15 * 60 * 1000);
+      data.duration = { set: (currentSession.duration ?? 0) + 15 };
+    }
 
     const session = await prisma.session.update({
       where: { id },
-      data: {
-        status,
-        code,
-        outcome,
-        completedAt: status === 'COMPLETED' ? new Date() : undefined,
-      },
+      data,
     });
 
     return NextResponse.json(session);
