@@ -179,6 +179,7 @@ function SessionContent({ session, sessionId }: { session: SessionData; sessionI
     explanationStream,
     getExplanation,
     askAboutFailure,
+    setMessages,
   } = useAIChat({
     mode: session.mode ?? 'SELF_PRACTICE',
     problem: problemContext,
@@ -187,6 +188,26 @@ function SessionContent({ session, sessionId }: { session: SessionData; sessionI
       ? { passed: testRunResults.passed, total: testRunResults.total }
       : undefined,
   });
+
+  // Sync existing hints from session into chat history on load
+  useEffect(() => {
+    if (session.hints && session.hints.length > 0) {
+      const hintMessages = session.hints.map((h) => ({
+        id: h.id,
+        role: 'assistant' as const,
+        content: h.content,
+        parts: [{ type: 'text', text: h.content }],
+        annotations: [{ type: 'hint', level: h.level }],
+      }));
+
+      // Merge with any existing messages
+      setMessages((prev) => {
+        const existingIds = new Set(prev.map((m) => m.id));
+        const newHints = (hintMessages as any[]).filter((h) => !existingIds.has(h.id));
+        return [...prev, ...newHints];
+      });
+    }
+  }, [session.hints, setMessages]);
 
   const handleCodeChange = useCallback(
     async (newCode: string) => {

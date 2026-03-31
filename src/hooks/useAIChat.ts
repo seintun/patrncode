@@ -158,6 +158,19 @@ export function useAIChat({ mode, problem, currentCode, testResults }: UseAIChat
         );
 
         setHintStream({ text: fullText, isLoading: false });
+
+        // Append the completed hint to the persistent message history
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `hint-${level}-${Date.now()}`,
+            role: 'assistant',
+            content: fullText,
+            parts: [{ type: 'text', text: fullText }],
+            annotations: [{ type: 'hint', level }],
+          } as any, // Cast to any to bypass strict SDK part vs content typing conflicts
+        ]);
+
         return fullText;
       } catch (err) {
         console.error('[useAIChat] getHint exception:', err);

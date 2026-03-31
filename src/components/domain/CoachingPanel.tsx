@@ -290,12 +290,32 @@ export function CoachingPanel({
                       {isAssistant ? 'Sophia' : 'You'}
                     </div>
                     {isAssistant ? (
-                      <StreamedMarkdownMessage
-                        content={hintStream.text}
-                        accentColor={config.colors.primary}
-                        isStreaming={hintStream.isLoading}
-                        cursorColor={config.colors.primary}
-                      />
+                      <>
+                        {(msg as any).annotations?.some((a: any) => a.type === 'hint') && (
+                          <div className="sophia-hint-badge">
+                            <svg
+                              width="10"
+                              height="10"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="3"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              aria-hidden="true"
+                            >
+                              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                            </svg>
+                            Hint (Level {(msg as any).annotations.find((a: any) => a.type === 'hint').level})
+                          </div>
+                        )}
+                        <StreamedMarkdownMessage
+                          content={text}
+                          accentColor={config.colors.primary}
+                          isStreaming={false}
+                          cursorColor={config.colors.primary}
+                        />
+                      </>
                     ) : (
                       <div className="whitespace-pre-wrap">{text}</div>
                     )}
@@ -304,8 +324,8 @@ export function CoachingPanel({
               );
             })}
 
-            {/* Hint stream - show if loading OR has text */}
-            {(hintStream.text || hintStream.isLoading) && (
+            {/* Active Hint stream - show ONLY during generation */}
+            {hintStream.isLoading && (
               <div className="flex gap-3 pl-1">
                 {!avatarError ? (
                   <div className="relative h-7 w-7 shrink-0 overflow-hidden rounded-full">
