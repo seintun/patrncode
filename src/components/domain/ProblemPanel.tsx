@@ -47,10 +47,7 @@ export function ProblemPanel({
   const [activeTab, setActiveTab] = useState<TabKey>('statement');
 
   // Cache key and data
-  const storageKey = useMemo(
-    () => `sophia-explanation:${sessionId ?? problem.title}`,
-    [sessionId, problem.title],
-  );
+  const storageKey = useMemo(() => sessionId ?? problem.title, [sessionId, problem.title]);
 
   const { cachedText } = useExplanationCache(storageKey, explanationStream);
 

@@ -16,7 +16,7 @@ import { useAIChat } from '@/hooks/useAIChat';
 import { useCodeExecution } from '@/hooks/useCodeExecution';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { Button } from '@/components/ui/Button';
-import { SessionMode, SessionStatus, SessionOutcome, MessageRole } from '@/generated/prisma/enums';
+import type { SessionMode, MessageRole } from '@/generated/prisma/enums';
 import type { MobileWorkspaceHandle } from '@/components/domain/MobileWorkspace';
 
 interface TestCase {
@@ -149,6 +149,8 @@ function SessionContent({ session, sessionId }: { session: SessionData; sessionI
   const router = useRouter();
   const workspaceRef = useRef<MobileWorkspaceHandle | null>(null);
   const testRunCountRef = useRef(0);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [testRunTick, setTestRunTick] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [code, setCode] = useState(session.code ?? session.problem.starterCode ?? '');
   const [notes, setNotes] = useState('');
@@ -274,6 +276,7 @@ function SessionContent({ session, sessionId }: { session: SessionData; sessionI
 
   const handleRunTests = useCallback(async () => {
     testRunCountRef.current++;
+    setTestRunTick((t) => t + 1);
     // Only open the sheet programmatically on mobile to avoid scroll locking on desktop
     if (typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches) {
       workspaceRef.current?.openTestResults();

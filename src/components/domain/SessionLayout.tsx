@@ -181,6 +181,7 @@ export function SessionLayout({
 
       {/* Floating Sophia avatar — always visible */}
       <FloatingSophia
+        ref={avatarButtonRef}
         currentMessage={currentMessage}
         isHidden={false}
         isDimmed={isCoachSurfaceOpen}

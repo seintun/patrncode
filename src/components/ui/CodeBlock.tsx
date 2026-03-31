@@ -15,10 +15,9 @@ function CopyButton({ code }: { code: string }) {
     try {
       await navigator.clipboard.writeText(code);
       setCopied(true);
-      const timer = setTimeout(() => setCopied(false), 2000);
-      return () => clearTimeout(timer);
+      setTimeout(() => setCopied(false), 2000);
     } catch {
-      return undefined;
+      // Clipboard write failed; ignore
     }
   }, [code]);
 
