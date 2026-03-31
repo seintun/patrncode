@@ -119,11 +119,56 @@ function ProblemDetailContent({
   const router = useRouter();
   const [selectedMode, setSelectedMode] = useState<SessionMode>('SELF_PRACTICE');
   const [starting, setStarting] = useState(false);
+  const [activeSession, setActiveSession] = useState<{
+    id: string;
+    mode: SessionMode;
+    expiresAt: string;
+  } | null>(null);
+  const [loadingActive, setLoadingActive] = useState(true);
   const { prewarmWorker } = useCodeExecution();
 
   useEffect(() => {
     prewarmWorker();
-  }, [prewarmWorker]);
+
+    // Check for active session
+    const checkActive = async () => {
+      try {
+        const res = await fetch(`/api/sessions?problemId=${problem.id}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.session) {
+            setActiveSession(data.session);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to check active session:', err);
+      } finally {
+        setLoadingActive(false);
+      }
+    };
+    checkActive();
+  }, [prewarmWorker, problem.id]);
+
+  // Handle countdown for active session (must be at top level)
+  const [timeLeft, setTimeLeft] = useState<string>('');
+
+  useEffect(() => {
+    if (!activeSession?.expiresAt) {
+      setTimeLeft('');
+      return;
+    }
+    
+    const updateTime = () => {
+      const remaining = Math.max(0, new Date(activeSession.expiresAt).getTime() - Date.now());
+      const mins = Math.floor(remaining / 1000 / 60);
+      const secs = Math.floor((remaining / 1000) % 60);
+      setTimeLeft(`${mins}:${secs.toString().padStart(2, '0')}`);
+    };
+
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
+    return () => clearInterval(interval);
+  }, [activeSession?.expiresAt]);
 
   const handleStartSession = async () => {
     setStarting(true);
@@ -143,6 +188,87 @@ function ProblemDetailContent({
       setStarting(false);
     }
   };
+
+  const handleEndSession = async () => {
+    if (!activeSession) return;
+    try {
+      const res = await fetch(`/api/sessions/${activeSession.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'ABANDONED' }),
+      });
+      if (res.ok) {
+        setActiveSession(null);
+      }
+    } catch (err) {
+      console.error('Failed to end session:', err);
+    }
+  };
+
+  if (loadingActive) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-[var(--color-accent)]" />
+      </div>
+    );
+  }
+
+  if (activeSession) {
+    const sophiaConfig = SOPHIA_MODES[activeSession.mode];
+
+    return (
+      <div className="mx-auto max-w-4xl px-4 py-8" style={{ animation: 'scaleIn 0.4s ease-out' }}>
+        <div className="mb-8 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-secondary)] p-8 text-center shadow-xl">
+          <div className="mx-auto mb-4 h-24 w-24 overflow-hidden rounded-full border-2 border-[var(--color-accent)] shadow-lg">
+            <img
+              src={MODE_IMAGES[activeSession.mode]}
+              alt={activeSession.mode}
+              className="h-full w-full object-cover"
+            />
+          </div>
+          <h2 className="mb-2 text-2xl font-bold text-[var(--color-text-primary)]">
+            Active Session Found
+          </h2>
+          <div className="mb-6 flex flex-col items-center gap-1">
+            <p className="text-[var(--color-text-secondary)]">
+              You already have an active{' '}
+              <span style={{ color: sophiaConfig.colors.text }} className="font-semibold">
+                {activeSession.mode.replace('_', ' ')}
+              </span>{' '}
+              session for this problem.
+            </p>
+            {timeLeft && (
+              <p className="flex items-center gap-1.5 text-sm font-mono font-medium text-[var(--color-text-muted)] bg-[var(--color-bg-elevated)] px-3 py-1 rounded-full border border-[var(--color-border)]">
+                <span className="inline-block w-2 h-2 rounded-full bg-[var(--color-accent)] animate-pulse" />
+                {timeLeft} remaining
+              </p>
+            )}
+          </div>
+          <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+            <Button
+              onClick={() => router.push(`/session/${activeSession.id}`)}
+              size="lg"
+              className="min-w-[200px]"
+              style={{
+                backgroundColor: sophiaConfig.colors.primary,
+                boxShadow: `0 8px 30px -4px ${sophiaConfig.colors.primary}44`,
+              }}
+            >
+              Resume Session
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={handleEndSession}
+              size="lg"
+              className="bg-transparent border-[var(--color-error)] text-[var(--color-error)] hover:bg-[var(--color-error)] hover:text-white"
+            >
+              End Session to Switch Mode
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">

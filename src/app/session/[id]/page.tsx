@@ -66,6 +66,7 @@ interface SessionData {
     content: string;
     createdAt: string;
   }>;
+  expiresAt?: string | null;
 }
 
 export default function SessionPage() {
@@ -142,10 +143,18 @@ export default function SessionPage() {
     );
   }
 
-  return <SessionContent session={session} sessionId={sessionId} />;
+  return <SessionContent session={session} sessionId={sessionId} setSession={setSession} />;
 }
 
-function SessionContent({ session, sessionId }: { session: SessionData; sessionId: string }) {
+function SessionContent({ 
+  session, 
+  sessionId,
+  setSession 
+}: { 
+  session: SessionData; 
+  sessionId: string;
+  setSession: React.Dispatch<React.SetStateAction<SessionData | null>>;
+}) {
   const router = useRouter();
   const workspaceRef = useRef<MobileWorkspaceHandle | null>(null);
   const testRunCountRef = useRef(0);
@@ -159,7 +168,23 @@ function SessionContent({ session, sessionId }: { session: SessionData; sessionI
   const [completing, setCompleting] = useState(false);
   const [pyodideReady, setPyodideReady] = useState(false);
   const [pyodideLoading, setPyodideLoading] = useState(false);
+  const [isExpired, setIsExpired] = useState(false);
+  const [showEndConfirmation, setShowEndConfirmation] = useState(false);
   const { run: runTests, results: testRunResults, isRunning, prewarmWorker } = useCodeExecution();
+
+  useEffect(() => {
+    if (!session.expiresAt) return;
+    const interval = setInterval(() => {
+      const remaining = new Date(session.expiresAt!).getTime() - Date.now();
+      if (remaining <= 0) {
+        setIsExpired(true);
+        clearInterval(interval);
+      } else {
+        setIsExpired(false);
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [session.expiresAt]);
 
   useEffect(() => {
     prewarmWorker();
@@ -335,7 +360,13 @@ function SessionContent({ session, sessionId }: { session: SessionData; sessionI
   );
 
   const handleEndSession = async () => {
+    if (!showEndConfirmation) {
+      setShowEndConfirmation(true);
+      return;
+    }
+    
     setCompleting(true);
+    setShowEndConfirmation(false);
     try {
       await fetch(`/api/sessions/${sessionId}`, {
         method: 'PATCH',
@@ -482,6 +513,22 @@ function SessionContent({ session, sessionId }: { session: SessionData; sessionI
     );
   }
 
+  const handleExtendSession = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/sessions/${sessionId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ extend: true }),
+      });
+      if (res.ok) {
+        const updatedSession = await res.json();
+        setSession((prev) => (prev ? { ...prev, expiresAt: updatedSession.expiresAt } : prev));
+      }
+    } catch (err) {
+      console.error('Failed to extend session:', err);
+    }
+  }, [sessionId, setSession]);
+
   return (
     <div className="flex h-[calc(100dvh-57px)] flex-col">
       <AIBanner />
@@ -490,7 +537,12 @@ function SessionContent({ session, sessionId }: { session: SessionData; sessionI
           <span className="text-sm font-medium text-[var(--color-text-primary)] truncate max-w-[140px] sm:max-w-[200px] md:max-w-none">
             {session.problem.title}
           </span>
-          <SessionTimer startTime={session.startedAt} className="ml-2 shrink-0" />
+          <SessionTimer
+            startTime={session.startedAt}
+            expiresAt={session.expiresAt}
+            onExtend={handleExtendSession}
+            className="ml-2 shrink-0"
+          />
         </div>
 
         <div className="flex items-center gap-2 md:gap-3 ml-2">
@@ -525,7 +577,41 @@ function SessionContent({ session, sessionId }: { session: SessionData; sessionI
           </Button>
         </div>
       </div>
-      <div className="flex-1 min-h-0">
+      <div className="flex-1 min-h-0 relative">
+        {showEndConfirmation && (
+          <div 
+            className="absolute inset-0 z-[110] flex items-center justify-center bg-[var(--color-bg-primary)]/60 backdrop-blur-md animate-in fade-in duration-300"
+            onClick={() => setShowEndConfirmation(false)}
+          >
+            <div 
+              className="max-w-md w-full mx-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-elevated)] p-6 shadow-2xl animate-in zoom-in-95 duration-200"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2 className="mb-2 text-xl font-bold text-[var(--color-text-primary)] leading-tight">
+                Ready to wrap up?
+              </h2>
+              <p className="mb-6 text-sm text-[var(--color-text-secondary)] leading-relaxed">
+                End your session now to let us <strong>analyze your work</strong>. We&apos;ll generate a <strong>personalized performance breakdown</strong>, which will be available in your progress dashboard shortly.
+              </p>
+              <div className="flex gap-3">
+                <Button 
+                  onClick={handleEndSession} 
+                  className="flex-1 bg-[var(--color-error)] text-white hover:bg-[var(--color-error)]/80 border-none"
+                  disabled={completing}
+                >
+                  {completing ? 'Preparing...' : 'Yes, End Session'}
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  onClick={() => setShowEndConfirmation(false)} 
+                  className="flex-1 border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-secondary)]"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
         <ErrorBoundary>
           <SessionLayout
             workspaceRef={workspaceRef}

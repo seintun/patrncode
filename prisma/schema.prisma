@@ -53,6 +53,8 @@ model Session {
   status      SessionStatus   @default(IN_PROGRESS)
   code        String?
   startedAt   DateTime        @default(now())
+  expiresAt   DateTime?
+  duration    Int?
   completedAt DateTime?
   outcome     SessionOutcome?
 

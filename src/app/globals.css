@@ -141,9 +141,21 @@ body {
     box-shadow: 0 0 0 0 transparent;
   }
   50% {
-    box-shadow: 0 0 20px -4px
-      var(--sophia-glow-color, color-mix(in srgb, var(--color-accent) 25%, transparent));
+    box-shadow: 0 0 20px -4px var(--sophia-glow-color, color-mix(in srgb, var(--color-accent) 25%, transparent));
   }
+}
+
+.animate-glow {
+  animation: glow 3s ease-in-out infinite;
+}
+
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 2s ease-in-out infinite;
 }
 
 @keyframes sophiaEntrance {

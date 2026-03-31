@@ -13,6 +13,7 @@ import { MobileWorkspace, type MobileWorkspaceHandle } from './MobileWorkspace';
 import { FloatingSophia } from '@/components/ui/FloatingSophia';
 import { useFloatingSophia } from '@/hooks/useFloatingSophia';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
+import { SessionExpiredOverlay } from './SessionExpiredOverlay';
 import type { SessionMode } from '@/lib/sophia';
 
 interface SessionLayoutProps {
@@ -26,7 +27,9 @@ interface SessionLayoutProps {
   constraints?: string[];
   workspaceRef?: React.RefObject<MobileWorkspaceHandle | null>;
   onRunTests?: () => void;
+  onReturnToPractice?: () => void;
   isRunning?: boolean;
+  isExpired?: boolean;
   elapsedSeconds?: number;
   totalSeconds?: number;
   codeIsEmpty?: boolean;
@@ -46,7 +49,9 @@ export function SessionLayout({
   constraints,
   workspaceRef,
   onRunTests,
+  onReturnToPractice,
   isRunning,
+  isExpired = false,
   elapsedSeconds = 0,
   totalSeconds = 0,
   codeIsEmpty = false,
@@ -178,6 +183,16 @@ export function SessionLayout({
           onActiveTabChange={handleActiveTabChange}
         />
       </div>
+
+      {/* Session Expired Overlay */}
+      {isExpired && (
+        <SessionExpiredOverlay
+          mode={mode}
+          problemTitle={problemTitle}
+          onViewSummary={() => {/* Handled by parent or router */}}
+          onReturnToPractice={onReturnToPractice || (() => window.location.href = '/practice')}
+        />
+      )}
 
       {/* Floating Sophia avatar — always visible */}
       <FloatingSophia
