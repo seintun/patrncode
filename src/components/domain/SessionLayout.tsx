@@ -145,14 +145,20 @@ export function SessionLayout({
           isCoachOpen ? 'md:grid-cols-[30%_40%_30%]' : 'md:grid-cols-[30%_70%]'
         }`}
       >
-        <div className="flex h-full flex-col border-r border-[var(--color-border)]">{problem}</div>
+        <div className="flex h-full flex-col min-h-0 overflow-hidden border-r border-[var(--color-border)]">
+          {problem}
+        </div>
         <div className="flex h-full flex-col overflow-hidden border-r border-[var(--color-border)]">
           <div className="min-h-0 flex-1">{editor}</div>
           <div className="h-[35%] flex flex-col border-t border-[var(--color-border)]">
             {testResults}
           </div>
         </div>
-        {isCoachOpen && <div className="flex h-full flex-col relative">{coachWithClose}</div>}
+        {isCoachOpen && (
+          <div className="relative flex h-full flex-col min-h-0 overflow-hidden">
+            {coachWithClose}
+          </div>
+        )}
       </div>
 
       {/* Mobile: bottom sheet architecture */}
