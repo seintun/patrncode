@@ -1,4 +1,4 @@
 export const MODELS = {
-  reasoning: 'x-ai/grok-4.1-fast',
-  summary: 'x-ai/grok-4.1-fast',
+  reasoning: process.env.AI_MODEL_REASONING || 'x-ai/grok-4.1-fast',
+  summary: process.env.AI_MODEL_SUMMARY || 'x-ai/grok-4.1-fast',
 } as const;
