@@ -2,6 +2,11 @@ import { render, screen } from '@testing-library/react';
 import { PatternHeatmap } from '../PatternHeatmap';
 import type { Pattern } from '@/generated/prisma/enums';
 
+const mockPush = vi.fn();
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ push: mockPush }),
+}));
+
 interface PatternStat {
   pattern: Pattern;
   total: number;
