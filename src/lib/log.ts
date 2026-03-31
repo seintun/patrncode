@@ -24,7 +24,14 @@ function log(level: LogLevel, message: string, fields: LogFields = {}): void {
     message,
     ...fields,
   };
-  console.log(JSON.stringify(entry));
+  const line = JSON.stringify(entry);
+  if (level === 'error') {
+    console.error(line);
+  } else if (level === 'warn') {
+    console.warn(line);
+  } else {
+    process.stdout.write(line + '\n');
+  }
 }
 
 export function logInfo(message: string, fields?: LogFields): void {

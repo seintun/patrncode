@@ -9,7 +9,19 @@ import { handleApiError } from '@/lib/errors/api';
 export async function GET(request: Request): Promise<Response> {
   try {
     const adminSecret = process.env.ADMIN_SECRET;
-    if (adminSecret) {
+    const isProd = process.env.NODE_ENV === 'production';
+
+    if (isProd) {
+      // In production, admin endpoint must always be protected
+      if (!adminSecret) {
+        return NextResponse.json({ error: 'Not found' }, { status: 404 });
+      }
+      const provided = request.headers.get('x-admin-secret');
+      if (provided !== adminSecret) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }
+    } else if (adminSecret) {
+      // In non-production, enforce only if configured
       const provided = request.headers.get('x-admin-secret');
       if (provided !== adminSecret) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

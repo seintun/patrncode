@@ -6,35 +6,9 @@ import { buildInterviewerPrompt } from '@/lib/ai/prompts/interviewer';
 import { handleApiError } from '@/lib/errors/api';
 import { withRateLimit } from '@/lib/ratelimit';
 import { type NextRequest } from 'next/server';
-import { Redis } from '@upstash/redis';
-import { checkTokenBudget } from '@/lib/ai/token-counter';
+import { checkTokenBudget, recordTokenUsage } from '@/lib/ai/token-counter';
+import { TOKEN_ESTIMATE_PER_MESSAGE } from '@/lib/config';
 import { logInfo, logError } from '@/lib/log';
-
-let redis: Redis | null = null;
-try {
-  redis = Redis.fromEnv();
-} catch {
-  // Redis unavailable — caching disabled
-}
-
-function getCacheKey(guestId: string, messageContent: string): string {
-  const hash = [...messageContent].reduce((h, c) => ((h << 5) - h + c.charCodeAt(0)) | 0, 0);
-  return `ai:chat:${guestId}:${Math.abs(hash)}`;
-}
-
-/**
- * Extract plain text from a UIMessage (parts[]) or legacy {content} format.
- */
-function extractText(message: Record<string, unknown>): string {
-  const parts = message.parts as Array<{ type: string; text?: string }> | undefined;
-  if (parts && parts.length > 0) {
-    return parts
-      .filter((p) => p.type === 'text' && p.text)
-      .map((p) => p.text!)
-      .join('');
-  }
-  return (message.content as string) ?? '';
-}
 
 async function handler(req: NextRequest): Promise<Response> {
   const startTime = Date.now();
@@ -90,8 +64,8 @@ async function handler(req: NextRequest): Promise<Response> {
       });
     }
 
-    // Guest ID from header or generate one
-    const guestId = req.headers.get('x-guest-id') ?? 'anonymous';
+    // Guest ID from cookie or anonymous
+    const guestId = req.cookies.get('sophocode_guest')?.value ?? 'anonymous';
 
     // Check token budget
     const budget = await checkTokenBudget(guestId);
@@ -107,24 +81,6 @@ async function handler(req: NextRequest): Promise<Response> {
           headers: { 'Content-Type': 'application/json' },
         },
       );
-    }
-
-    // Check Redis cache for identical last message (non-personalized responses only)
-    const lastMessage = messages[messages.length - 1] as Record<string, unknown> | undefined;
-    if (redis && lastMessage?.role === 'user') {
-      const lastText = extractText(lastMessage);
-      if (lastText) {
-        const cacheKey = getCacheKey(guestId, lastText);
-        const cached = await redis.get<string>(cacheKey);
-        if (cached) {
-          return new Response(cached, {
-            headers: {
-              'Content-Type': 'text/plain; charset=utf-8',
-              'X-Cache': 'HIT',
-            },
-          });
-        }
-      }
     }
 
     const promptInput = {
@@ -154,6 +110,13 @@ async function handler(req: NextRequest): Promise<Response> {
       mode: mode as string,
       statusCode: 200,
       latencyMs: Date.now() - startTime,
+    });
+
+    recordTokenUsage(guestId, TOKEN_ESTIMATE_PER_MESSAGE).catch((err) => {
+      logError('Failed to record token usage', {
+        guestId,
+        error: err instanceof Error ? err.message : String(err),
+      });
     });
 
     return result.toUIMessageStreamResponse();

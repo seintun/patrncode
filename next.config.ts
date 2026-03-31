@@ -6,7 +6,8 @@ const nextConfig: NextConfig = {
 
   // Remove console.log in production builds (keeps console.error and console.warn)
   compiler: {
-    removeConsole: process.env.NODE_ENV === 'production' ? { exclude: ['error', 'warn'] } : false,
+    removeConsole:
+      process.env.NODE_ENV === 'production' ? { exclude: ['error', 'warn', 'log', 'info'] } : false,
   },
 
   experimental: {

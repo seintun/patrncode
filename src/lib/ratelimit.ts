@@ -21,7 +21,7 @@ interface MemoryEntry {
 const memoryStore = new Map<string, MemoryEntry>();
 
 // Cleanup expired entries every 5 minutes
-setInterval(
+const cleanupInterval = setInterval(
   () => {
     const now = Date.now();
     for (const [key, entry] of memoryStore) {
@@ -32,6 +32,8 @@ setInterval(
   },
   5 * 60 * 1000,
 );
+// Allow Node to exit even if the timer is pending (prevents serverless warmup issues)
+cleanupInterval.unref();
 
 function memoryLimit(
   identifier: string,
