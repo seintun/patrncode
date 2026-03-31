@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.1
+
+### Patch Changes
+
+- 4ece3b9: feat: floating Sophia avatar with coach panel toggle
+- a71e256: fix: resolve hidden bottom tab bar on mobile browsers by switching to dvh units
+- 3a94413: Implemented comprehensive security and performance hardening, including server-side guest cookies, session ownership validation, UUID validation, AI endpoint rate limiting, and Pyodide preloading.
+
 ## 0.1.3
 
 ### Patch Changes
