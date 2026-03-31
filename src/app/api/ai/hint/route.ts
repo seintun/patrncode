@@ -8,8 +8,6 @@ import { withRateLimit } from '@/lib/ratelimit';
 import { type NextRequest } from 'next/server';
 import { hintRequestSchema, validateBody } from '@/lib/validations';
 
-const VALID_LEVELS = [1, 2, 3] as const;
-
 async function handler(req: NextRequest): Promise<Response> {
   try {
     if (!process.env.OPENROUTER_API_KEY) {
@@ -26,9 +24,8 @@ async function handler(req: NextRequest): Promise<Response> {
     }
     const { title, statement, pattern, currentCode, testResults, level, mode } = validation.data;
 
-    if (!VALID_LEVELS.includes(level)) {
-      return new Response('Invalid hint level. Must be 1, 2, or 3.', { status: 400 });
-    }
+    // Zod already validates level is 1-3; cast to literal type for buildHintPrompt
+    const hintLevel = level as 1 | 2 | 3;
 
     const { system, user } = buildHintPrompt({
       title,
@@ -36,7 +33,7 @@ async function handler(req: NextRequest): Promise<Response> {
       pattern,
       currentCode: currentCode || '',
       testResults,
-      level,
+      level: hintLevel,
       mode: isSessionMode(mode) ? mode : undefined,
     });
 

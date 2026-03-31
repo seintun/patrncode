@@ -9,8 +9,18 @@ export const chatMessageSchema = z.object({
 export const chatRequestSchema = z.object({
   messages: z.array(
     z.object({
+      id: z.string().optional(),
       role: z.enum(['user', 'assistant']),
-      content: z.string().max(4000),
+      parts: z
+        .array(
+          z.object({
+            type: z.string(),
+            text: z.string().max(4000).optional(),
+          }),
+        )
+        .optional(),
+      // Legacy format — AI SDK v6 may still send content-only messages
+      content: z.string().max(4000).optional(),
     }),
   ),
   mode: z.enum(['coach', 'interviewer']),
