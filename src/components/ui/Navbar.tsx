@@ -62,12 +62,12 @@ export default function Navbar() {
         </div>
 
         {/* Desktop sign-in */}
-        <Link
-          href="/login"
-          className="hidden text-sm font-medium text-[var(--color-text-secondary)] transition-colors hover:text-[var(--color-accent)] sm:block"
-        >
+        <span className="hidden items-center gap-1.5 text-sm font-medium text-[var(--color-text-muted)] sm:flex">
           Sign in
-        </Link>
+          <span className="rounded-full bg-[var(--color-accent)]/10 px-1.5 py-0.5 text-[10px] font-semibold text-[var(--color-accent)]">
+            soon
+          </span>
+        </span>
 
         {/* Mobile hamburger */}
         <button
@@ -135,13 +135,12 @@ export default function Navbar() {
               <div className="my-1 border-t border-[var(--color-border)]" />
             </li>
             <li>
-              <Link
-                href="/login"
-                onClick={close}
-                className="block rounded-md px-3 py-2.5 text-sm font-medium text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-elevated)] hover:text-[var(--color-accent)]"
-              >
+              <span className="flex items-center gap-1.5 rounded-md px-3 py-2.5 text-sm font-medium text-[var(--color-text-muted)]">
                 Sign in
-              </Link>
+                <span className="rounded-full bg-[var(--color-accent)]/10 px-1.5 py-0.5 text-[10px] font-semibold text-[var(--color-accent)]">
+                  soon
+                </span>
+              </span>
             </li>
           </ul>
         </div>

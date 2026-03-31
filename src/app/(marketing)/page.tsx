@@ -27,7 +27,12 @@ export default function LandingPage() {
           className="mx-auto mb-8 max-w-2xl text-lg text-[var(--color-text-secondary)]"
           style={{ animation: 'slideUp 0.4s ease-out 200ms both' }}
         >
-          Learn patterns, not just problems. Get coached through Clarify → Plan → Code → Reflect.
+          Learn patterns, not just problems.
+          <br />
+          Get coached through{' '}
+          <code className="rounded bg-[var(--color-accent)]/10 px-2 py-0.5 font-[family-name:var(--font-geist-mono)] text-sm font-semibold text-[var(--color-accent)]">
+            Clarify → Plan → Code → Reflect
+          </code>
         </p>
         <div style={{ animation: 'slideUp 0.4s ease-out 300ms both' }}>
           <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -37,7 +42,9 @@ export default function LandingPage() {
               </Button>
             </Link>
           </div>
-          <p className="mt-3 text-sm text-[var(--color-text-muted)]">No sign-up needed.</p>
+          <p className="mt-3 text-sm text-[var(--color-text-muted)]">
+            No sign-up needed — free during beta launch.
+          </p>
         </div>
 
         {/* Animated code block — decorative */}
@@ -85,6 +92,52 @@ export default function LandingPage() {
               <span className="inline-block h-4 w-2 animate-pulse bg-[var(--color-accent)]" />
             </code>
           </pre>
+        </div>
+      </section>
+
+      {/* Experience Notice */}
+      <section
+        className="mb-16 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-secondary)] p-6 text-center sm:p-8"
+        style={{ animation: 'scaleIn 0.5s ease-out 500ms both' }}
+      >
+        <div className="mx-auto mb-4 flex items-center justify-center gap-2">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 20 20"
+            fill="none"
+            className="text-[var(--color-accent)]"
+          >
+            <rect
+              x="2"
+              y="3"
+              width="16"
+              height="11"
+              rx="2"
+              stroke="currentColor"
+              strokeWidth="1.5"
+            />
+            <path
+              d="M6 17h8M10 14v3"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+            />
+          </svg>
+          <span className="text-sm font-semibold text-[var(--color-text-primary)]">
+            Best on Desktop
+          </span>
+        </div>
+        <p className="mx-auto max-w-xl text-sm leading-relaxed text-[var(--color-text-secondary)]">
+          Sophocode is designed for your keyboard — the fastest way to practice LeetCode. Works on
+          mobile, but you&apos;ll get the full experience with a desktop editor and real keyboard
+          shortcuts.{' '}
+          <span className="text-[var(--color-text-muted)]">Voice-based practice coming soon.</span>
+        </p>
+        <div className="mt-4">
+          <span className="inline-flex items-center rounded-full border border-[var(--color-accent)]/30 bg-[var(--color-accent)]/5 px-3 py-1 text-xs font-medium text-[var(--color-accent)]">
+            Free during beta
+          </span>
         </div>
       </section>
 
@@ -235,8 +288,14 @@ const features = [
   },
   {
     title: 'Process-First Practice',
-    description:
-      'Clarify → Plan → Code → Reflect — the real interview process, practiced every session.',
+    description: (
+      <>
+        <code className="rounded bg-[var(--color-accent)]/10 px-1.5 py-0.5 font-[family-name:var(--font-geist-mono)] text-xs font-semibold text-[var(--color-accent)]">
+          Clarify → Plan → Code → Reflect
+        </code>{' '}
+        — the real interview process, practiced every session.
+      </>
+    ),
     icon: (
       <svg
         width="32"
