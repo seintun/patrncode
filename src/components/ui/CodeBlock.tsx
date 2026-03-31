@@ -79,7 +79,9 @@ export const CodeBlock = memo(function CodeBlock({
   return (
     <div className="sophia-pre-wrapper" style={accentStyle}>
       <div className="sophia-pre-header">
-        {lang && <span className="sophia-lang-label">{lang}</span>}
+        <span className="sophia-lang-label">
+          {lang || (codeText.includes('#') || codeText.includes('//') ? 'Pseudocode' : 'Logic')}
+        </span>
         <CopyButton code={codeText} />
       </div>
       <pre className="sophia-pre">

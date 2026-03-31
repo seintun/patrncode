@@ -32,10 +32,16 @@ export const MarkdownRenderer = memo(function MarkdownRenderer({
   const components = useMemo<Components>(
     () => ({
       code({ children, className: codeClass }) {
-        const isBlock = typeof codeClass === 'string' && codeClass.startsWith('language-');
+        const codeText = extractChildText(children);
+        const hasNewlines = codeText.includes('\n');
+        const isBlock =
+          (typeof codeClass === 'string' && codeClass.startsWith('language-')) || hasNewlines;
+
         if (isBlock) {
-          const lang = codeClass.replace('language-', '').split(' ')[0] || undefined;
-          const codeText = extractChildText(children);
+          const lang =
+            typeof codeClass === 'string'
+              ? codeClass.replace('language-', '').split(' ')[0]
+              : undefined;
           return (
             <CodeBlock lang={lang} code={codeText} accentColor={accentColor}>
               {children}
