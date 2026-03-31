@@ -3,9 +3,10 @@
 import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { SessionLayout } from '@/components/domain/SessionLayout';
 import { ProblemPanel } from '@/components/domain/ProblemPanel';
-import { CodeEditor } from '@/components/domain/CodeEditor';
+
 import { TestResults } from '@/components/domain/TestResults';
 import { CoachingPanel } from '@/components/domain/CoachingPanel';
 import { SessionTimer } from '@/components/domain/SessionTimer';
@@ -18,6 +19,11 @@ import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { Button } from '@/components/ui/Button';
 import type { SessionMode, MessageRole } from '@/generated/prisma/enums';
 import type { MobileWorkspaceHandle } from '@/components/domain/MobileWorkspace';
+
+const CodeEditor = dynamic(
+  () => import('@/components/domain/CodeEditor').then((mod) => ({ default: mod.CodeEditor })),
+  { ssr: false, loading: () => <Skeleton className="h-full w-full" /> },
+);
 
 interface TestCase {
   id: string;

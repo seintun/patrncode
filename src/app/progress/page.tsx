@@ -5,10 +5,19 @@ import Link from 'next/link';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
+import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
-import { PatternHeatmap } from '@/components/domain/PatternHeatmap';
 import type { Pattern, MasteryState } from '@/generated/prisma/enums';
+
+const PatternHeatmap = dynamic(
+  () =>
+    import('@/components/domain/PatternHeatmap').then((mod) => ({ default: mod.PatternHeatmap })),
+  {
+    ssr: false,
+    loading: () => <div className="h-64 animate-pulse rounded-lg bg-[var(--color-bg-elevated)]" />,
+  },
+);
 
 interface ProblemHistoryItem {
   mastery: MasteryState;
