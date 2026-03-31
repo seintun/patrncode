@@ -1,6 +1,8 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+
+const HINT_COOLDOWN_MS = 3 * 60 * 1000; // 3 minutes
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { StreamedMarkdownMessage } from '@/components/ui/StreamedMarkdownMessage';
@@ -47,8 +49,10 @@ export function CoachingPanel({
 }: CoachingPanelProps) {
   const [input, setInput] = useState('');
   const [avatarError, setAvatarError] = useState(false);
+  const [cooldownRemaining, setCooldownRemaining] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const cooldownEndRef = useRef<number>(0);
 
   const config = getSophiaConfig(mode);
   const canChat = mode === 'COACH_ME' || mode === 'MOCK_INTERVIEW';
@@ -74,6 +78,23 @@ export function CoachingPanel({
 
   const nextHintLevel = Math.min(hintLevel + 1, 3);
   const canGetHint = hintLevel < 3 && mode !== 'MOCK_INTERVIEW';
+  const isHintOnCooldown = cooldownRemaining > 0;
+
+  useEffect(() => {
+    if (cooldownRemaining <= 0) return;
+    const id = setInterval(() => {
+      const remaining = Math.max(0, Math.ceil((cooldownEndRef.current - Date.now()) / 1000));
+      setCooldownRemaining(remaining);
+      if (remaining <= 0) clearInterval(id);
+    }, 1000);
+    return () => clearInterval(id);
+  }, [cooldownRemaining]);
+
+  const handleHintRequest = useCallback(() => {
+    onHintRequest(nextHintLevel);
+    cooldownEndRef.current = Date.now() + HINT_COOLDOWN_MS;
+    setCooldownRemaining(Math.ceil(HINT_COOLDOWN_MS / 1000));
+  }, [onHintRequest, nextHintLevel]);
 
   const statusText = hintStream.isLoading
     ? config.vocabulary.generatingHint
@@ -200,8 +221,8 @@ export function CoachingPanel({
               {canGetHint && (
                 <button
                   type="button"
-                  onClick={() => onHintRequest(nextHintLevel)}
-                  disabled={hintStream.isLoading || isLoading}
+                  onClick={handleHintRequest}
+                  disabled={hintStream.isLoading || isLoading || isHintOnCooldown}
                   aria-label={`Ask Sophia for a hint level ${nextHintLevel}`}
                   className="hint-cta-btn mt-2"
                 >
@@ -218,7 +239,9 @@ export function CoachingPanel({
                   >
                     <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
                   </svg>
-                  Get Hint (Level {nextHintLevel})
+                  {isHintOnCooldown
+                    ? `Next hint in ${Math.floor(cooldownRemaining / 60)}:${String(cooldownRemaining % 60).padStart(2, '0')}`
+                    : `Get Hint (Level ${nextHintLevel})`}
                 </button>
               )}
             </div>
@@ -312,7 +335,8 @@ export function CoachingPanel({
                             >
                               <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
                             </svg>
-                            Hint (Level {(msg as any).annotations.find((a: any) => a.type === 'hint').level})
+                            Hint (Level{' '}
+                            {(msg as any).annotations.find((a: any) => a.type === 'hint').level})
                           </div>
                         )}
                         <StreamedMarkdownMessage
@@ -404,8 +428,8 @@ export function CoachingPanel({
               {canGetHint && !hintStream.isLoading && (
                 <button
                   type="button"
-                  onClick={() => onHintRequest(nextHintLevel)}
-                  disabled={hintStream.isLoading || isLoading}
+                  onClick={handleHintRequest}
+                  disabled={hintStream.isLoading || isLoading || isHintOnCooldown}
                   aria-label={`Ask Sophia for a hint level ${nextHintLevel}`}
                   className="hint-cta-btn"
                 >
@@ -422,7 +446,9 @@ export function CoachingPanel({
                   >
                     <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
                   </svg>
-                  Request Level {nextHintLevel} Hint
+                  {isHintOnCooldown
+                    ? `Next hint in ${Math.floor(cooldownRemaining / 60)}:${String(cooldownRemaining % 60).padStart(2, '0')}`
+                    : `Request Level ${nextHintLevel} Hint`}
                 </button>
               )}
               {showFailureButton && onAskAboutFailure && (
