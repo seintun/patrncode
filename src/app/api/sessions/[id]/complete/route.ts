@@ -167,14 +167,14 @@ async function handler(
           currentStreak: streakResult.current,
           longestStreak: streakResult.longest,
           lastActivityAt: streakResult.lastActivityAt,
-          streakLastWonAt: streakResult.wonToday ? new Date() : null,
+          streakLastWonAt: new Date(),
           coins: isDailyChallenge ? coinsEarned + 10 : coinsEarned,
         },
         update: {
           currentStreak: streakResult.current,
           longestStreak: streakResult.longest,
           lastActivityAt: streakResult.lastActivityAt,
-          streakLastWonAt: streakResult.wonToday ? new Date() : null,
+          streakLastWonAt: streakResult.wonToday ? undefined : new Date(),
           coins: { increment: isDailyChallenge ? coinsEarned + 10 : coinsEarned },
         },
       });
