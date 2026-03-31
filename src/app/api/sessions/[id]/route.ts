@@ -100,8 +100,9 @@ async function patchHandler(
       }
 
       const currentExpiresAt = currentSession.expiresAt || new Date();
-      data.expiresAt = new Date(currentExpiresAt.getTime() + 15 * 60 * 1000);
-      data.duration = { increment: 15 }; // Assuming we want to track total duration
+      const baseTime = Math.max(Date.now(), currentExpiresAt.getTime());
+      data.expiresAt = new Date(baseTime + 15 * 60 * 1000);
+      data.duration = { increment: 15 };
     }
 
     const session = await prisma.session.update({

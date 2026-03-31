@@ -34,6 +34,7 @@ interface SessionLayoutProps {
   totalSeconds?: number;
   codeIsEmpty?: boolean;
   onCoachToggle?: (isOpen: boolean) => void;
+  onViewSummary?: () => void;
   codeLength?: number;
   testRunCount?: number;
 }
@@ -50,6 +51,7 @@ export function SessionLayout({
   workspaceRef,
   onRunTests,
   onReturnToPractice,
+  onViewSummary,
   isRunning,
   isExpired = false,
   elapsedSeconds = 0,
@@ -183,16 +185,6 @@ export function SessionLayout({
           onActiveTabChange={handleActiveTabChange}
         />
       </div>
-
-      {/* Session Expired Overlay */}
-      {isExpired && (
-        <SessionExpiredOverlay
-          mode={mode}
-          problemTitle={problemTitle}
-          onViewSummary={() => {/* Handled by parent or router */}}
-          onReturnToPractice={onReturnToPractice || (() => window.location.href = '/practice')}
-        />
-      )}
 
       {/* Floating Sophia avatar — always visible */}
       <FloatingSophia

@@ -80,6 +80,10 @@ async function getHandler(
       return NextResponse.json({ error: 'Missing problemId parameter' }, { status: 400 });
     }
 
+    if (!validateId(problemId)) {
+      return NextResponse.json({ error: 'Invalid problemId format' }, { status: 400 });
+    }
+
     const session = await prisma.session.findFirst({
       where: {
         guestId,
