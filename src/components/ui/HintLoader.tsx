@@ -3,10 +3,10 @@
 import { useEffect, useState } from 'react';
 
 const HINT_LOADING_MESSAGES = [
-  'Analyzing your code...',
-  'Finding the key insight...',
-  'Crafting a helpful nudge...',
-  'Almost there...',
+  'Analyzing your code…',
+  'Finding the key insight…',
+  'Crafting a helpful nudge…',
+  'Almost there…',
 ];
 
 interface HintLoaderProps {
@@ -20,13 +20,13 @@ export function HintLoader({ level, className = '' }: HintLoaderProps) {
   useEffect(() => {
     const id = setInterval(() => {
       setMsgIndex((i) => (i + 1) % HINT_LOADING_MESSAGES.length);
-    }, 1800);
+    }, 2000);
     return () => clearInterval(id);
   }, []);
 
   return (
     <div
-      className={`explanation-loader ${className}`}
+      className={`explanation-loader hint-loader ${className}`}
       aria-live="polite"
       aria-label="Generating hint"
     >
@@ -55,17 +55,30 @@ export function HintLoader({ level, className = '' }: HintLoaderProps) {
 
       <div className="explanation-loader-skeleton">
         <div className="explanation-loader-gap" />
-        {[70, 90, 60].map((w, i) => (
+        {[85, 92, 60].map((w, i) => (
           <div
             key={i}
             className="explanation-loader-line"
-            style={{ width: `${w}%`, animationDelay: `${i * 0.12}s` }}
+            style={{ width: `${w}%`, animationDelay: `${i * 0.15}s` }}
           />
         ))}
       </div>
 
-      <div className="mt-2 text-xs text-[var(--color-text-muted)]" style={{ fontSize: '0.7rem' }}>
-        Hint Level {level} • Uses AI • Typically 5-10s
+      <div className="explanation-cta-hint mt-3 opacity-80" style={{ fontSize: '0.65rem' }}>
+        <svg
+          width="10"
+          height="10"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+        </svg>
+        Hint Level {level} · Uses AI · 5–10s
       </div>
     </div>
   );

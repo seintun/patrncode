@@ -627,6 +627,121 @@ body {
     cursor: not-allowed;
   }
 
+  /* ── Hint CTA card (Coaching variant) ─────────────────────────────────────── */
+
+  .hint-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.85rem;
+    padding: 2.25rem 1.5rem;
+    border-radius: 12px;
+    border: 1px dashed rgba(45, 212, 191, 0.25);
+    background: radial-gradient(ellipse at top, rgba(45, 212, 191, 0.06) 0%, transparent 70%);
+    margin: 1rem 0;
+  }
+
+  .hint-cta-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background-color: rgba(45, 212, 191, 0.12);
+    color: #2dd4bf;
+    border: 1px solid rgba(45, 212, 191, 0.2);
+  }
+
+  .hint-cta-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.5rem;
+    border-radius: 8px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #fff;
+    background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+    border: none;
+    cursor: pointer;
+    transition:
+      opacity 0.15s,
+      transform 0.1s;
+    box-shadow: 0 4px 14px rgba(20, 184, 166, 0.35);
+  }
+  .hint-cta-btn:hover:not(:disabled) {
+    opacity: 0.95;
+    transform: translateY(-1px);
+  }
+  .hint-cta-btn:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+  .hint-cta-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  /* ── Error / Failure CTA ──────────────────────────────────────────────────── */
+
+  .error-cta-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.25rem;
+    border-radius: 8px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #fff;
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    border: none;
+    cursor: pointer;
+    transition:
+      opacity 0.15s,
+      transform 0.1s;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.35);
+  }
+  .error-cta-btn:hover:not(:disabled) {
+    opacity: 0.9;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(220, 38, 38, 0.45);
+  }
+  .error-cta-btn:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+  .error-cta-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  /* ── Hint Badge ───────────────────────────────────────────────────────────── */
+
+  .sophia-hint-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.15rem 0.65rem;
+    border-radius: 100px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    background-color: rgba(45, 212, 191, 0.12);
+    color: #2dd4bf;
+    border: 1px solid rgba(45, 212, 191, 0.25);
+    margin-bottom: 0.5rem;
+  }
+
+  .sophia-bubble-assistant {
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.3);
+  }
+
   /* ── Explanation loading state ────────────────────────────────────────────── */
 
   .explanation-loader {

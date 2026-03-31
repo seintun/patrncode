@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/Button';
 import { StreamedMarkdownMessage } from '@/components/ui/StreamedMarkdownMessage';
 import { HintLoader } from '@/components/ui/HintLoader';
 import { getSophiaConfig, SOPHIA_AVATAR } from '@/lib/sophia';
@@ -153,21 +152,79 @@ export function CoachingPanel({
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4" aria-live="polite" aria-atomic="false">
-        {messages.length === 0 && !hintStream.text ? (
-          <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
-            <p className="text-sm text-[var(--color-text-muted)]">{config.emptyStateText}</p>
-            {canGetHint && (
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => onHintRequest(nextHintLevel)}
-                disabled={!canGetHint || hintStream.isLoading}
-                aria-label={`Ask Sophia for a hint level ${nextHintLevel}`}
-              >
-                {hintStream.isLoading
-                  ? 'Getting hint...'
-                  : `Ask Sophia for a hint (Level ${nextHintLevel})`}
-              </Button>
+        {messages.length === 0 && !hintStream.text && !hintStream.isLoading ? (
+          <div className="flex h-full flex-col items-center justify-start py-8">
+            <div className="hint-cta">
+              <div className="hint-cta-icon" aria-hidden="true">
+                <svg
+                  width="28"
+                  height="28"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M12 2a10 10 0 1 0 10 10" />
+                  <path d="M12 6v6l4 2" />
+                </svg>
+              </div>
+
+              <h3 className="explanation-cta-title">Need a nudge?</h3>
+              <p className="explanation-cta-desc">
+                Sophia can analyze your code and provide a progressive hint to help you get unstuck
+                without giving away the full solution.
+              </p>
+
+              <div className="explanation-cta-hint">
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                </svg>
+                Uses AI · Progressive Levels · Typically 5-10s
+              </div>
+
+              {canGetHint && (
+                <button
+                  type="button"
+                  onClick={() => onHintRequest(nextHintLevel)}
+                  disabled={hintStream.isLoading || isLoading}
+                  aria-label={`Ask Sophia for a hint level ${nextHintLevel}`}
+                  className="hint-cta-btn mt-2"
+                >
+                  <svg
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                  </svg>
+                  Get Hint (Level {nextHintLevel})
+                </button>
+              )}
+            </div>
+            {!canGetHint && (
+              <p className="mt-4 text-xs text-[var(--color-text-muted)] italic">
+                {mode === 'MOCK_INTERVIEW'
+                  ? 'Hints are disabled in Mock Interview mode.'
+                  : 'All hints for this problem have been unlocked.'}
+              </p>
             )}
           </div>
         ) : (
@@ -181,8 +238,11 @@ export function CoachingPanel({
               return (
                 <div
                   key={msg.id}
-                  style={{ animation: 'slideUp 0.2s ease-out' }}
-                  className={cn('flex gap-2', isAssistant ? 'justify-start' : 'justify-end')}
+                  style={{ animation: 'slideUp 0.15s ease-out' }}
+                  className={cn(
+                    'flex gap-3',
+                    isAssistant ? 'justify-start pl-1' : 'justify-end pr-1',
+                  )}
                 >
                   {isAssistant && (
                     <div className="shrink-0">
@@ -209,7 +269,10 @@ export function CoachingPanel({
                     </div>
                   )}
                   <div
-                    className="max-w-[80%] rounded-lg px-3 py-2 text-sm"
+                    className={cn(
+                      'max-w-[85%] rounded-lg px-3 py-2 text-sm',
+                      isAssistant && 'sophia-bubble-assistant',
+                    )}
                     style={
                       isAssistant
                         ? { backgroundColor: config.colors.bg, color: 'var(--color-text-primary)' }
@@ -243,7 +306,7 @@ export function CoachingPanel({
 
             {/* Hint stream - show if loading OR has text */}
             {(hintStream.text || hintStream.isLoading) && (
-              <div className="flex gap-2">
+              <div className="flex gap-3 pl-1">
                 {!avatarError ? (
                   <div className="relative h-7 w-7 shrink-0 overflow-hidden rounded-full">
                     <Image
@@ -265,10 +328,25 @@ export function CoachingPanel({
                   </div>
                 )}
                 <div
-                  className="rounded-lg px-3 py-2 text-sm text-[var(--color-text-primary)]"
+                  className={cn(
+                    'rounded-lg px-3 py-2 text-sm text-[var(--color-text-primary)] sophia-bubble-assistant',
+                  )}
                   style={{ backgroundColor: config.colors.bg }}
                 >
-                  <div className="mb-1 text-xs font-medium" style={{ color: config.colors.text }}>
+                  <div className="sophia-hint-badge">
+                    <svg
+                      width="10"
+                      height="10"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                    </svg>
                     Hint (Level {hintLevel})
                   </div>
                   {hintStream.text ? (
@@ -296,30 +374,56 @@ export function CoachingPanel({
               </div>
             )}
 
-            {/* Action buttons */}
-            <div className="flex flex-wrap justify-center gap-2">
-              {canGetHint && (
-                <Button
-                  variant="secondary"
-                  size="sm"
+            <div className="flex flex-wrap justify-center gap-2 pt-2">
+              {canGetHint && !hintStream.isLoading && (
+                <button
+                  type="button"
                   onClick={() => onHintRequest(nextHintLevel)}
                   disabled={hintStream.isLoading || isLoading}
                   aria-label={`Ask Sophia for a hint level ${nextHintLevel}`}
+                  className="hint-cta-btn"
                 >
-                  Ask Sophia for a hint (Level {nextHintLevel})
-                </Button>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                  </svg>
+                  Request Level {nextHintLevel} Hint
+                </button>
               )}
               {showFailureButton && onAskAboutFailure && (
-                <Button
-                  variant="secondary"
-                  size="sm"
+                <button
+                  type="button"
                   onClick={onAskAboutFailure}
                   disabled={isLoading}
                   aria-label="Ask Sophia why tests failed"
-                  className="border-[var(--color-error)]/30 text-[var(--color-error)] hover:bg-[var(--color-error)]/10"
+                  className="error-cta-btn"
                 >
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="8" x2="12" y2="12" />
+                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                  </svg>
                   Why did this fail?
-                </Button>
+                </button>
               )}
             </div>
 
