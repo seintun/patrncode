@@ -23,6 +23,9 @@ interface CoachingPanelProps {
 }
 
 function extractTextFromMessage(msg: UIMessage): string {
+  // Try direct content first (standard for simple user messages)
+  if ((msg as any).content) return (msg as any).content;
+  // Fallback to parts (standard for complex or streaming messages)
   if (!msg.parts) return '';
   return msg.parts
     .filter((p) => p.type === 'text')
@@ -230,10 +233,13 @@ export function CoachingPanel({
         ) : (
           <div className="space-y-3">
             {/* Chat messages */}
-            {messages.map((msg) => {
+            {messages.map((msg, index) => {
               const text = extractTextFromMessage(msg);
-              if (!text) return null;
               const isAssistant = msg.role === 'assistant';
+              const isStreamingActive = isAssistant && isLoading && index === messages.length - 1;
+
+              // Don't skip assistant messages even if they're empty (it means they're reasoning/starting)
+              if (!text && !isAssistant) return null;
 
               return (
                 <div
@@ -310,9 +316,9 @@ export function CoachingPanel({
                           </div>
                         )}
                         <StreamedMarkdownMessage
-                          content={text}
+                          content={text || (isStreamingActive ? '...' : '')}
                           accentColor={config.colors.primary}
-                          isStreaming={false}
+                          isStreaming={isStreamingActive}
                           cursorColor={config.colors.primary}
                         />
                       </>
