@@ -60,18 +60,21 @@ export async function proxy(request: NextRequest) {
 
   const cspValue = [
     "default-src 'self'",
-    `script-src 'self' 'nonce-${nonce}' 'unsafe-eval' https://vercel.live`,
+    `script-src 'self' 'nonce-${nonce}' 'unsafe-eval' https://vercel.live https://va.vercel-scripts.com`,
     `style-src 'self' 'unsafe-inline'`,
     "img-src 'self' data: blob: https:",
-    `connect-src 'self' https://api.openrouter.ai https://*.upstash.io https://openrouter.ai ${process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''}`,
+    `connect-src 'self' https://api.openrouter.ai https://*.upstash.io https://openrouter.ai https://va.vercel-scripts.com ${process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''}`,
     "worker-src 'self' blob:",
     "font-src 'self' data:",
+    "frame-src 'self' https://vercel.live",
     "frame-ancestors 'none'",
     "base-uri 'self'",
     "form-action 'self'",
   ].join('; ');
 
+  // Set CSP on BOTH response (browser enforcement) and request (Next.js nonce extraction during SSR)
   response.headers.set(cspHeaderName, cspValue);
+  request.headers.set(cspHeaderName, cspValue);
 
   return response;
 }
