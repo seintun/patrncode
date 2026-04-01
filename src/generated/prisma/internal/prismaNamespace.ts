@@ -392,6 +392,8 @@ export const ModelName = {
   SessionFeedback: 'SessionFeedback',
   SessionMessage: 'SessionMessage',
   UserProblemState: 'UserProblemState',
+  PatternWeakness: 'PatternWeakness',
+  CustomProblemRequest: 'CustomProblemRequest',
   UserProfile: 'UserProfile'
 } as const
 
@@ -408,7 +410,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "problem" | "testCase" | "session" | "testRun" | "hint" | "sessionFeedback" | "sessionMessage" | "userProblemState" | "userProfile"
+    modelProps: "problem" | "testCase" | "session" | "testRun" | "hint" | "sessionFeedback" | "sessionMessage" | "userProblemState" | "patternWeakness" | "customProblemRequest" | "userProfile"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1004,6 +1006,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    PatternWeakness: {
+      payload: Prisma.$PatternWeaknessPayload<ExtArgs>
+      fields: Prisma.PatternWeaknessFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PatternWeaknessFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatternWeaknessPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PatternWeaknessFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatternWeaknessPayload>
+        }
+        findFirst: {
+          args: Prisma.PatternWeaknessFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatternWeaknessPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PatternWeaknessFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatternWeaknessPayload>
+        }
+        findMany: {
+          args: Prisma.PatternWeaknessFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatternWeaknessPayload>[]
+        }
+        create: {
+          args: Prisma.PatternWeaknessCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatternWeaknessPayload>
+        }
+        createMany: {
+          args: Prisma.PatternWeaknessCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PatternWeaknessCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatternWeaknessPayload>[]
+        }
+        delete: {
+          args: Prisma.PatternWeaknessDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatternWeaknessPayload>
+        }
+        update: {
+          args: Prisma.PatternWeaknessUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatternWeaknessPayload>
+        }
+        deleteMany: {
+          args: Prisma.PatternWeaknessDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PatternWeaknessUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PatternWeaknessUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatternWeaknessPayload>[]
+        }
+        upsert: {
+          args: Prisma.PatternWeaknessUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatternWeaknessPayload>
+        }
+        aggregate: {
+          args: Prisma.PatternWeaknessAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePatternWeakness>
+        }
+        groupBy: {
+          args: Prisma.PatternWeaknessGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PatternWeaknessGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PatternWeaknessCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PatternWeaknessCountAggregateOutputType> | number
+        }
+      }
+    }
+    CustomProblemRequest: {
+      payload: Prisma.$CustomProblemRequestPayload<ExtArgs>
+      fields: Prisma.CustomProblemRequestFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CustomProblemRequestFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CustomProblemRequestPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CustomProblemRequestFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CustomProblemRequestPayload>
+        }
+        findFirst: {
+          args: Prisma.CustomProblemRequestFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CustomProblemRequestPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CustomProblemRequestFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CustomProblemRequestPayload>
+        }
+        findMany: {
+          args: Prisma.CustomProblemRequestFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CustomProblemRequestPayload>[]
+        }
+        create: {
+          args: Prisma.CustomProblemRequestCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CustomProblemRequestPayload>
+        }
+        createMany: {
+          args: Prisma.CustomProblemRequestCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.CustomProblemRequestCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CustomProblemRequestPayload>[]
+        }
+        delete: {
+          args: Prisma.CustomProblemRequestDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CustomProblemRequestPayload>
+        }
+        update: {
+          args: Prisma.CustomProblemRequestUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CustomProblemRequestPayload>
+        }
+        deleteMany: {
+          args: Prisma.CustomProblemRequestDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CustomProblemRequestUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CustomProblemRequestUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CustomProblemRequestPayload>[]
+        }
+        upsert: {
+          args: Prisma.CustomProblemRequestUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CustomProblemRequestPayload>
+        }
+        aggregate: {
+          args: Prisma.CustomProblemRequestAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCustomProblemRequest>
+        }
+        groupBy: {
+          args: Prisma.CustomProblemRequestGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CustomProblemRequestGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CustomProblemRequestCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CustomProblemRequestCountAggregateOutputType> | number
+        }
+      }
+    }
     UserProfile: {
       payload: Prisma.$UserProfilePayload<ExtArgs>
       fields: Prisma.UserProfileFieldRefs
@@ -1235,6 +1385,39 @@ export const UserProblemStateScalarFieldEnum = {
 } as const
 
 export type UserProblemStateScalarFieldEnum = (typeof UserProblemStateScalarFieldEnum)[keyof typeof UserProblemStateScalarFieldEnum]
+
+
+export const PatternWeaknessScalarFieldEnum = {
+  id: 'id',
+  guestId: 'guestId',
+  pattern: 'pattern',
+  failedCount: 'failedCount',
+  successCount: 'successCount',
+  lastPracticedAt: 'lastPracticedAt',
+  confidenceScore: 'confidenceScore',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PatternWeaknessScalarFieldEnum = (typeof PatternWeaknessScalarFieldEnum)[keyof typeof PatternWeaknessScalarFieldEnum]
+
+
+export const CustomProblemRequestScalarFieldEnum = {
+  id: 'id',
+  guestId: 'guestId',
+  pattern: 'pattern',
+  difficulty: 'difficulty',
+  status: 'status',
+  title: 'title',
+  statement: 'statement',
+  starterCode: 'starterCode',
+  testCases: 'testCases',
+  errorMessage: 'errorMessage',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CustomProblemRequestScalarFieldEnum = (typeof CustomProblemRequestScalarFieldEnum)[keyof typeof CustomProblemRequestScalarFieldEnum]
 
 
 export const UserProfileScalarFieldEnum = {
@@ -1489,6 +1672,34 @@ export type ListEnumMasteryStateFieldRefInput<$PrismaModel> = FieldRefInputType<
 
 
 /**
+ * Reference to a field of type 'Float'
+ */
+export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+/**
+ * Reference to a field of type 'Float[]'
+ */
+export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
+    
+
+
+/**
+ * Reference to a field of type 'RequestStatus'
+ */
+export type EnumRequestStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RequestStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'RequestStatus[]'
+ */
+export type ListEnumRequestStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RequestStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'SubscriptionTier'
  */
 export type EnumSubscriptionTierFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SubscriptionTier'>
@@ -1541,20 +1752,6 @@ export type EnumKeybindingSchemeFieldRefInput<$PrismaModel> = FieldRefInputType<
  * Reference to a field of type 'KeybindingScheme[]'
  */
 export type ListEnumKeybindingSchemeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'KeybindingScheme[]'>
-    
-
-
-/**
- * Reference to a field of type 'Float'
- */
-export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
-    
-
-
-/**
- * Reference to a field of type 'Float[]'
- */
-export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
 
 /**
@@ -1660,6 +1857,8 @@ export type GlobalOmitConfig = {
   sessionFeedback?: Prisma.SessionFeedbackOmit
   sessionMessage?: Prisma.SessionMessageOmit
   userProblemState?: Prisma.UserProblemStateOmit
+  patternWeakness?: Prisma.PatternWeaknessOmit
+  customProblemRequest?: Prisma.CustomProblemRequestOmit
   userProfile?: Prisma.UserProfileOmit
 }
 

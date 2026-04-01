@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { useRoadmapCompletion } from '@/hooks/useRoadmapCompletion';
+import { RecommendedProblem } from '@/components/domain/RecommendedProblem';
 
 interface RoadmapProblem {
   id: string;
@@ -102,6 +103,8 @@ export default function RoadmapPage() {
           <RoadmapSkeleton />
         ) : (
           <div className="space-y-6">
+            <RecommendedProblem />
+
             <div className="flex items-center justify-between">
               <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">SophoCode 75</h1>
               <div className="flex items-center gap-3">

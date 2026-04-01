@@ -18,6 +18,9 @@ import { useAIChat } from '@/hooks/useAIChat';
 import { useCodeExecution } from '@/hooks/useCodeExecution';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { Button } from '@/components/ui/Button';
+import { CustomProblemModal } from '@/components/domain/CustomProblemModal';
+import { SessionReportModal } from '@/components/domain/SessionReportModal';
+import { useUserProfile } from '@/hooks/useUserProfile';
 import type { SessionMode, MessageRole } from '@/generated/prisma/enums';
 import type { MobileWorkspaceHandle } from '@/components/domain/MobileWorkspace';
 
@@ -181,6 +184,9 @@ function SessionContent({
   const [autoEndCountdown, setAutoEndCountdown] = useState(60);
   const [showEndConfirmation, setShowEndConfirmation] = useState(false);
   const [leaveDestination, setLeaveDestination] = useState<string | null>(null);
+  const [showCustomProblemModal, setShowCustomProblemModal] = useState(false);
+  const [showSessionReportModal, setShowSessionReportModal] = useState(false);
+  const profile = useUserProfile();
   const { run: runTests, results: testRunResults, isRunning, prewarmWorker } = useCodeExecution();
   const isLeaveGuardActive = session.status === 'IN_PROGRESS' && !completing && !isExpired;
 
@@ -626,6 +632,9 @@ function SessionContent({
         hintLevel={hintLevel}
         onAskAboutFailure={hasFailures ? () => handleAskAboutFailure('') : undefined}
         showFailureButton={hasFailures}
+        onOpenCustomProblem={() => setShowCustomProblemModal(true)}
+        onViewSessionReport={() => setShowSessionReportModal(true)}
+        showSessionReportButton={session.status === 'COMPLETED'}
       />
     ),
     [
@@ -850,6 +859,16 @@ function SessionContent({
             testRunCount={testRunCountRef.current}
           />
         </ErrorBoundary>
+        <CustomProblemModal
+          open={showCustomProblemModal}
+          onClose={() => setShowCustomProblemModal(false)}
+          isPremium={profile.tier === 'PREMIUM'}
+        />
+        <SessionReportModal
+          open={showSessionReportModal}
+          onClose={() => setShowSessionReportModal(false)}
+          sessionId={sessionId}
+        />
       </div>
     </div>
   );

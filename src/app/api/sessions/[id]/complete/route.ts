@@ -7,9 +7,11 @@ import { MODELS } from '@/lib/ai/models';
 import { buildSummaryPrompt } from '@/lib/ai/prompts/summary';
 import { computeNextMastery, computeNextReviewDate } from '@/lib/mastery';
 import { calculateStreak } from '@/lib/streak';
-import type { MasteryState } from '@/generated/prisma/enums';
+import type { MasteryState, Pattern } from '@/generated/prisma/enums';
 import { handleApiError, withAuthAndId } from '@/lib/errors/api';
 import { requireOwnership } from '@/lib/auth/session-auth';
+import { updatePatternWeakness } from '@/lib/pattern-weakness';
+import { invalidateRecommendation } from '@/lib/recommendation-cache';
 
 async function handler(
   _request: NextRequest,
@@ -198,7 +200,7 @@ async function generateBackgroundFeedback({
   sessionId: string;
   guestId: string;
   problemId: string;
-  problem: { title: string; pattern: string; dailyChallengeDate: Date | null };
+  problem: { title: string; pattern: Pattern; dailyChallengeDate: Date | null };
   finalCode: string;
   passed: number;
   total: number;
@@ -327,6 +329,21 @@ async function generateBackgroundFeedback({
 
   // Wait for both operations to complete
   await Promise.all([problemStatePromise, profilePromise]);
+
+  const weaknessOutcome = solved
+    ? hintsUsed === 0
+      ? 'SOLVED_ZERO_HINTS'
+      : 'SOLVED_WITH_HINTS'
+    : 'ATTEMPTED';
+
+  await Promise.all([
+    updatePatternWeakness({
+      guestId,
+      pattern: problem.pattern,
+      outcome: weaknessOutcome,
+    }),
+    invalidateRecommendation(guestId),
+  ]);
 
   if (aiFailed) {
     console.warn(

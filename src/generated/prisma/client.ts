@@ -82,6 +82,16 @@ export type SessionMessage = Prisma.SessionMessageModel
  */
 export type UserProblemState = Prisma.UserProblemStateModel
 /**
+ * Model PatternWeakness
+ * 
+ */
+export type PatternWeakness = Prisma.PatternWeaknessModel
+/**
+ * Model CustomProblemRequest
+ * 
+ */
+export type CustomProblemRequest = Prisma.CustomProblemRequestModel
+/**
  * Model UserProfile
  * 
  */

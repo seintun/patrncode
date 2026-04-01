@@ -139,6 +139,40 @@ model UserProblemState {
   @@index([lastAttemptedAt, nextReviewAt])
 }
 
+model PatternWeakness {
+  id              String   @id @default(cuid())
+  guestId         String
+  pattern         Pattern
+  failedCount     Int      @default(0)
+  successCount    Int      @default(0)
+  lastPracticedAt DateTime?
+  confidenceScore Float    @default(0.5)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([guestId, pattern])
+  @@index([guestId])
+  @@index([confidenceScore])
+}
+
+model CustomProblemRequest {
+  id           String        @id @default(cuid())
+  guestId      String
+  pattern      Pattern
+  difficulty   Difficulty?
+  status       RequestStatus @default(PENDING)
+  title        String?
+  statement    String?
+  starterCode  String?
+  testCases    Json?
+  errorMessage String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([guestId, createdAt])
+  @@index([status])
+}
+
 model UserProfile {
   id               String           @id @default(cuid())
   guestId          String           @unique
@@ -242,4 +276,10 @@ enum KeybindingScheme {
   VIM
   EMACS
   NONE
+}
+
+enum RequestStatus {
+  PENDING
+  FULFILLED
+  FAILED
 }

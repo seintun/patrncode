@@ -2,12 +2,6 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { updateSession } from '@/lib/supabase/middleware';
 import { generateGuestId, getGuestIdFromCookie } from '@/lib/guest';
 
-const PREMIUM_ROUTES = [
-  '/api/ai/generate-problem',
-  '/api/session/report',
-  '/api/recommendations/next',
-];
-
 /**
  * Generate a cryptographically random nonce for CSP.
  */
@@ -59,7 +53,12 @@ export async function proxy(request: NextRequest) {
 
   // Premium route gating
   const { pathname } = request.nextUrl;
-  if (PREMIUM_ROUTES.some((r) => pathname.startsWith(r))) {
+  const isPremiumRoute =
+    pathname.startsWith('/api/ai/generate-problem') ||
+    pathname.startsWith('/api/recommendations/next') ||
+    /\/api\/sessions\/[^/]+\/report$/.test(pathname);
+
+  if (isPremiumRoute) {
     const guestId = getGuestIdFromCookie(request.cookies);
     if (!guestId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

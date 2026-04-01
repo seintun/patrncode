@@ -59,6 +59,8 @@ export const ModelName = {
   SessionFeedback: 'SessionFeedback',
   SessionMessage: 'SessionMessage',
   UserProblemState: 'UserProblemState',
+  PatternWeakness: 'PatternWeakness',
+  CustomProblemRequest: 'CustomProblemRequest',
   UserProfile: 'UserProfile'
 } as const
 
@@ -196,6 +198,39 @@ export const UserProblemStateScalarFieldEnum = {
 } as const
 
 export type UserProblemStateScalarFieldEnum = (typeof UserProblemStateScalarFieldEnum)[keyof typeof UserProblemStateScalarFieldEnum]
+
+
+export const PatternWeaknessScalarFieldEnum = {
+  id: 'id',
+  guestId: 'guestId',
+  pattern: 'pattern',
+  failedCount: 'failedCount',
+  successCount: 'successCount',
+  lastPracticedAt: 'lastPracticedAt',
+  confidenceScore: 'confidenceScore',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PatternWeaknessScalarFieldEnum = (typeof PatternWeaknessScalarFieldEnum)[keyof typeof PatternWeaknessScalarFieldEnum]
+
+
+export const CustomProblemRequestScalarFieldEnum = {
+  id: 'id',
+  guestId: 'guestId',
+  pattern: 'pattern',
+  difficulty: 'difficulty',
+  status: 'status',
+  title: 'title',
+  statement: 'statement',
+  starterCode: 'starterCode',
+  testCases: 'testCases',
+  errorMessage: 'errorMessage',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CustomProblemRequestScalarFieldEnum = (typeof CustomProblemRequestScalarFieldEnum)[keyof typeof CustomProblemRequestScalarFieldEnum]
 
 
 export const UserProfileScalarFieldEnum = {

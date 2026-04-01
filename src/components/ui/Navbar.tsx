@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { StreakCounter } from '@/components/domain/StreakCounter';
 import { CoinBalance } from '@/components/domain/CoinBalance';
 import { useUserProfile } from '@/hooks/useUserProfile';
+import { SettingsPanel } from '@/components/domain/SettingsPanel';
 
 const NAV_LINKS = [
   { href: '/practice', label: 'Practice' },
@@ -16,6 +17,7 @@ const NAV_LINKS = [
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const pathname = usePathname();
   const profile = useUserProfile();
   const hamburgerRef = useRef<HTMLButtonElement>(null);
@@ -76,12 +78,30 @@ export default function Navbar() {
         </div>
 
         {/* Desktop sign-in */}
-        <span className="hidden items-center gap-1.5 text-sm font-medium text-[var(--color-text-muted)] sm:flex">
-          Sign in
-          <span className="rounded-full bg-[var(--color-accent)]/10 px-1.5 py-0.5 text-[10px] font-semibold text-[var(--color-accent)]">
-            soon
+        <div className="hidden items-center gap-3 sm:flex">
+          <button
+            type="button"
+            onClick={() => setSettingsOpen(true)}
+            className="rounded-md p-1.5 text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-elevated)] hover:text-[var(--color-text-primary)]"
+            aria-label="Open settings"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M12 15.5A3.5 3.5 0 1 0 12 8.5a3.5 3.5 0 0 0 0 7ZM19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.04 1.55V21a2 2 0 1 1-4 0v-.09A1.7 1.7 0 0 0 8.96 19.4a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.55-1.04H3a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 4.6 8.96a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 8.96 4.6 1.7 1.7 0 0 0 10 3.05V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1.04 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 8.96c.17.4.53.67.96.74H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1.3Z"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+          <span className="flex items-center gap-1.5 text-sm font-medium text-[var(--color-text-muted)]">
+            Sign in
+            <span className="rounded-full bg-[var(--color-accent)]/10 px-1.5 py-0.5 text-[10px] font-semibold text-[var(--color-accent)]">
+              soon
+            </span>
           </span>
-        </span>
+        </div>
 
         {/* Mobile hamburger */}
         <button
@@ -159,6 +179,18 @@ export default function Navbar() {
               </div>
             </li>
             <li>
+              <button
+                type="button"
+                onClick={() => {
+                  close();
+                  setSettingsOpen(true);
+                }}
+                className="w-full rounded-md px-3 py-2.5 text-left text-sm font-medium text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-elevated)] hover:text-[var(--color-text-primary)]"
+              >
+                Settings
+              </button>
+            </li>
+            <li>
               <span className="flex items-center gap-1.5 rounded-md px-3 py-2.5 text-sm font-medium text-[var(--color-text-muted)]">
                 Sign in
                 <span className="rounded-full bg-[var(--color-accent)]/10 px-1.5 py-0.5 text-[10px] font-semibold text-[var(--color-accent)]">
@@ -169,6 +201,8 @@ export default function Navbar() {
           </ul>
         </div>
       )}
+
+      <SettingsPanel open={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </nav>
   );
 }

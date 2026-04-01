@@ -126,3 +126,12 @@ export const KeybindingScheme = {
 } as const
 
 export type KeybindingScheme = (typeof KeybindingScheme)[keyof typeof KeybindingScheme]
+
+
+export const RequestStatus = {
+  PENDING: 'PENDING',
+  FULFILLED: 'FULFILLED',
+  FAILED: 'FAILED'
+} as const
+
+export type RequestStatus = (typeof RequestStatus)[keyof typeof RequestStatus]

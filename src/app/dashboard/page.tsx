@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/Badge';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { useUser } from '@/hooks/useUser';
 import Link from 'next/link';
+import { RecommendedProblem } from '@/components/domain/RecommendedProblem';
 
 interface Stats {
   totalSolved: number;
@@ -101,6 +102,9 @@ export default function DashboardPage() {
           <h2 className="mb-4 text-xl font-semibold text-[var(--color-text-primary)]">
             Today&apos;s Suggestions
           </h2>
+          <div className="mb-4">
+            <RecommendedProblem />
+          </div>
           {needsRefresh.length > 0 ? (
             <div className="space-y-3">
               {needsRefresh.map((p) => (

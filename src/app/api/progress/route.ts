@@ -29,6 +29,7 @@ async function handler(_request: NextRequest): Promise<Response> {
       sessionsThisWeek,
       recentSessions,
       needsRefresh,
+      weakPatterns,
       allAttempted,
       problemHistory,
       allProblems,
@@ -68,6 +69,17 @@ async function handler(_request: NextRequest): Promise<Response> {
           nextReviewAt: true,
         },
         orderBy: { nextReviewAt: 'asc' },
+      }),
+      prisma.patternWeakness.findMany({
+        where: { guestId },
+        orderBy: { confidenceScore: 'asc' },
+        take: 5,
+        select: {
+          pattern: true,
+          confidenceScore: true,
+          failedCount: true,
+          successCount: true,
+        },
       }),
       prisma.userProblemState.findMany({
         where: { guestId },
@@ -207,6 +219,7 @@ async function handler(_request: NextRequest): Promise<Response> {
         },
         recentSessions,
         needsRefresh,
+        weakPatterns,
         inProgressProblems,
         recommendedProblem,
         patternStats,
