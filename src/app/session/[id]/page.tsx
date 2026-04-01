@@ -13,6 +13,7 @@ import { SessionTimer } from '@/components/domain/SessionTimer';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { AIBanner } from '@/components/ui/AIBanner';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { useAIChat } from '@/hooks/useAIChat';
 import { useCodeExecution } from '@/hooks/useCodeExecution';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
@@ -179,7 +180,38 @@ function SessionContent({
   const [hasSeenFiveMinWarning, setHasSeenFiveMinWarning] = useState(false);
   const [autoEndCountdown, setAutoEndCountdown] = useState(60);
   const [showEndConfirmation, setShowEndConfirmation] = useState(false);
+  const [leaveDestination, setLeaveDestination] = useState<string | null>(null);
   const { run: runTests, results: testRunResults, isRunning, prewarmWorker } = useCodeExecution();
+  const isLeaveGuardActive = session.status === 'IN_PROGRESS' && !completing && !isExpired;
+
+  const handleLeaveConfirm = useCallback(async () => {
+    if (!leaveDestination) {
+      return;
+    }
+
+    const destination = leaveDestination;
+    setLeaveDestination(null);
+
+    try {
+      const res = await fetch(`/api/sessions/${sessionId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'ABANDONED', code }),
+      });
+
+      if (!res.ok) {
+        throw new Error(`Failed to abandon session before leaving: ${res.status}`);
+      }
+    } catch (err) {
+      console.error('Failed to abandon session before leaving:', err);
+    } finally {
+      router.push(destination);
+    }
+  }, [leaveDestination, sessionId, code, router]);
+
+  const handleLeaveCancel = useCallback(() => {
+    setLeaveDestination(null);
+  }, []);
 
   const handleEndSession = useCallback(async () => {
     if (!isExpired && !showEndConfirmation) {
@@ -266,6 +298,67 @@ function SessionContent({
   useEffect(() => {
     prewarmWorker();
   }, [prewarmWorker]);
+
+  useEffect(() => {
+    const handleDocumentClick = (event: MouseEvent) => {
+      if (!isLeaveGuardActive || event.defaultPrevented) {
+        return;
+      }
+
+      if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+        return;
+      }
+
+      const target = event.target;
+      if (!(target instanceof Element)) {
+        return;
+      }
+
+      const anchor = target.closest('a[href]');
+      if (!(anchor instanceof HTMLAnchorElement)) {
+        return;
+      }
+
+      if (anchor.target && anchor.target.toLowerCase() === '_blank') {
+        return;
+      }
+
+      if (anchor.hasAttribute('download')) {
+        return;
+      }
+
+      const rawHref = anchor.getAttribute('href');
+      if (!rawHref || rawHref.startsWith('#')) {
+        return;
+      }
+
+      let destinationUrl: URL;
+      try {
+        destinationUrl = new URL(anchor.href, window.location.href);
+      } catch {
+        return;
+      }
+
+      if (destinationUrl.origin !== window.location.origin) {
+        return;
+      }
+
+      const currentUrl = new URL(window.location.href);
+      if (destinationUrl.pathname === currentUrl.pathname) {
+        return;
+      }
+
+      event.preventDefault();
+      setLeaveDestination(
+        `${destinationUrl.pathname}${destinationUrl.search}${destinationUrl.hash}`,
+      );
+    };
+
+    document.addEventListener('click', handleDocumentClick, true);
+    return () => {
+      document.removeEventListener('click', handleDocumentClick, true);
+    };
+  }, [isLeaveGuardActive]);
 
   const functionName = useMemo(() => {
     if (!session?.problem.starterCode) return null;
@@ -724,6 +817,16 @@ function SessionContent({
             </div>
           </div>
         )}
+        <ConfirmDialog
+          isOpen={leaveDestination !== null}
+          title="Leave session?"
+          message="Your current code will be saved, and this session will be ended. You can resume from the problem page later."
+          confirmLabel="Save & Leave"
+          cancelLabel="Stay Here"
+          confirmVariant="danger"
+          onConfirm={handleLeaveConfirm}
+          onCancel={handleLeaveCancel}
+        />
         <ErrorBoundary>
           <SessionLayout
             workspaceRef={workspaceRef}
