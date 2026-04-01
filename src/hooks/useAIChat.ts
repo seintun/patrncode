@@ -240,7 +240,7 @@ export function useAIChat({
 
   const askAboutFailure = useCallback(
     async (failedResults: string) => {
-      const contextMessage = `My code failed some tests. Here are the results:\n\n${failedResults}\n\nCan you help me understand why these tests failed and what I should fix?`;
+      const contextMessage = `My code failed some tests. Here are the results:\n\n${failedResults}\n\nGive me a concise explanation in plain English:\n- root cause\n- one concrete fix\n- one thing to test next`;
       await sendChat(contextMessage);
     },
     [sendChat],

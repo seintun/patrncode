@@ -144,6 +144,14 @@ describe('buildCoachPrompt', () => {
     expect(result.system.toLowerCase()).toContain('never provide pseudocode');
   });
 
+  it('enforces concise response format for readability', () => {
+    const result = buildCoachPrompt(problemContext);
+    const lower = result.system.toLowerCase();
+    expect(lower).toContain('max 120 words');
+    expect(lower).toContain('max 4 bullets');
+    expect(lower).toContain('short sections');
+  });
+
   it('mentions problem context', () => {
     const result = buildCoachPrompt(problemContext);
     expect(result.system).toContain('Two Sum');
@@ -180,6 +188,13 @@ describe('buildInterviewerPrompt', () => {
     expect(result.system.toLowerCase()).toMatch(
       /problem understanding|approach selection|communication/,
     );
+  });
+
+  it('enforces concise interviewer replies', () => {
+    const result = buildInterviewerPrompt(problemContext);
+    const lower = result.system.toLowerCase();
+    expect(lower).toContain('max 90 words');
+    expect(lower).toContain('one primary question');
   });
 
   it('mentions problem context', () => {
