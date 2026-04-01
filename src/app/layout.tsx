@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from 'next';
-import { headers } from 'next/headers';
 import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
 import './globals.css';
@@ -7,21 +6,6 @@ import { Analytics } from '@vercel/analytics/next';
 import JsonLdSchema from '@/components/seo/JsonLdSchema';
 import Navbar from '@/components/ui/Navbar';
 import { OfflineBanner } from '@/components/ui/OfflineBanner';
-
-// Per-request CSP nonce requires dynamic rendering
-export const dynamic = 'force-dynamic';
-
-/**
- * Extract CSP nonce from request headers (set by middleware).
- * Next.js also uses this internally for __NEXT_DATA__ and other inline scripts.
- */
-async function getNonce(): Promise<string | undefined> {
-  const h = await headers();
-  const csp = h.get('content-security-policy') ?? h.get('content-security-policy-report-only');
-  if (!csp) return undefined;
-  const match = csp.match(/'nonce-([a-zA-Z0-9]+)'/);
-  return match?.[1];
-}
 
 export const viewport: Viewport = {
   themeColor: '#080c18',
@@ -96,13 +80,11 @@ const webAppSchema = {
   },
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const nonce = await getNonce();
-
   return (
     <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col font-[family-name:var(--font-geist-sans)]">
@@ -124,8 +106,8 @@ export default async function RootLayout({
           {children}
         </main>
         <Analytics />
-        <JsonLdSchema schema={organizationSchema} nonce={nonce} />
-        <JsonLdSchema schema={webAppSchema} nonce={nonce} />
+        <JsonLdSchema schema={organizationSchema} />
+        <JsonLdSchema schema={webAppSchema} />
       </body>
     </html>
   );
