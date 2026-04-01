@@ -80,6 +80,7 @@ export default function SessionSummaryPage() {
       return;
     }
 
+    let isMounted = true;
     let attempts = 0;
     const maxAttempts = 10; // 15s total (1.5s interval)
 
@@ -88,9 +89,9 @@ export default function SessionSummaryPage() {
 
       try {
         const res = await fetch(`/api/sessions/${sessionId}`);
-        if (res.ok) {
+        if (res.ok && isMounted) {
           const updated = await res.json();
-          if (updated.feedback) {
+          if (updated.feedback && isMounted) {
             setData(updated);
             clearInterval(interval);
             return;
@@ -100,13 +101,16 @@ export default function SessionSummaryPage() {
         // silent retry
       }
 
-      if (attempts >= maxAttempts) {
+      if (attempts >= maxAttempts && isMounted) {
         clearInterval(interval);
         setFeedbackTimeout(true);
       }
     }, 1500);
 
-    return () => clearInterval(interval);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
   }, [data, sessionId, feedbackTimeout]);
 
   if (loading) {
