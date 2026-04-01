@@ -107,115 +107,23 @@ async function handler(
     });
 
     // Background tasks: AI feedback generation + secondary DB writes
-    after(async () => {
-      try {
-        // AI feedback generation
-        let strengths = 'You showed persistence in working through the problem.';
-        let weaknesses = 'Consider reviewing the core pattern concepts.';
-        let suggestions = 'Practice similar problems to reinforce the pattern.';
-        let complexityNote = 'Review the time and space complexity of your solution.';
-
-        if (process.env.OPENROUTER_API_KEY) {
-          try {
-            const { system, user } = buildSummaryPrompt({
-              title: session.problem.title,
-              pattern: session.problem.pattern,
-              finalCode: session.code ?? latestRun?.code ?? '',
-              testResults: { passed, total },
-              hintsUsed,
-              timeSpentSeconds,
-            });
-
-            const result = await generateText({
-              model: openrouter(MODELS.summary),
-              system,
-              prompt: user,
-            });
-
-            const parsed = parseSummarySections(result.text);
-            if (parsed) {
-              ({ strengths, weaknesses, suggestions, complexityNote } = parsed);
-            }
-          } catch (aiError) {
-            console.error('AI summary generation failed, using fallback:', aiError);
-          }
-        }
-
-        // Save feedback
-        await prisma.sessionFeedback.create({
-          data: {
-            sessionId: id,
-            strengths,
-            weaknesses,
-            suggestions,
-            complexityNote,
-          },
-        });
-
-        // Update user problem state
-        await prisma.userProblemState.upsert({
-          where: {
-            guestId_problemId: {
-              guestId: session.guestId,
-              problemId: session.problemId,
-            },
-          },
-          update: {
-            mastery: nextMastery,
-            lastAttemptedAt: new Date(),
-            nextReviewAt,
-            attemptCount: { increment: 1 },
-            solveCount: solved ? { increment: 1 } : undefined,
-          },
-          create: {
-            guestId: session.guestId,
-            problemId: session.problemId,
-            mastery: nextMastery,
-            lastAttemptedAt: new Date(),
-            nextReviewAt,
-            attemptCount: 1,
-            solveCount: solved ? 1 : 0,
-          },
-        });
-
-        // Update profile streak (only if solved)
-        if (solved) {
-          const profile = await prisma.userProfile.findUnique({
-            where: { guestId: session.guestId },
-          });
-          const streakResult = calculateStreak(
-            profile?.lastActivityAt ?? null,
-            profile?.streakLastWonAt ?? null,
-            profile?.currentStreak ?? 0,
-            profile?.longestStreak ?? 0,
-          );
-
-          const coinsEarned = 1;
-          const isDailyChallenge = session.problem.dailyChallengeDate != null;
-
-          await prisma.userProfile.upsert({
-            where: { guestId: session.guestId },
-            create: {
-              guestId: session.guestId,
-              currentStreak: streakResult.current,
-              longestStreak: streakResult.longest,
-              lastActivityAt: streakResult.lastActivityAt,
-              streakLastWonAt: new Date(),
-              coins: isDailyChallenge ? coinsEarned + 10 : coinsEarned,
-            },
-            update: {
-              currentStreak: streakResult.current,
-              longestStreak: streakResult.longest,
-              lastActivityAt: streakResult.lastActivityAt,
-              streakLastWonAt: streakResult.wonToday ? undefined : new Date(),
-              coins: { increment: isDailyChallenge ? coinsEarned + 10 : coinsEarned },
-            },
-          });
-        }
-      } catch (error) {
-        console.error('Background AI generation failed:', error);
-      }
-    });
+    after(() =>
+      generateBackgroundFeedback({
+        sessionId: id,
+        guestId: session.guestId,
+        problemId: session.problemId,
+        problem: session.problem,
+        finalCode: session.code ?? latestRun?.code ?? '',
+        passed,
+        total,
+        hintsUsed,
+        timeSpentSeconds,
+        solved,
+        nextMastery,
+        nextReviewAt,
+        dailyChallengeDate: session.problem.dailyChallengeDate,
+      }).catch((err) => console.error('Background feedback failed:', err)),
+    );
 
     return response;
   } catch (error) {
@@ -256,6 +164,140 @@ function parseSummarySections(text: string): {
     return { strengths, weaknesses, suggestions, complexityNote };
   } catch {
     return null;
+  }
+}
+
+async function generateBackgroundFeedback({
+  sessionId,
+  guestId,
+  problemId,
+  problem,
+  finalCode,
+  passed,
+  total,
+  hintsUsed,
+  timeSpentSeconds,
+  solved,
+  nextMastery,
+  nextReviewAt,
+  dailyChallengeDate,
+}: {
+  sessionId: string;
+  guestId: string;
+  problemId: string;
+  problem: { title: string; pattern: string; dailyChallengeDate: Date | null };
+  finalCode: string;
+  passed: number;
+  total: number;
+  hintsUsed: number;
+  timeSpentSeconds: number;
+  solved: boolean;
+  nextMastery: MasteryState;
+  nextReviewAt: Date;
+  dailyChallengeDate: Date | null;
+}) {
+  // AI feedback generation
+  let strengths = 'You showed persistence in working through the problem.';
+  let weaknesses = 'Consider reviewing the core pattern concepts.';
+  let suggestions = 'Practice similar problems to reinforce the pattern.';
+  let complexityNote = 'Review the time and space complexity of your solution.';
+
+  if (process.env.OPENROUTER_API_KEY) {
+    try {
+      const { system, user } = buildSummaryPrompt({
+        title: problem.title,
+        pattern: problem.pattern,
+        finalCode,
+        testResults: { passed, total },
+        hintsUsed,
+        timeSpentSeconds,
+      });
+
+      const result = await generateText({
+        model: openrouter(MODELS.summary),
+        system,
+        prompt: user,
+      });
+
+      const parsed = parseSummarySections(result.text);
+      if (parsed) {
+        ({ strengths, weaknesses, suggestions, complexityNote } = parsed);
+      }
+    } catch (aiError) {
+      console.error('AI summary generation failed, using fallback:', aiError);
+    }
+  }
+
+  // Save feedback
+  await prisma.sessionFeedback.create({
+    data: {
+      sessionId,
+      strengths,
+      weaknesses,
+      suggestions,
+      complexityNote,
+    },
+  });
+
+  // Update user problem state
+  await prisma.userProblemState.upsert({
+    where: {
+      guestId_problemId: {
+        guestId,
+        problemId,
+      },
+    },
+    update: {
+      mastery: nextMastery,
+      lastAttemptedAt: new Date(),
+      nextReviewAt,
+      attemptCount: { increment: 1 },
+      solveCount: solved ? { increment: 1 } : undefined,
+    },
+    create: {
+      guestId,
+      problemId,
+      mastery: nextMastery,
+      lastAttemptedAt: new Date(),
+      nextReviewAt,
+      attemptCount: 1,
+      solveCount: solved ? 1 : 0,
+    },
+  });
+
+  // Update profile streak (only if solved)
+  if (solved) {
+    const profile = await prisma.userProfile.findUnique({
+      where: { guestId },
+    });
+    const streakResult = calculateStreak(
+      profile?.lastActivityAt ?? null,
+      profile?.streakLastWonAt ?? null,
+      profile?.currentStreak ?? 0,
+      profile?.longestStreak ?? 0,
+    );
+
+    const coinsEarned = 1;
+    const isDailyChallenge = dailyChallengeDate != null;
+
+    await prisma.userProfile.upsert({
+      where: { guestId },
+      create: {
+        guestId,
+        currentStreak: streakResult.current,
+        longestStreak: streakResult.longest,
+        lastActivityAt: streakResult.lastActivityAt,
+        streakLastWonAt: new Date(),
+        coins: isDailyChallenge ? coinsEarned + 10 : coinsEarned,
+      },
+      update: {
+        currentStreak: streakResult.current,
+        longestStreak: streakResult.longest,
+        lastActivityAt: streakResult.lastActivityAt,
+        streakLastWonAt: streakResult.wonToday ? undefined : new Date(),
+        coins: { increment: isDailyChallenge ? coinsEarned + 10 : coinsEarned },
+      },
+    });
   }
 }
 
