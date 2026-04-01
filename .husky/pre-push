@@ -1,5 +1,3 @@
-
-
 # Skip in CI — changesets action manages changesets on release branches
 if [ -n "$CI" ] || [ -n "$GITHUB_ACTIONS" ]; then
   exit 0
@@ -8,7 +6,7 @@ fi
 # Get current branch name
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
-# Don't auto-add changesets when pushing main directly
+# Don't check changesets when pushing main directly
 if [ "$BRANCH" = "main" ]; then
   exit 0
 fi
@@ -17,9 +15,12 @@ fi
 bunx changeset status --since=origin/main >/dev/null 2>&1
 
 if [ $? -ne 0 ]; then
-  echo "🦋 Missing changeset detected before push. Auto-generating an empty changeset..."
-  bunx changeset add --empty
-  git add .changeset/
-  git commit --no-verify -m "chore: add empty changeset before push"
-  echo "✅ Empty changeset added and committed! Pushing now..."
+  echo ""
+  echo "  ❌ Missing changeset — push blocked."
+  echo ""
+  echo "  Run this, then push again:"
+  echo "    bunx changeset add --empty   # if no version bump needed"
+  echo "    bunx changeset add           # if user-facing change"
+  echo ""
+  exit 1
 fi
