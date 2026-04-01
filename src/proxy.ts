@@ -60,7 +60,7 @@ export async function proxy(request: NextRequest) {
 
   const cspValue = [
     "default-src 'self'",
-    `script-src 'self' 'nonce-${nonce}' 'unsafe-eval' https://vercel.live https://va.vercel-scripts.com`,
+    `script-src 'self' 'nonce-${nonce}' 'unsafe-eval' https://cdn.jsdelivr.net https://vercel.live https://va.vercel-scripts.com`,
     `style-src 'self' 'unsafe-inline'`,
     "img-src 'self' data: blob: https:",
     `connect-src 'self' https://api.openrouter.ai https://*.upstash.io https://openrouter.ai https://va.vercel-scripts.com ${process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''}`,
