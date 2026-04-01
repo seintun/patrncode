@@ -12,6 +12,10 @@ vi.mock('@/lib/db/prisma', () => ({
     session: {
       findUnique: vi.fn(),
       update: vi.fn(),
+      findFirst: vi.fn(),
+    },
+    userProblemState: {
+      updateMany: vi.fn(),
     },
   },
 }));
@@ -103,5 +107,122 @@ describe('GET /api/sessions/[id]', () => {
     expect(response.status).toBe(401);
     const data = await response.json();
     expect(data.error).toContain('Unauthorized');
+  });
+});
+
+describe('PATCH /api/sessions/[id] - mastery reset on abandon', () => {
+  const mockGuestId = 'test-guest-id';
+  const mockSessionId = 'clxp1234567890abcdefghijkl';
+  const mockProblemId = 'prob-123';
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+
+    vi.mocked(cookies).mockResolvedValue({
+      get: vi.fn().mockReturnValue({ value: mockGuestId }),
+    } as any);
+
+    vi.mocked(requireOwnership).mockResolvedValue({} as any);
+  });
+
+  it('resets mastery to UNSEEN when session is abandoned and no completed session exists', async () => {
+    const mockUpdatedSession = {
+      id: mockSessionId,
+      guestId: mockGuestId,
+      problemId: mockProblemId,
+      status: 'ABANDONED',
+    };
+
+    vi.mocked(prisma.session.update).mockResolvedValue(mockUpdatedSession as any);
+    vi.mocked(prisma.session.findFirst).mockResolvedValue(null); // No completed session
+    vi.mocked(prisma.userProblemState.updateMany).mockResolvedValue({ count: 1 });
+
+    const { PATCH } = await import('../route');
+    const req = new NextRequest(`http://localhost/api/sessions/${mockSessionId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status: 'ABANDONED' }),
+    });
+    const params = Promise.resolve({ id: mockSessionId });
+
+    const response = await PATCH(req, { params } as any);
+
+    expect(response.status).toBe(200);
+
+    // Verify it checked for completed sessions
+    expect(prisma.session.findFirst).toHaveBeenCalledWith({
+      where: {
+        guestId: mockGuestId,
+        problemId: mockProblemId,
+        status: 'COMPLETED',
+      },
+    });
+
+    // Verify it reset mastery to UNSEEN
+    expect(prisma.userProblemState.updateMany).toHaveBeenCalledWith({
+      where: {
+        guestId: mockGuestId,
+        problemId: mockProblemId,
+        mastery: 'IN_PROGRESS',
+      },
+      data: { mastery: 'UNSEEN' },
+    });
+  });
+
+  it('does NOT reset mastery when session is abandoned but completed session exists', async () => {
+    const mockUpdatedSession = {
+      id: mockSessionId,
+      guestId: mockGuestId,
+      problemId: mockProblemId,
+      status: 'ABANDONED',
+    };
+
+    vi.mocked(prisma.session.update).mockResolvedValue(mockUpdatedSession as any);
+    vi.mocked(prisma.session.findFirst).mockResolvedValue({
+      id: 'completed-session-id',
+      status: 'COMPLETED',
+    } as any);
+
+    const { PATCH } = await import('../route');
+    const req = new NextRequest(`http://localhost/api/sessions/${mockSessionId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status: 'ABANDONED' }),
+    });
+    const params = Promise.resolve({ id: mockSessionId });
+
+    const response = await PATCH(req, { params } as any);
+
+    expect(response.status).toBe(200);
+
+    // Verify it checked for completed sessions
+    expect(prisma.session.findFirst).toHaveBeenCalled();
+
+    // Verify it did NOT reset mastery
+    expect(prisma.userProblemState.updateMany).not.toHaveBeenCalled();
+  });
+
+  it('does NOT reset mastery when status is not ABANDONED', async () => {
+    const mockUpdatedSession = {
+      id: mockSessionId,
+      guestId: mockGuestId,
+      problemId: mockProblemId,
+      status: 'COMPLETED',
+    };
+
+    vi.mocked(prisma.session.update).mockResolvedValue(mockUpdatedSession as any);
+
+    const { PATCH } = await import('../route');
+    const req = new NextRequest(`http://localhost/api/sessions/${mockSessionId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status: 'COMPLETED' }),
+    });
+    const params = Promise.resolve({ id: mockSessionId });
+
+    const response = await PATCH(req, { params } as any);
+
+    expect(response.status).toBe(200);
+
+    // Verify it did NOT check for completed sessions or reset mastery
+    expect(prisma.session.findFirst).not.toHaveBeenCalled();
+    expect(prisma.userProblemState.updateMany).not.toHaveBeenCalled();
   });
 });
