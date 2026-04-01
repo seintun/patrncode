@@ -208,6 +208,7 @@ async function generateBackgroundFeedback({
   let suggestions = 'Practice similar problems to reinforce the pattern.';
   let complexityNote = 'Review the time and space complexity of your solution.';
 
+  let aiFailed = false;
   if (process.env.OPENROUTER_API_KEY) {
     try {
       const { system, user } = buildSummaryPrompt({
@@ -230,11 +231,13 @@ async function generateBackgroundFeedback({
         ({ strengths, weaknesses, suggestions, complexityNote } = parsed);
       }
     } catch (aiError) {
+      aiFailed = true;
       console.error('AI summary generation failed, using fallback:', aiError);
     }
   }
 
-  // Save feedback (upsert to guard against race conditions)
+  // Save feedback immediately (upsert to guard against race conditions)
+  // This ensures feedback is always available even if subsequent DB operations fail
   await prisma.sessionFeedback.upsert({
     where: { sessionId },
     update: {
@@ -252,8 +255,8 @@ async function generateBackgroundFeedback({
     },
   });
 
-  // Update user problem state
-  await prisma.userProblemState.upsert({
+  // Update user problem state and profile streak in parallel where possible
+  const problemStatePromise = prisma.userProblemState.upsert({
     where: {
       guestId_problemId: {
         guestId,
@@ -279,38 +282,49 @@ async function generateBackgroundFeedback({
   });
 
   // Update profile streak (only if solved)
-  if (solved) {
-    const profile = await prisma.userProfile.findUnique({
-      where: { guestId },
-    });
-    const streakResult = calculateStreak(
-      profile?.lastActivityAt ?? null,
-      profile?.streakLastWonAt ?? null,
-      profile?.currentStreak ?? 0,
-      profile?.longestStreak ?? 0,
+  const profilePromise = solved
+    ? (async () => {
+        const profile = await prisma.userProfile.findUnique({
+          where: { guestId },
+        });
+        const streakResult = calculateStreak(
+          profile?.lastActivityAt ?? null,
+          profile?.streakLastWonAt ?? null,
+          profile?.currentStreak ?? 0,
+          profile?.longestStreak ?? 0,
+        );
+
+        const coinsEarned = 1;
+        const isDailyChallenge = dailyChallengeDate != null;
+
+        await prisma.userProfile.upsert({
+          where: { guestId },
+          create: {
+            guestId,
+            currentStreak: streakResult.current,
+            longestStreak: streakResult.longest,
+            lastActivityAt: streakResult.lastActivityAt,
+            streakLastWonAt: new Date(),
+            coins: isDailyChallenge ? coinsEarned + 10 : coinsEarned,
+          },
+          update: {
+            currentStreak: streakResult.current,
+            longestStreak: streakResult.longest,
+            lastActivityAt: streakResult.lastActivityAt,
+            streakLastWonAt: streakResult.wonToday ? undefined : new Date(),
+            coins: { increment: isDailyChallenge ? coinsEarned + 10 : coinsEarned },
+          },
+        });
+      })()
+    : Promise.resolve();
+
+  // Wait for both operations to complete
+  await Promise.all([problemStatePromise, profilePromise]);
+
+  if (aiFailed) {
+    console.warn(
+      `Background feedback for session ${sessionId} used fallback values due to AI failure`,
     );
-
-    const coinsEarned = 1;
-    const isDailyChallenge = dailyChallengeDate != null;
-
-    await prisma.userProfile.upsert({
-      where: { guestId },
-      create: {
-        guestId,
-        currentStreak: streakResult.current,
-        longestStreak: streakResult.longest,
-        lastActivityAt: streakResult.lastActivityAt,
-        streakLastWonAt: new Date(),
-        coins: isDailyChallenge ? coinsEarned + 10 : coinsEarned,
-      },
-      update: {
-        currentStreak: streakResult.current,
-        longestStreak: streakResult.longest,
-        lastActivityAt: streakResult.lastActivityAt,
-        streakLastWonAt: streakResult.wonToday ? undefined : new Date(),
-        coins: { increment: isDailyChallenge ? coinsEarned + 10 : coinsEarned },
-      },
-    });
   }
 }
 

@@ -264,8 +264,9 @@ function SessionContent({
   useEffect(() => {
     if (!session.expiresAt || completing) return;
 
+    const expiresAt = session.expiresAt;
     const interval = setInterval(() => {
-      const remaining = new Date(session.expiresAt!).getTime() - Date.now();
+      const remaining = new Date(expiresAt).getTime() - Date.now();
 
       // Post-expiration countdown (1 minute)
       if (remaining <= 0) {

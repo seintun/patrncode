@@ -20,47 +20,53 @@ async function handler(_request: NextRequest): Promise<Response> {
     const weekAgo = new Date(now);
     weekAgo.setDate(weekAgo.getDate() - 7);
 
-    const [totalSolved, patternsPracticed, sessionsThisWeek, recentSessions, needsRefresh] =
-      await Promise.all([
-        prisma.userProblemState.count({
-          where: { guestId, solveCount: { gt: 0 } },
-        }),
-        prisma.userProblemState
-          .findMany({
-            where: { guestId, attemptCount: { gt: 0 } },
-            select: { problem: { select: { pattern: true } } },
-            distinct: ['problemId'],
-          })
-          .then((rows) => new Set(rows.map((r) => r.problem.pattern)).size),
-        prisma.session.count({
-          where: { guestId, startedAt: { gte: weekAgo } },
-        }),
-        prisma.session.findMany({
-          where: { guestId },
-          orderBy: { startedAt: 'desc' },
-          take: 5,
-          select: {
-            id: true,
-            outcome: true,
-            startedAt: true,
-            completedAt: true,
-            problem: { select: { title: true, slug: true, pattern: true, difficulty: true } },
+    // Run all independent queries in parallel to minimize P99 latency
+    const [
+      totalSolved,
+      patternsPracticed,
+      sessionsThisWeek,
+      recentSessions,
+      needsRefresh,
+      allAttempted,
+      problemHistory,
+      allProblems,
+    ] = await Promise.all([
+      prisma.userProblemState.count({
+        where: { guestId, solveCount: { gt: 0 } },
+      }),
+      prisma.userProblemState
+        .findMany({
+          where: { guestId, attemptCount: { gt: 0 } },
+          select: { problem: { select: { pattern: true } } },
+          distinct: ['problemId'],
+        })
+        .then((rows) => new Set(rows.map((r) => r.problem.pattern)).size),
+      prisma.session.count({
+        where: { guestId, startedAt: { gte: weekAgo } },
+      }),
+      prisma.session.findMany({
+        where: { guestId },
+        orderBy: { startedAt: 'desc' },
+        take: 5,
+        select: {
+          id: true,
+          outcome: true,
+          startedAt: true,
+          completedAt: true,
+          problem: { select: { title: true, slug: true, pattern: true, difficulty: true } },
+        },
+      }),
+      prisma.userProblemState.findMany({
+        where: { guestId, mastery: 'NEEDS_REFRESH' },
+        take: 5,
+        select: {
+          problem: {
+            select: { id: true, title: true, slug: true, pattern: true, difficulty: true },
           },
-        }),
-        prisma.userProblemState.findMany({
-          where: { guestId, mastery: 'NEEDS_REFRESH' },
-          take: 5,
-          select: {
-            problem: {
-              select: { id: true, title: true, slug: true, pattern: true, difficulty: true },
-            },
-            nextReviewAt: true,
-          },
-          orderBy: { nextReviewAt: 'asc' },
-        }),
-      ]);
-
-    const [allAttempted, problemHistory] = await Promise.all([
+          nextReviewAt: true,
+        },
+        orderBy: { nextReviewAt: 'asc' },
+      }),
       prisma.userProblemState.findMany({
         where: { guestId },
         select: { problemId: true },
@@ -79,8 +85,12 @@ async function handler(_request: NextRequest): Promise<Response> {
           },
         },
       }),
+      prisma.problem.findMany({
+        select: { pattern: true },
+      }),
     ]);
 
+    // Fetch session history for problem history items
     const historyProblemIds = Array.from(new Set(problemHistory.map((item) => item.problem.id)));
     const historySessions =
       historyProblemIds.length > 0
@@ -166,9 +176,6 @@ async function handler(_request: NextRequest): Promise<Response> {
       select: { id: true, title: true, slug: true, pattern: true, difficulty: true },
     });
 
-    const allProblems = await prisma.problem.findMany({
-      select: { pattern: true },
-    });
     const problemsByPattern = new Map<string, number>();
     for (const p of allProblems) {
       problemsByPattern.set(p.pattern, (problemsByPattern.get(p.pattern) ?? 0) + 1);
@@ -178,14 +185,14 @@ async function handler(_request: NextRequest): Promise<Response> {
       const states = problemHistoryWithSessionMeta.filter((h) => h.problem.pattern === pattern);
       const mastered = states.filter((s) => s.mastery === 'MASTERED').length;
       const inProgress = states.filter((s) => s.sessionStatus === 'ACTIVE').length;
-      const needsRefresh = states.filter((s) => s.mastery === 'NEEDS_REFRESH').length;
+      const needsRefreshCount = states.filter((s) => s.mastery === 'NEEDS_REFRESH').length;
       return {
         pattern,
         total,
         mastered,
         inProgress,
-        needsRefresh,
-        unseen: Math.max(total - mastered - inProgress - needsRefresh, 0),
+        needsRefresh: needsRefreshCount,
+        unseen: Math.max(total - mastered - inProgress - needsRefreshCount, 0),
       };
     });
 
