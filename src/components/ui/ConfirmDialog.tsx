@@ -26,6 +26,8 @@ export function ConfirmDialog({
   onCancel,
 }: ConfirmDialogProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
+  const titleId = 'confirm-dialog-title';
+  const descriptionId = 'confirm-dialog-description';
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -52,19 +54,31 @@ export function ConfirmDialog({
 
   return (
     <div
-      className="absolute inset-0 z-[110] flex items-center justify-center bg-[var(--color-bg-primary)]/60 backdrop-blur-md animate-in fade-in duration-300"
+      className="fixed inset-0 z-[110] flex items-center justify-center bg-[var(--color-bg-primary)]/60 backdrop-blur-md animate-in fade-in duration-300"
       onClick={onCancel}
     >
       <div
         ref={dialogRef}
         tabIndex={-1}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        aria-describedby={descriptionId}
         className="max-w-md w-full mx-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-elevated)] p-6 shadow-2xl animate-in zoom-in-95 duration-200 focus:outline-none"
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="mb-2 text-xl font-bold text-[var(--color-text-primary)] leading-tight">
+        <h2
+          id={titleId}
+          className="mb-2 text-xl font-bold text-[var(--color-text-primary)] leading-tight"
+        >
           {title}
         </h2>
-        <p className="mb-6 text-sm text-[var(--color-text-secondary)] leading-relaxed">{message}</p>
+        <p
+          id={descriptionId}
+          className="mb-6 text-sm text-[var(--color-text-secondary)] leading-relaxed"
+        >
+          {message}
+        </p>
         <div className="flex gap-3">
           <Button
             onClick={onConfirm}

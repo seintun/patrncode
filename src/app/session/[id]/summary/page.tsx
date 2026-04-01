@@ -59,8 +59,13 @@ export default function SessionSummaryPage() {
 
   useEffect(() => {
     async function fetchSummary() {
+      setLoading(true);
+      setError(null);
+      setFeedbackTimeout(false);
+      setData(null);
+
       try {
-        const res = await fetch(`/api/sessions/${sessionId}`);
+        const res = await fetch(`/api/sessions/${sessionId}`, { cache: 'no-store' });
         if (!res.ok) {
           throw new Error('Failed to load session');
         }
@@ -84,22 +89,28 @@ export default function SessionSummaryPage() {
 
   useEffect(() => {
     // Only poll completed sessions while feedback is pending.
-    if (!data || data.status !== 'COMPLETED' || data.feedback !== null || feedbackTimeout) {
+    if (!data || data.status !== 'COMPLETED' || data.feedback != null || feedbackTimeout) {
       return;
     }
 
     let isMounted = true;
     let attempts = 0;
     const maxAttempts = 10; // 15s total (1.5s interval)
+    let inFlight = false;
 
     const interval = setInterval(async () => {
-      attempts++;
+      if (inFlight) {
+        return;
+      }
 
+      inFlight = true;
       try {
-        const res = await fetch(`/api/sessions/${sessionId}`);
+        attempts++;
+
+        const res = await fetch(`/api/sessions/${sessionId}`, { cache: 'no-store' });
         if (res.ok && isMounted) {
           const updated = await res.json();
-          if (updated.feedback && isMounted) {
+          if (updated.feedback != null && isMounted) {
             setData(updated);
             clearInterval(interval);
             return;
@@ -107,6 +118,8 @@ export default function SessionSummaryPage() {
         }
       } catch {
         // silent retry
+      } finally {
+        inFlight = false;
       }
 
       if (attempts >= maxAttempts && isMounted) {

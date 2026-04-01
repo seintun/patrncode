@@ -81,9 +81,12 @@ async function handler(
     });
     const nextReviewAt = computeNextReviewDate(nextMastery);
 
-    // Mark session COMPLETED first
-    const updatedSession = await prisma.session.update({
-      where: { id },
+    // Mark session COMPLETED first (idempotent transition)
+    const completionResult = await prisma.session.updateMany({
+      where: {
+        id,
+        status: 'IN_PROGRESS',
+      },
       data: {
         status: 'COMPLETED',
         outcome,
@@ -91,9 +94,13 @@ async function handler(
       },
     });
 
+    if (completionResult.count === 0) {
+      return NextResponse.json({ error: 'Session already finalized' }, { status: 400 });
+    }
+
     // Return immediately - feedback will be generated in background
     const response = NextResponse.json({
-      sessionId: updatedSession.id,
+      sessionId: id,
       outcome,
       feedback: null,
       stats: {

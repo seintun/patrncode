@@ -14,7 +14,9 @@ async function handler(_request: NextRequest): Promise<Response> {
       return NextResponse.json({ error: 'Unauthorized: Guest ID missing' }, { status: 401 });
     }
 
-    await cleanupExpiredSessions(guestId);
+    cleanupExpiredSessions(guestId).catch((err) => {
+      console.error('Failed to clean up expired sessions for guest', guestId, err);
+    });
 
     const now = new Date();
     const weekAgo = new Date(now);

@@ -50,7 +50,9 @@ export async function GET(request: NextRequest): Promise<Response> {
     let masteryMap: Record<string, string> = {};
     const sessionStatusMap: Record<string, 'ACTIVE' | 'ABANDONED' | null> = {};
     if (guestId) {
-      await cleanupExpiredSessions(guestId);
+      cleanupExpiredSessions(guestId).catch((err) => {
+        console.error('Failed to clean up expired sessions for guest', guestId, err);
+      });
 
       const states = await prisma.userProblemState.findMany({
         where: { guestId },

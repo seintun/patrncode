@@ -44,7 +44,12 @@ describe('cleanupExpiredSessions', () => {
     const result = await cleanupExpiredSessions('guest-1');
 
     expect(prisma.session.updateMany).toHaveBeenCalledWith({
-      where: { id: { in: ['s1', 's2'] } },
+      where: {
+        guestId: 'guest-1',
+        status: 'IN_PROGRESS',
+        expiresAt: { lt: expect.any(Date) },
+        id: { in: ['s1', 's2'] },
+      },
       data: { status: 'ABANDONED' },
     });
     expect(prisma.userProblemState.updateMany).toHaveBeenCalledWith({

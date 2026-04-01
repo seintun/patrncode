@@ -30,8 +30,9 @@ describe('ConfirmDialog', () => {
     const onCancel = vi.fn();
     render(<ConfirmDialog {...defaultProps} onCancel={onCancel} />);
 
-    const backdrop = screen.getByText('Confirm Action').closest('.absolute')!;
-    await user.click(backdrop);
+    const backdrop = screen.getByRole('dialog').parentElement;
+    expect(backdrop).toBeTruthy();
+    await user.click(backdrop as HTMLElement);
 
     expect(onCancel).toHaveBeenCalledTimes(1);
   });

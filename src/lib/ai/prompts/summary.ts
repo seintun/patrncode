@@ -65,18 +65,19 @@ Keep the entire summary concise — no more than 200 words total.`;
 ${input.finalCode}
 \`\`\`
 
-Provide structured feedback with bullet points (-) under each section:
+Provide structured feedback in four sections using exactly these markdown headings and this order:
 
-    - (2-3 bullet points, each starting with "- ")
+## Strengths
+Give 2-3 concise bullet points (each starting with "- ") highlighting what the user did well.
 
-### Areas for Improvement
-    - (1-3 bullet points, each starting with "- ")
+## Areas for Improvement
+Give 1-3 specific bullet points (each starting with "- ") on what could be improved.
 
-### Suggestions for Next Steps
-    - (2-3 bullet points, each starting with "- ")
+## Suggestions for Next Steps
+Give 2-3 actionable bullet points (each starting with "- ") on what to practice or try next.
 
-### Complexity Note
-    - (brief analysis starting with "- ")`;
+## Complexity Note
+Provide a brief analysis (either a short paragraph or 1 bullet starting with "- ") about algorithmic complexity and scalability.`;
 
   return { system, user };
 }

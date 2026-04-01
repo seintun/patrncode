@@ -3,11 +3,12 @@ import { prisma } from '@/lib/db/prisma';
 export async function cleanupExpiredSessions(
   guestId: string,
 ): Promise<{ expiredCount: number; abandonedCount: number; resetMasteryCount: number }> {
+  const now = new Date();
   const expiredSessions = await prisma.session.findMany({
     where: {
       guestId,
       status: 'IN_PROGRESS',
-      expiresAt: { lt: new Date() },
+      expiresAt: { lt: now },
     },
     select: {
       id: true,
@@ -37,7 +38,12 @@ export async function cleanupExpiredSessions(
 
   const [abandonedResult, resetMasteryResult] = await Promise.all([
     prisma.session.updateMany({
-      where: { id: { in: sessionIds } },
+      where: {
+        guestId,
+        status: 'IN_PROGRESS',
+        expiresAt: { lt: now },
+        id: { in: sessionIds },
+      },
       data: { status: 'ABANDONED' },
     }),
     resetProblemIds.length > 0
