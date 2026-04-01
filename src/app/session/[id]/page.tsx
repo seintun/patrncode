@@ -626,23 +626,11 @@ function SessionContent({
         hintStream={hintStream}
         onHintRequest={handleHintRequest}
         hintLevel={hintLevel}
-        onAskAboutFailure={hasFailures ? () => handleAskAboutFailure('') : undefined}
-        showFailureButton={hasFailures}
         onViewSessionReport={() => setShowSessionReportModal(true)}
         showSessionReportButton={session.status === 'COMPLETED'}
       />
     ),
-    [
-      session.mode,
-      messages,
-      sendChat,
-      aiLoading,
-      hintStream,
-      handleHintRequest,
-      hintLevel,
-      hasFailures,
-      handleAskAboutFailure,
-    ],
+    [session.mode, messages, sendChat, aiLoading, hintStream, handleHintRequest, hintLevel],
   );
 
   if (error) {
