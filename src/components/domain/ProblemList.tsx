@@ -9,6 +9,7 @@ import { Select } from '@/components/ui/Select';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { Button } from '@/components/ui/Button';
 import type { Difficulty, Pattern, MasteryState } from '@/generated/prisma/enums';
+import { DailyChallengeBanner } from '@/components/domain/DailyChallengeBanner';
 
 interface ProblemItem {
   id: string;
@@ -18,6 +19,14 @@ interface ProblemItem {
   pattern: Pattern;
   testCaseCount: number;
   mastery: MasteryState | null;
+}
+
+interface DailyChallenge {
+  id: string;
+  title: string;
+  slug: string;
+  difficulty: Difficulty;
+  pattern: Pattern;
 }
 
 const PATTERN_OPTIONS = [
@@ -58,6 +67,7 @@ export default function ProblemList() {
   const [pattern, setPattern] = useState('');
   const [difficultyFilter, setDifficultyFilter] = useState<Difficulty | ''>('');
   const [sortBy, setSortBy] = useState('difficulty');
+  const [dailyChallenge, setDailyChallenge] = useState<DailyChallenge | null>(null);
 
   const fetchProblems = useCallback(async () => {
     setLoading(true);
@@ -85,6 +95,15 @@ export default function ProblemList() {
     fetchProblems();
   }, [fetchProblems]);
 
+  useEffect(() => {
+    fetch('/api/daily-challenge')
+      .then((r) => r.json())
+      .then((data: { dailyChallenge: DailyChallenge | null }) =>
+        setDailyChallenge(data.dailyChallenge ?? null),
+      )
+      .catch(() => {});
+  }, []);
+
   const sorted = useMemo(() => {
     const copy = [...problems];
     if (sortBy === 'difficulty') {
@@ -97,8 +116,16 @@ export default function ProblemList() {
     return copy;
   }, [problems, sortBy]);
 
+  const dailyMastery = dailyChallenge
+    ? (problems.find((p) => p.slug === dailyChallenge.slug)?.mastery ?? null)
+    : null;
+  const alreadySolved = dailyMastery === 'MASTERED' || dailyMastery === 'NEEDS_REFRESH';
+
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
+      {dailyChallenge && (
+        <DailyChallengeBanner dailyChallenge={dailyChallenge} alreadySolved={alreadySolved} />
+      )}
       <h1 className="mb-6 text-2xl font-bold text-[var(--color-text-primary)]">
         Practice Problems
       </h1>

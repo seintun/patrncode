@@ -56,6 +56,10 @@ describe('ProblemList', () => {
       ok: true,
       json: async () => mockProblems,
     } as Response);
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ dailyChallenge: null }),
+    } as Response);
 
     render(<ProblemList />);
 
@@ -72,6 +76,10 @@ describe('ProblemList', () => {
     mockFetch.mockResolvedValueOnce({
       ok: false,
     } as Response);
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ dailyChallenge: null }),
+    } as Response);
 
     render(<ProblemList />);
 
@@ -86,6 +94,10 @@ describe('ProblemList', () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
       json: async () => [],
+    } as Response);
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ dailyChallenge: null }),
     } as Response);
 
     render(<ProblemList />);
@@ -102,6 +114,10 @@ describe('ProblemList', () => {
       ok: true,
       json: async () => mockProblems,
     } as Response);
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ dailyChallenge: null }),
+    } as Response);
 
     render(<ProblemList />);
 
@@ -116,6 +132,10 @@ describe('ProblemList', () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
       json: async () => mockProblems,
+    } as Response);
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ dailyChallenge: null }),
     } as Response);
 
     render(<ProblemList />);

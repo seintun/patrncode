@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { StreakCounter } from '@/components/domain/StreakCounter';
 import { CoinBalance } from '@/components/domain/CoinBalance';
+import { useUserProfile } from '@/hooks/useUserProfile';
 
 const NAV_LINKS = [
   { href: '/practice', label: 'Practice' },
@@ -16,6 +17,7 @@ const NAV_LINKS = [
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const profile = useUserProfile();
   const hamburgerRef = useRef<HTMLButtonElement>(null);
   const firstLinkRef = useRef<HTMLAnchorElement>(null);
 
@@ -65,8 +67,12 @@ export default function Navbar() {
 
         {/* Desktop streak + coins */}
         <div className="hidden items-center gap-4 sm:flex">
-          <StreakCounter currentStreak={0} longestStreak={0} lastActivityAt={null} />
-          <CoinBalance coins={0} tier="FREE" />
+          <StreakCounter
+            currentStreak={profile.currentStreak}
+            longestStreak={profile.longestStreak}
+            lastActivityAt={profile.lastActivityAt}
+          />
+          <CoinBalance coins={profile.coins} tier={profile.tier} />
         </div>
 
         {/* Desktop sign-in */}
@@ -144,8 +150,12 @@ export default function Navbar() {
             </li>
             <li>
               <div className="flex items-center gap-4 px-3 py-2.5">
-                <StreakCounter currentStreak={0} longestStreak={0} lastActivityAt={null} />
-                <CoinBalance coins={0} tier="FREE" />
+                <StreakCounter
+                  currentStreak={profile.currentStreak}
+                  longestStreak={profile.longestStreak}
+                  lastActivityAt={profile.lastActivityAt}
+                />
+                <CoinBalance coins={profile.coins} tier={profile.tier} />
               </div>
             </li>
             <li>

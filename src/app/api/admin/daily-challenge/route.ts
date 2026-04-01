@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import { handleApiError } from '@/lib/errors/api';
+import { requireAdminSecret } from '@/lib/auth/admin';
 
 export async function GET(): Promise<Response> {
   try {
@@ -31,23 +32,8 @@ export async function GET(): Promise<Response> {
 
 export async function POST(request: Request): Promise<Response> {
   try {
-    const adminSecret = process.env.ADMIN_SECRET;
-    const isProd = process.env.NODE_ENV === 'production';
-
-    if (isProd) {
-      if (!adminSecret) {
-        return NextResponse.json({ error: 'Not found' }, { status: 404 });
-      }
-      const provided = request.headers.get('x-admin-secret');
-      if (provided !== adminSecret) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-      }
-    } else if (adminSecret) {
-      const provided = request.headers.get('x-admin-secret');
-      if (provided !== adminSecret) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-      }
-    }
+    const authError = requireAdminSecret(request);
+    if (authError) return authError;
 
     // Clear yesterday's daily challenge
     await prisma.problem.updateMany({
@@ -55,39 +41,9 @@ export async function POST(request: Request): Promise<Response> {
       data: { dailyChallengeDate: null },
     });
 
-    // Extract guest ID from header or request body
-    let guestId: string | null = request.headers.get('x-guest-id');
-    if (!guestId) {
-      const body = await request.json().catch(() => ({}));
-      guestId = (body as { guestId?: string }).guestId ?? null;
-    }
-
-    if (!guestId) {
-      return NextResponse.json(
-        { error: 'guestId is required (x-guest-id header or request body)' },
-        { status: 400 },
-      );
-    }
-
-    // Find problems this guest has solved in the last 24 hours
-    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-    const attemptedToday = await prisma.userProblemState.findMany({
-      where: {
-        guestId,
-        solveCount: { gt: 0 },
-        lastAttemptedAt: { gte: twentyFourHoursAgo },
-      },
-      select: { problemId: true },
-    });
-    const attemptedIds = attemptedToday.map((s) => s.problemId);
-
-    // Pick from curated problems not yet attempted
     const candidates = await prisma.problem.findMany({
-      where: {
-        isCurated: true,
-        ...(attemptedIds.length > 0 ? { id: { notIn: attemptedIds } } : {}),
-      },
-      take: 10,
+      where: { isCurated: true },
+      take: 20,
       orderBy: { createdAt: 'asc' },
     });
 

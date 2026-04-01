@@ -229,7 +229,7 @@ function parseSummarySections(text: string): {
       sections[heading] = content;
     }
 
-    const strengths = sections['strengths'] ?? sections['strengths'] ?? '';
+    const strengths = sections['strengths'] ?? sections['strength'] ?? '';
     const weaknesses = sections['areas for improvement'] ?? sections['weaknesses'] ?? '';
     const suggestions = sections['suggestions for next steps'] ?? sections['suggestions'] ?? '';
     const complexityNote = sections['complexity note'] ?? sections['complexity'] ?? '';

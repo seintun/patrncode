@@ -54,39 +54,22 @@ export default function SubscribePage() {
   }
 
   return (
-    <div
-      className="min-h-screen flex flex-col items-center px-4 py-12"
-      style={{ backgroundColor: 'var(--color-bg-primary)' }}
-    >
-      <h1 className="text-3xl font-bold mb-2" style={{ color: 'var(--color-text-primary)' }}>
+    <div className="min-h-screen flex flex-col items-center px-4 py-12 bg-[var(--color-bg-primary)]">
+      <h1 className="text-3xl font-bold mb-2 text-[var(--color-text-primary)]">
         Upgrade to SophoCode Premium
       </h1>
-      <p className="text-base mb-8" style={{ color: 'var(--color-text-secondary)' }}>
+      <p className="text-base mb-8 text-[var(--color-text-secondary)]">
         Unlock the full potential of your practice
       </p>
 
       {success && (
-        <div
-          className="mb-6 rounded-lg px-4 py-3 text-sm font-medium"
-          style={{
-            backgroundColor: 'color-mix(in srgb, var(--color-success) 15%, transparent)',
-            color: 'var(--color-success)',
-            border: '1px solid color-mix(in srgb, var(--color-success) 30%, transparent)',
-          }}
-        >
+        <div className="mb-6 rounded-lg px-4 py-3 text-sm font-medium bg-[color-mix(in_srgb,var(--color-success)_15%,transparent)] text-[var(--color-success)] border border-[color-mix(in_srgb,var(--color-success)_30%,transparent)]">
           Upgrade successful! You are now on the Premium plan.
         </div>
       )}
 
       {error && (
-        <div
-          className="mb-6 rounded-lg px-4 py-3 text-sm font-medium"
-          style={{
-            backgroundColor: 'color-mix(in srgb, var(--color-error) 15%, transparent)',
-            color: 'var(--color-error)',
-            border: '1px solid color-mix(in srgb, var(--color-error) 30%, transparent)',
-          }}
-        >
+        <div className="mb-6 rounded-lg px-4 py-3 text-sm font-medium bg-[color-mix(in_srgb,var(--color-error)_15%,transparent)] text-[var(--color-error)] border border-[color-mix(in_srgb,var(--color-error)_30%,transparent)]">
           {error}
         </div>
       )}
@@ -95,37 +78,33 @@ export default function SubscribePage() {
         {/* Free Plan */}
         <Card className="flex flex-col p-6">
           <div className="mb-4">
-            <span
-              className="text-xs font-bold uppercase tracking-wider"
-              style={{ color: 'var(--color-text-muted)' }}
-            >
+            <span className="text-xs font-bold uppercase tracking-wider text-[var(--color-text-muted)]">
               Free
             </span>
-            <h2 className="text-2xl font-bold mt-1" style={{ color: 'var(--color-text-primary)' }}>
+            <h2 className="text-2xl font-bold mt-1 text-[var(--color-text-primary)]">
               $0
-              <span
-                className="text-sm font-normal"
-                style={{ color: 'var(--color-text-secondary)' }}
-              >
-                /mo
-              </span>
+              <span className="text-sm font-normal text-[var(--color-text-secondary)]">/mo</span>
             </h2>
           </div>
 
-          <hr className="mb-4" style={{ borderColor: 'var(--color-border)' }} />
+          <hr className="mb-4 border-[var(--color-border)]" />
 
           <ul className="flex-1 space-y-3 mb-6">
             {freeFeatures.map((f) => (
               <li key={f.text} className="flex items-start gap-2 text-sm">
                 <span
-                  style={{ color: f.included ? 'var(--color-success)' : 'var(--color-text-muted)' }}
+                  className={
+                    f.included ? 'text-[var(--color-success)]' : 'text-[var(--color-text-muted)]'
+                  }
                 >
                   {f.included ? '✓' : '○'}
                 </span>
                 <span
-                  style={{
-                    color: f.included ? 'var(--color-text-primary)' : 'var(--color-text-muted)',
-                  }}
+                  className={
+                    f.included
+                      ? 'text-[var(--color-text-primary)]'
+                      : 'text-[var(--color-text-muted)]'
+                  }
                 >
                   {f.text}
                 </span>
@@ -139,38 +118,24 @@ export default function SubscribePage() {
         </Card>
 
         {/* Premium Plan */}
-        <Card
-          className="flex flex-col p-6"
-          style={{
-            borderColor: 'var(--color-accent)',
-            borderWidth: '2px',
-          }}
-        >
+        <Card className="flex flex-col p-6 border-2 border-[var(--color-accent)]">
           <div className="mb-4">
-            <span
-              className="text-xs font-bold uppercase tracking-wider"
-              style={{ color: 'var(--color-accent)' }}
-            >
+            <span className="text-xs font-bold uppercase tracking-wider text-[var(--color-accent)]">
               Premium
             </span>
-            <h2 className="text-2xl font-bold mt-1" style={{ color: 'var(--color-text-primary)' }}>
+            <h2 className="text-2xl font-bold mt-1 text-[var(--color-text-primary)]">
               $9
-              <span
-                className="text-sm font-normal"
-                style={{ color: 'var(--color-text-secondary)' }}
-              >
-                /mo
-              </span>
+              <span className="text-sm font-normal text-[var(--color-text-secondary)]">/mo</span>
             </h2>
           </div>
 
-          <hr className="mb-4" style={{ borderColor: 'var(--color-border)' }} />
+          <hr className="mb-4 border-[var(--color-border)]" />
 
           <ul className="flex-1 space-y-3 mb-6">
             {premiumFeatures.map((f) => (
               <li key={f.text} className="flex items-start gap-2 text-sm">
-                <span style={{ color: 'var(--color-success)' }}>✓</span>
-                <span style={{ color: 'var(--color-text-primary)' }}>{f.text}</span>
+                <span className="text-[var(--color-success)]">✓</span>
+                <span className="text-[var(--color-text-primary)]">{f.text}</span>
               </li>
             ))}
           </ul>
@@ -186,15 +151,11 @@ export default function SubscribePage() {
         </Card>
       </div>
 
-      <p className="mt-8 text-xs" style={{ color: 'var(--color-text-muted)' }}>
+      <p className="mt-8 text-xs text-[var(--color-text-muted)]">
         Billing is managed externally. This is a mock upgrade for now.
       </p>
 
-      <Link
-        href="/dashboard"
-        className="mt-4 text-sm underline"
-        style={{ color: 'var(--color-text-secondary)' }}
-      >
+      <Link href="/dashboard" className="mt-4 text-sm underline text-[var(--color-text-secondary)]">
         Back to Dashboard
       </Link>
     </div>

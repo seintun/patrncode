@@ -129,3 +129,28 @@ describe('calculateStreak', () => {
     });
   });
 });
+
+describe('streak edge cases', () => {
+  it('longestStreak is preserved when streak resets', () => {
+    const twoDaysAgo = new Date(Date.now() - 2 * 86400000);
+    const result = calculateStreak(twoDaysAgo, twoDaysAgo, 10, 20);
+    expect(result.current).toBe(1);
+    expect(result.longest).toBe(20);
+  });
+
+  it('first activity sets longestStreak to 1', () => {
+    const result = calculateStreak(null, null, 0, 0);
+    expect(result.current).toBe(1);
+    expect(result.longest).toBe(1);
+  });
+
+  it('lastWasYesterday with wonToday=true falls to else branch and resets', () => {
+    const now = new Date();
+    const todayUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+    const yesterdayUTC = new Date(todayUTC.getTime() - 86400000);
+    // lastActivityAt=yesterday, streakLastWonAt=today (edge: stale lastActivityAt)
+    const result = calculateStreak(yesterdayUTC, todayUTC, 5, 5);
+    expect(result.current).toBe(1);
+    expect(result.longest).toBe(5);
+  });
+});
