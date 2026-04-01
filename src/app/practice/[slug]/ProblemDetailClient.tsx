@@ -11,6 +11,7 @@ import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import JsonLdSchema from '@/components/seo/JsonLdSchema';
 import { SOPHIA_MODES } from '@/lib/sophia';
 import { useCodeExecution } from '@/hooks/useCodeExecution';
+import { SessionContinuationCard } from '@/components/domain/SessionContinuationCard';
 
 interface ProblemDetail {
   id: string;
@@ -277,59 +278,28 @@ function ProblemDetailContent({
   }
 
   if (activeSession) {
-    const sophiaConfig = SOPHIA_MODES[activeSession.mode];
-
     return (
-      <div className="mx-auto max-w-4xl px-4 py-8" style={{ animation: 'scaleIn 0.4s ease-out' }}>
-        <div className="mb-8 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-secondary)] p-8 text-center shadow-xl">
-          <div className="mx-auto mb-4 h-24 w-24 overflow-hidden rounded-full border-2 border-[var(--color-accent)] shadow-lg">
-            <img
-              src={MODE_IMAGES[activeSession.mode]}
-              alt={activeSession.mode}
-              className="h-full w-full object-cover"
-            />
-          </div>
-          <h2 className="mb-2 text-2xl font-bold text-[var(--color-text-primary)]">
-            Active Session Found
-          </h2>
-          <div className="mb-6 flex flex-col items-center gap-1">
-            <p className="text-[var(--color-text-secondary)]">
-              You already have an active{' '}
-              <span style={{ color: sophiaConfig.colors.text }} className="font-semibold">
-                {activeSession.mode.replace('_', ' ')}
-              </span>{' '}
-              session for this problem.
-            </p>
-            {timeLeft && (
-              <p className="flex items-center gap-1.5 text-sm font-mono font-medium text-[var(--color-text-muted)] bg-[var(--color-bg-elevated)] px-3 py-1 rounded-full border border-[var(--color-border)]">
-                <span className="inline-block w-2 h-2 rounded-full bg-[var(--color-accent)] animate-pulse" />
-                {timeLeft} remaining
-              </p>
-            )}
-          </div>
-          <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-            <Button
-              onClick={() => router.push(`/session/${activeSession.id}`)}
-              size="lg"
-              className="min-w-[200px]"
-              style={{
-                backgroundColor: sophiaConfig.colors.primary,
-                boxShadow: `0 8px 30px -4px ${sophiaConfig.colors.primary}44`,
-              }}
-            >
-              Resume Session
-            </Button>
-            <Button
-              variant="secondary"
-              onClick={handleEndSession}
-              size="lg"
-              className="bg-transparent border-[var(--color-error)] text-[var(--color-error)] hover:bg-[var(--color-error)] hover:text-white"
-            >
-              End Session to Switch Mode
-            </Button>
-          </div>
-        </div>
-      </div>
+      <SessionContinuationCard
+        mode={activeSession.mode}
+        title="Active Session Found"
+        description={
+          <>
+            You already have an active{' '}
+            <span className="font-semibold">{activeSession.mode.replace('_', ' ')}</span> session
+            for this problem.
+          </>
+        }
+        timeLabel={timeLeft ? `${timeLeft} remaining` : undefined}
+        primaryAction={{
+          label: 'Resume Session',
+          onClick: () => router.push(`/session/${activeSession.id}`),
+        }}
+        secondaryAction={{
+          label: 'End Session to Switch Mode',
+          onClick: handleEndSession,
+          destructive: true,
+        }}
+      />
     );
   }
 
@@ -443,22 +413,27 @@ function ProblemDetailContent({
       </div>
 
       {abandonedSession && (
-        <Card className="mb-8 p-6">
-          <h2 className="mb-2 text-lg font-semibold text-[var(--color-text-primary)]">
-            Previous Session Available
-          </h2>
-          <p className="mb-4 text-sm text-[var(--color-text-secondary)]">
-            You can resume your previous code from an abandoned session, or start fresh.
-          </p>
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-            <Button onClick={handleResumeAbandonedSession} disabled={starting}>
-              {starting ? 'Starting...' : 'Resume with Previous Code'}
-            </Button>
-            <Button variant="secondary" onClick={handleStartSession} disabled={starting}>
-              Start Fresh
-            </Button>
-          </div>
-        </Card>
+        <SessionContinuationCard
+          mode={abandonedSession.mode}
+          title="Previous Session Available"
+          description={
+            <>
+              We found an abandoned{' '}
+              <span className="font-semibold">{abandonedSession.mode.replace('_', ' ')}</span>{' '}
+              session for this problem. Resume with your previous code or start fresh.
+            </>
+          }
+          primaryAction={{
+            label: starting ? 'Starting...' : 'Resume with Previous Code',
+            onClick: handleResumeAbandonedSession,
+            disabled: starting,
+          }}
+          secondaryAction={{
+            label: 'Start Fresh',
+            onClick: handleStartSession,
+            disabled: starting,
+          }}
+        />
       )}
 
       {!abandonedSession && (
