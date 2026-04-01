@@ -153,6 +153,16 @@ describe('buildCoachPrompt', () => {
     expect(lower).toContain('markdown');
   });
 
+  it('keeps structure but avoids rigid repeated heading labels', () => {
+    const result = buildCoachPrompt(problemContext);
+    const lower = result.system.toLowerCase();
+    expect(lower).toContain('internally');
+    expect(lower).toContain('do not render fixed heading labels');
+    expect(lower).toContain('quick take');
+    expect(lower).toContain('what to fix');
+    expect(lower).toContain('try next');
+  });
+
   it('applies concise markdown format in self-practice mode too', () => {
     const result = buildCoachPrompt({ ...problemContext, sessionMode: 'SELF_PRACTICE' });
     const lower = result.system.toLowerCase();
@@ -205,6 +215,16 @@ describe('buildInterviewerPrompt', () => {
     expect(lower).toContain('max 90 words');
     expect(lower).toContain('one primary question');
     expect(lower).toContain('markdown');
+  });
+
+  it('keeps interviewer structure but avoids rigid heading labels', () => {
+    const result = buildInterviewerPrompt(problemContext);
+    const lower = result.system.toLowerCase();
+    expect(lower).toContain('internally');
+    expect(lower).toContain('do not render fixed heading labels');
+    expect(lower).toContain('signal');
+    expect(lower).toContain('concern');
+    expect(lower).toContain('question');
   });
 
   it('mentions problem context', () => {

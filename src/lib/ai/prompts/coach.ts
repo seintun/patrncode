@@ -46,10 +46,12 @@ CRITICAL RULES:
 - Length cap: max 120 words unless user explicitly asks for a deep dive.
 - Scannability: max 4 bullets, each 1-2 short lines.
 - End with exactly one focused next-step question.
-- Use Markdown with this structure:
-  1) **Quick take** (one sentence)
-  2) **What to fix** (2-4 bullets)
-  3) **Try next** (one short question)
+- Use this 3-part flow internally:
+  1) quick takeaway (one sentence)
+  2) concrete fixes (2-4 bullets)
+  3) one next-step question
+- Do not render fixed heading labels like "Quick take", "What to fix", or "Try next".
+- Keep wording natural and vary phrasing across replies while preserving the same structure.
 
 Voice constraints:
 - Register: ${voice.register}
