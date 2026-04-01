@@ -88,13 +88,13 @@ describe('buildHintPrompt', () => {
   });
 
   describe('Level 3', () => {
-    it('may contain pseudocode but not full solutions', () => {
+    it('forbids pseudocode and full solutions', () => {
       const result = buildHintPrompt({
         ...problemContext,
         currentCode: 'def two_sum(): pass',
         level: 3,
       });
-      expect(result.system.toLowerCase()).toMatch(/pseudocode|code fragments/);
+      expect(result.system.toLowerCase()).toContain('do not include pseudocode');
       expect(result.system.toLowerCase()).toContain('do not provide the complete');
     });
   });
@@ -141,6 +141,7 @@ describe('buildCoachPrompt', () => {
   it('forbids full solution code', () => {
     const result = buildCoachPrompt(problemContext);
     expect(result.system.toLowerCase()).toContain('never provide full solution code');
+    expect(result.system.toLowerCase()).toContain('never provide pseudocode');
   });
 
   it('mentions problem context', () => {

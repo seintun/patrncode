@@ -10,6 +10,7 @@ import { HintLoader } from '@/components/ui/HintLoader';
 import { getSophiaConfig, SOPHIA_AVATAR } from '@/lib/sophia';
 import type { SessionMode } from '@/generated/prisma/enums';
 import type { UIMessage } from 'ai';
+import { sanitizeCoachingContent } from '@/lib/ai/safety';
 
 interface CoachingPanelProps {
   mode: SessionMode;
@@ -340,7 +341,9 @@ export function CoachingPanel({
                           </div>
                         )}
                         <StreamedMarkdownMessage
-                          content={text || (isStreamingActive ? '...' : '')}
+                          content={sanitizeCoachingContent(
+                            text || (isStreamingActive ? '...' : ''),
+                          )}
                           accentColor={config.colors.primary}
                           isStreaming={isStreamingActive}
                           cursorColor={config.colors.primary}
@@ -401,7 +404,7 @@ export function CoachingPanel({
                   </div>
                   {hintStream.text ? (
                     <StreamedMarkdownMessage
-                      content={hintStream.text}
+                      content={sanitizeCoachingContent(hintStream.text)}
                       accentColor={config.colors.primary}
                       isStreaming={hintStream.isLoading}
                       cursorColor={config.colors.primary}
