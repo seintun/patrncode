@@ -181,6 +181,7 @@ describe('GET /api/sessions', () => {
     const mockSession = {
       id: 'active-session-id',
       mode: 'SELF_PRACTICE',
+      code: 'const x = 1;',
       startedAt: new Date(),
       expiresAt: new Date(Date.now() + 30 * 60 * 1000),
     };
@@ -193,6 +194,7 @@ describe('GET /api/sessions', () => {
     const data = await response.json();
     expect(data.session).toBeDefined();
     expect(data.session.id).toBe('active-session-id');
+    expect(data.session.code).toBe('const x = 1;');
   });
 
   it('returns null session when no active session exists', async () => {

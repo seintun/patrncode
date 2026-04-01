@@ -115,6 +115,7 @@ async function getHandler(
       select: {
         id: true,
         mode: true,
+        code: true,
         startedAt: true,
         expiresAt: true,
       },

@@ -130,6 +130,7 @@ function ProblemDetailContent({
   const [activeSession, setActiveSession] = useState<{
     id: string;
     mode: SessionMode;
+    code: string | null;
     expiresAt: string | null;
   } | null>(null);
   const [abandonedSession, setAbandonedSession] = useState<AbandonedSession | null>(null);
@@ -142,6 +143,15 @@ function ProblemDetailContent({
     // Check for active session
     const checkActive = async () => {
       try {
+        try {
+          await fetch('/api/sessions/cleanup', {
+            method: 'POST',
+            cache: 'no-store',
+          });
+        } catch (cleanupError) {
+          console.error('Failed to cleanup expired sessions:', cleanupError);
+        }
+
         const res = await fetch(`/api/sessions?problemId=${problem.id}&includeAbandoned=true`, {
           cache: 'no-store',
         });
@@ -226,7 +236,10 @@ function ProblemDetailContent({
       const res = await fetch(`/api/sessions/${activeSession.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'ABANDONED' }),
+        body: JSON.stringify({
+          status: 'ABANDONED',
+          code: activeSession.code ?? undefined,
+        }),
       });
       if (res.ok) {
         setActiveSession(null);
