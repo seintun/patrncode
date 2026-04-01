@@ -47,6 +47,7 @@ async function getHandler(
         messages: {
           orderBy: { createdAt: 'asc' },
         },
+        feedback: true,
       },
     });
 

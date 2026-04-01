@@ -33,18 +33,23 @@ Your feedback must be:
 You MUST return a structured summary with exactly these sections:
 
 ## Strengths
-List 2-3 specific things the user did well. Be concrete (e.g., "You correctly identified the hash map pattern before writing any code" not just "Good job").
+2-3 specific wins. MUST follow this format:
+- Bullet point 1
+- Bullet point 2
 
 ## Areas for Improvement
-List 1-3 specific things to work on. Be honest but constructive (e.g., "Consider edge cases earlier — an empty array was the first hidden test you failed").
+1-3 growth areas. MUST follow this format:
+- Bullet point 1
 
 ## Suggestions for Next Steps
-Provide 2-3 actionable recommendations (e.g., "Practice another hash map problem to solidify the pattern", "Try solving it again without hints to build independence").
+2-3 concrete rituals or problems. MUST follow this format:
+- Bullet point 1
 
 ## Complexity Note
-Brief analysis of the final solution's time and space complexity. Use intuitive language with analogies.
+Brief technical analysis. Keep it concise.
 
-Keep the entire summary concise — no more than 250 words total.`;
+CRITICAL: Every item in Strengths, Areas for Improvement, and Suggestions MUST be its own bullet point starting with "- ". NO PARAGRAPHS.
+Keep the entire summary concise — no more than 200 words total.`;
 
   const timeMinutes = Math.round(input.timeSpentSeconds / 60);
 
@@ -60,7 +65,18 @@ Keep the entire summary concise — no more than 250 words total.`;
 ${input.finalCode}
 \`\`\`
 
-Provide structured feedback with Strengths, Areas for Improvement, Suggestions for Next Steps, and a Complexity Note.`;
+Provide structured feedback with bullet points (-) under each section:
+
+    - (2-3 bullet points, each starting with "- ")
+
+### Areas for Improvement
+    - (1-3 bullet points, each starting with "- ")
+
+### Suggestions for Next Steps
+    - (2-3 bullet points, each starting with "- ")
+
+### Complexity Note
+    - (brief analysis starting with "- ")`;
 
   return { system, user };
 }

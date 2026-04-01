@@ -57,16 +57,13 @@ export const MarkdownRenderer = memo(function MarkdownRenderer({
       },
 
       ul({ children }) {
-        if (compact) return <>{children}</>;
-        return <ul className="sophia-ul">{children}</ul>;
+        return <ul className={compact ? 'sophia-ul-compact' : 'sophia-ul'}>{children}</ul>;
       },
       ol({ children }) {
-        if (compact) return <>{children}</>;
-        return <ol className="sophia-ol">{children}</ol>;
+        return <ol className={compact ? 'sophia-ol-compact' : 'sophia-ol'}>{children}</ol>;
       },
       li({ children }) {
-        if (compact) return <>{children}</>;
-        return <li className="sophia-li">{children}</li>;
+        return <li className={compact ? 'sophia-li-compact' : 'sophia-li'}>{children}</li>;
       },
 
       blockquote({ children }) {

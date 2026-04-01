@@ -417,6 +417,47 @@ body {
     margin-bottom: 0;
   }
 
+  /* Enhanced lists for feedback cards */
+  .feedback-list ul,
+  .feedback-list ol {
+    list-style: none !important;
+    padding-left: 0 !important;
+    margin: 0.5rem 0 0 !important;
+  }
+
+  .feedback-list li {
+    display: block !important;
+    position: relative;
+    padding-left: 1.25rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+  }
+
+  .feedback-list li::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: var(--sophia-accent, #2dd4bf);
+    font-weight: 900;
+    font-size: 1.2em;
+    line-height: 1.4;
+  }
+
+  .feedback-list li:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Paragraph spacing in compact mode */
+  .feedback-list .sophia-p {
+    margin: 0 0 0.25rem 0;
+  }
+
+  .feedback-list .sophia-p:last-child {
+    margin-bottom: 0;
+  }
+
   /* Blockquote */
   .sophia-prose .sophia-blockquote {
     border-left: 3px solid var(--sophia-accent, #2dd4bf);

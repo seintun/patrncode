@@ -161,7 +161,13 @@ function parseSummarySections(text: string): {
       return null;
     }
 
-    return { strengths, weaknesses, suggestions, complexityNote };
+    // Ensure content is prepared for markdown parsing by adding leading/trailing newlines
+    return {
+      strengths: strengths ? `\n${strengths}\n` : '',
+      weaknesses: weaknesses ? `\n${weaknesses}\n` : '',
+      suggestions: suggestions ? `\n${suggestions}\n` : '',
+      complexityNote: complexityNote ? `\n${complexityNote}\n` : '',
+    };
   } catch {
     return null;
   }
@@ -228,9 +234,16 @@ async function generateBackgroundFeedback({
     }
   }
 
-  // Save feedback
-  await prisma.sessionFeedback.create({
-    data: {
+  // Save feedback (upsert to guard against race conditions)
+  await prisma.sessionFeedback.upsert({
+    where: { sessionId },
+    update: {
+      strengths,
+      weaknesses,
+      suggestions,
+      complexityNote,
+    },
+    create: {
       sessionId,
       strengths,
       weaknesses,
