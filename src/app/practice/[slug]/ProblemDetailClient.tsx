@@ -129,7 +129,7 @@ function ProblemDetailContent({
   const [activeSession, setActiveSession] = useState<{
     id: string;
     mode: SessionMode;
-    expiresAt: string;
+    expiresAt: string | null;
   } | null>(null);
   const [abandonedSession, setAbandonedSession] = useState<AbandonedSession | null>(null);
   const [loadingActive, setLoadingActive] = useState(true);
@@ -171,8 +171,10 @@ function ProblemDetailContent({
       return;
     }
 
+    const expiresAt = activeSession.expiresAt;
+
     const updateTime = () => {
-      const remaining = Math.max(0, new Date(activeSession.expiresAt).getTime() - Date.now());
+      const remaining = Math.max(0, new Date(expiresAt).getTime() - Date.now());
       const mins = Math.floor(remaining / 1000 / 60);
       const secs = Math.floor((remaining / 1000) % 60);
       setTimeLeft(`${mins}:${secs.toString().padStart(2, '0')}`);
@@ -197,9 +199,21 @@ function ProblemDetailContent({
           mode: selectedMode,
         }),
       });
-      if (!res.ok) throw new Error('Failed to create session');
-      const session = await res.json();
-      router.push(`/session/${session.id}`);
+      const payload = (await res.json().catch(() => null)) as {
+        id?: string;
+        sessionId?: string;
+      } | null;
+
+      if (res.status === 409 && payload?.sessionId) {
+        router.push(`/session/${payload.sessionId}`);
+        return;
+      }
+
+      if (!res.ok || !payload?.id) {
+        throw new Error('Failed to create session');
+      }
+
+      router.push(`/session/${payload.id}`);
     } catch {
       setStarting(false);
     }
@@ -234,9 +248,21 @@ function ProblemDetailContent({
           previousSessionId: abandonedSession.id,
         }),
       });
-      if (!res.ok) throw new Error('Failed to resume abandoned session');
-      const session = await res.json();
-      router.push(`/session/${session.id}`);
+      const payload = (await res.json().catch(() => null)) as {
+        id?: string;
+        sessionId?: string;
+      } | null;
+
+      if (res.status === 409 && payload?.sessionId) {
+        router.push(`/session/${payload.sessionId}`);
+        return;
+      }
+
+      if (!res.ok || !payload?.id) {
+        throw new Error('Failed to resume abandoned session');
+      }
+
+      router.push(`/session/${payload.id}`);
     } catch {
       setStarting(false);
     }

@@ -129,6 +129,16 @@ describe('POST /api/sessions', () => {
 
     const response = await POST(req);
     expect(response.status).toBe(201);
+    expect(prisma.session.findFirst).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({
+        where: expect.objectContaining({
+          guestId: mockGuestId,
+          problemId: mockProblemId,
+          status: 'ABANDONED',
+        }),
+      }),
+    );
     expect(prisma.session.create).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({

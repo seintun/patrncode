@@ -190,4 +190,35 @@ describe('SessionPage leave guard', () => {
     expect(mockPush).not.toHaveBeenCalled();
     expect(fetchMock.mock.calls.some(([, init]) => init?.method === 'PATCH')).toBe(false);
   });
+
+  it('still navigates after confirming leave when abandon request throws', async () => {
+    const user = userEvent.setup();
+    global.fetch = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      if (!init?.method || init.method === 'GET') {
+        return createJsonResponse(sessionResponse);
+      }
+
+      if (init.method === 'PATCH') {
+        throw new Error('network error');
+      }
+
+      return createJsonResponse({}, false, 404);
+    }) as unknown as typeof fetch;
+    const fetchMock = vi.mocked(global.fetch);
+
+    render(<SessionPage />);
+
+    const practiceLink = await screen.findByRole('link', { name: 'Practice' });
+    await user.click(practiceLink);
+
+    expect(screen.getByText('Leave session?')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Save & Leave' }));
+
+    await waitFor(() => {
+      expect(mockPush).toHaveBeenCalledWith('/practice');
+    });
+
+    expect(fetchMock.mock.calls.some(([, init]) => init?.method === 'PATCH')).toBe(true);
+  });
 });
