@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import { getCachedRecommendation, setCachedRecommendation } from '@/lib/recommendation-cache';
 import { withAuth } from '@/lib/errors/api';
-import type { Pattern } from '@/generated/prisma/enums';
+import { getWeakPatterns } from '@/lib/pattern-weakness';
 
 async function handler(req: NextRequest, { guestId }: { guestId: string }): Promise<Response> {
   const effectiveGuestId = guestId;
@@ -12,13 +12,7 @@ async function handler(req: NextRequest, { guestId }: { guestId: string }): Prom
     return NextResponse.json(cached);
   }
 
-  const weakPatterns: Array<{ pattern: Pattern; confidenceScore: number }> =
-    await prisma.patternWeakness.findMany({
-      where: { guestId: effectiveGuestId },
-      orderBy: { confidenceScore: 'asc' },
-      take: 3,
-      select: { pattern: true, confidenceScore: true },
-    });
+  const weakPatterns = await getWeakPatterns(effectiveGuestId, 3);
 
   const userStates = await prisma.userProblemState.findMany({
     where: { guestId: effectiveGuestId, mastery: { not: 'MASTERED' } },
@@ -31,7 +25,7 @@ async function handler(req: NextRequest, { guestId }: { guestId: string }): Prom
     id: string;
     slug: string;
     title: string;
-    pattern: Pattern;
+    pattern: string;
     difficulty: 'EASY' | 'MEDIUM' | 'HARD';
   } | null = null;
   let reason = '';

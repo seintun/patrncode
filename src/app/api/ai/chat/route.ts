@@ -21,6 +21,7 @@ async function handler(req: NextRequest): Promise<Response> {
     const {
       messages,
       mode,
+      sessionMode,
       title,
       statement,
       pattern,
@@ -89,6 +90,8 @@ async function handler(req: NextRequest): Promise<Response> {
       pattern: pattern as string,
       difficulty: difficulty as string,
       currentCode: currentCode as string | undefined,
+      sessionMode:
+        (sessionMode as 'SELF_PRACTICE' | 'COACH_ME' | 'MOCK_INTERVIEW' | undefined) ?? undefined,
     };
     const { system } =
       mode === 'coach' ? buildCoachPrompt(promptInput) : buildInterviewerPrompt(promptInput);

@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import type { Pattern, Difficulty } from '@/generated/prisma/enums';
+import { Prisma } from '@/generated/prisma/client';
 import { handleApiError } from '@/lib/errors/api';
 import { getGuestIdFromCookie } from '@/lib/guest';
 import { cookies } from 'next/headers';
@@ -21,7 +22,6 @@ export async function GET(request: NextRequest): Promise<Response> {
       pattern?: Pattern;
       difficulty?: Difficulty;
       isCurated?: boolean;
-      title?: { contains: string; mode: 'insensitive' };
     } = {};
 
     if (pattern) {
@@ -31,21 +31,59 @@ export async function GET(request: NextRequest): Promise<Response> {
     if (difficulty) where.difficulty = difficulty;
     if (curated) where.isCurated = true;
 
-    if (search) {
-      where.title = { contains: search, mode: 'insensitive' };
-    }
-
     const orderBy = curated
       ? [{ curatedOrder: 'asc' as const }]
       : [{ difficulty: 'asc' as const }, { sortOrder: 'asc' as const }, { title: 'asc' as const }];
 
-    const problems = await prisma.problem.findMany({
-      where,
-      orderBy,
-      include: {
-        _count: { select: { testCases: true } },
-      },
-    });
+    const problems = search
+      ? await (async () => {
+          const patternFilter = pattern
+            ? Prisma.sql`AND pattern = ${pattern}::"Pattern"`
+            : Prisma.empty;
+          const difficultyFilter = difficulty
+            ? Prisma.sql`AND difficulty = ${difficulty}::"Difficulty"`
+            : Prisma.empty;
+          const curatedFilter = curated ? Prisma.sql`AND "isCurated" = true` : Prisma.empty;
+
+          const ranked = await prisma.$queryRaw<Array<{ id: string }>>(Prisma.sql`
+            SELECT id
+            FROM "Problem"
+            WHERE 1=1
+            ${patternFilter}
+            ${difficultyFilter}
+            ${curatedFilter}
+            AND (
+              similarity(title, ${search}) > 0.1
+              OR similarity(statement, ${search}) > 0.1
+              OR title ILIKE ${`%${search}%`}
+            )
+            ORDER BY GREATEST(similarity(title, ${search}), similarity(statement, ${search})) DESC
+            LIMIT 100
+          `);
+
+          const ids = ranked.map((row) => row.id);
+          if (ids.length === 0) return [];
+
+          const byId = new Map(
+            (
+              await prisma.problem.findMany({
+                where: { id: { in: ids } },
+                include: {
+                  _count: { select: { testCases: true } },
+                },
+              })
+            ).map((problem) => [problem.id, problem]),
+          );
+
+          return ids.map((id) => byId.get(id)).filter((problem) => problem != null);
+        })()
+      : await prisma.problem.findMany({
+          where,
+          orderBy,
+          include: {
+            _count: { select: { testCases: true } },
+          },
+        });
 
     let masteryMap: Record<string, string> = {};
     const sessionStatusMap: Record<string, 'ACTIVE' | 'ABANDONED' | null> = {};

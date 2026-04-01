@@ -23,7 +23,6 @@ interface CoachingPanelProps {
   onAskAboutFailure?: () => void;
   showFailureButton?: boolean;
   onClose?: () => void;
-  onOpenCustomProblem?: () => void;
   onViewSessionReport?: () => void;
   showSessionReportButton?: boolean;
 }
@@ -50,7 +49,6 @@ export function CoachingPanel({
   onAskAboutFailure,
   showFailureButton,
   onClose,
-  onOpenCustomProblem,
   onViewSessionReport,
   showSessionReportButton,
 }: CoachingPanelProps) {
@@ -485,17 +483,6 @@ export function CoachingPanel({
                   Why did this fail?
                 </button>
               )}
-              {onOpenCustomProblem && (
-                <button
-                  type="button"
-                  onClick={onOpenCustomProblem}
-                  disabled={isLoading || hintStream.isLoading}
-                  aria-label="Generate practice problem"
-                  className="error-cta-btn"
-                >
-                  Generate practice problem
-                </button>
-              )}
               {showSessionReportButton && onViewSessionReport && (
                 <button
                   type="button"
@@ -512,7 +499,7 @@ export function CoachingPanel({
                 onClick={() => setShowWeakPatterns((v) => !v)}
                 className="text-xs text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
               >
-                {showWeakPatterns ? 'Hide weak patterns' : 'Show weak patterns'}
+                {showWeakPatterns ? 'Hide weak patterns' : 'Show weak patterns (from your history)'}
               </button>
             </div>
 

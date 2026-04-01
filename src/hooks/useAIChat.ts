@@ -95,6 +95,7 @@ export function useAIChat({
       api: '/api/ai/chat',
       body: {
         mode: chatMode,
+        sessionMode: mode,
         sessionId,
         currentCode,
         ...problem,

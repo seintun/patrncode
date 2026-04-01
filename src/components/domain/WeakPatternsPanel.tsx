@@ -40,7 +40,7 @@ export function WeakPatternsPanel() {
         <p className="text-xs text-[var(--color-text-muted)]">Loading...</p>
       ) : patterns.length === 0 ? (
         <p className="text-xs text-[var(--color-text-muted)]">
-          No weaknesses detected yet. Keep practicing.
+          No weak-pattern data yet. Complete a few sessions and run tests to generate it.
         </p>
       ) : (
         <div className="space-y-2">

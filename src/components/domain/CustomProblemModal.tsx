@@ -14,6 +14,11 @@ interface GeneratedProblem {
   title: string;
   statement: string;
   starterCode: string;
+  problem?: {
+    id: string;
+    slug: string;
+    title: string;
+  };
 }
 
 const PATTERNS = [
@@ -131,6 +136,11 @@ export function CustomProblemModal({ open, onClose, isPremium }: CustomProblemMo
             <p className="mt-2 line-clamp-6 whitespace-pre-wrap text-sm text-[var(--color-text-secondary)]">
               {generated.statement}
             </p>
+            {generated.problem?.slug && (
+              <a href={`/practice/${generated.problem.slug}`} className="mt-3 inline-block">
+                <Button size="sm">Start This Problem</Button>
+              </a>
+            )}
           </div>
         )}
       </div>

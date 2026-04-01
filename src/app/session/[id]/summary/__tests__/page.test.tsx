@@ -7,6 +7,7 @@ const mockReplace = vi.fn();
 vi.mock('next/navigation', () => ({
   useParams: () => ({ id: 'session-1' }),
   useRouter: () => ({ replace: mockReplace }),
+  useSearchParams: () => new URLSearchParams(),
 }));
 
 vi.mock('next/image', () => ({

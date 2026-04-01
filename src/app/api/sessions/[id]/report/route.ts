@@ -1,11 +1,19 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { generateText } from 'ai';
+import { z } from 'zod';
 import { withAuthAndId, handleApiError } from '@/lib/errors/api';
 import { requireOwnership } from '@/lib/auth/session-auth';
 import { prisma } from '@/lib/db/prisma';
 import { openrouter } from '@/lib/ai/provider';
 import { MODELS } from '@/lib/ai/models';
 import { buildSummaryPrompt } from '@/lib/ai/prompts/summary';
+
+const reportUpdateSchema = z.object({
+  strengths: z.string().min(1),
+  areasToImprove: z.string().default(''),
+  nextSteps: z.string().default(''),
+  complexityNote: z.string().default(''),
+});
 
 async function handler(
   _request: NextRequest,
@@ -105,3 +113,55 @@ async function handler(
 }
 
 export const GET = withAuthAndId(handler);
+
+async function patchHandler(
+  request: NextRequest,
+  { params, guestId }: { params: Promise<{ id: string }>; guestId: string },
+): Promise<Response> {
+  try {
+    const { id } = await params;
+    await requireOwnership(id, guestId);
+
+    const body = await request.json();
+    const parsed = reportUpdateSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.message }, { status: 400 });
+    }
+
+    const report = await prisma.sessionFeedback.upsert({
+      where: { sessionId: id },
+      update: {
+        strengths: parsed.data.strengths,
+        weaknesses: parsed.data.areasToImprove,
+        suggestions: parsed.data.nextSteps,
+        complexityNote: parsed.data.complexityNote,
+      },
+      create: {
+        sessionId: id,
+        strengths: parsed.data.strengths,
+        weaknesses: parsed.data.areasToImprove,
+        suggestions: parsed.data.nextSteps,
+        complexityNote: parsed.data.complexityNote,
+      },
+    });
+
+    return NextResponse.json({
+      sessionId: id,
+      report: {
+        strengths: report.strengths,
+        areasToImprove: report.weaknesses,
+        nextSteps: report.suggestions,
+        complexityNote: report.complexityNote,
+      },
+      saved: true,
+    });
+  } catch (error) {
+    return handleApiError(
+      new Response('', { status: 500 }),
+      error,
+      'PATCH /api/sessions/[id]/report',
+    );
+  }
+}
+
+export const PATCH = withAuthAndId(patchHandler);

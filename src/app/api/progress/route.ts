@@ -4,6 +4,7 @@ import { withErrorHandling } from '@/lib/errors/api';
 import { getGuestIdFromCookie } from '@/lib/guest';
 import { cookies } from 'next/headers';
 import { cleanupExpiredSessions } from '@/lib/session/expiry';
+import { getWeakPatterns } from '@/lib/pattern-weakness';
 
 async function handler(_request: NextRequest): Promise<Response> {
   try {
@@ -70,17 +71,7 @@ async function handler(_request: NextRequest): Promise<Response> {
         },
         orderBy: { nextReviewAt: 'asc' },
       }),
-      prisma.patternWeakness.findMany({
-        where: { guestId },
-        orderBy: { confidenceScore: 'asc' },
-        take: 5,
-        select: {
-          pattern: true,
-          confidenceScore: true,
-          failedCount: true,
-          successCount: true,
-        },
-      }),
+      getWeakPatterns(guestId, 5),
       prisma.userProblemState.findMany({
         where: { guestId },
         select: { problemId: true },

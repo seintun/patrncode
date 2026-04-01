@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useMemo } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Card } from '@/components/ui/Card';
@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { MarkdownRenderer } from '@/components/ui/MarkdownRenderer';
+import { SessionReportModal } from '@/components/domain/SessionReportModal';
 import { getSophiaConfig, SOPHIA_AVATAR } from '@/lib/sophia';
 import type { SessionMode } from '@/generated/prisma/enums';
 
@@ -45,12 +46,14 @@ const outcomeBadgeLevel: Record<string, 'EASY' | 'MEDIUM' | 'HARD'> = {
 export default function SessionSummaryPage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const sessionId = params.id as string;
   const [data, setData] = useState<SummaryData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [feedbackTimeout, setFeedbackTimeout] = useState(false);
   const [avatarError, setAvatarError] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
 
   const config = useMemo(() => {
     const mode = data?.mode ?? ('COACH_ME' as SessionMode);
@@ -86,6 +89,13 @@ export default function SessionSummaryPage() {
 
     fetchSummary();
   }, [sessionId, router]);
+
+  useEffect(() => {
+    const shouldOpen = searchParams.get('report') === '1';
+    if (shouldOpen) {
+      setShowReportModal(true);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     // Only poll completed sessions while feedback is pending.
@@ -465,6 +475,9 @@ export default function SessionSummaryPage() {
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3 mt-8 pb-12">
+        <Button variant="secondary" className="flex-1" onClick={() => setShowReportModal(true)}>
+          View Editable Report
+        </Button>
         <Link href={`/practice/${data.problem.slug}`} className="flex-1">
           <Button variant="primary" className="w-full">
             Practice Again
@@ -476,6 +489,12 @@ export default function SessionSummaryPage() {
           </Button>
         </Link>
       </div>
+
+      <SessionReportModal
+        open={showReportModal}
+        sessionId={sessionId}
+        onClose={() => setShowReportModal(false)}
+      />
     </div>
   );
 }

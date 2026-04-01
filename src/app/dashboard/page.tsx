@@ -6,8 +6,10 @@ import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { useUser } from '@/hooks/useUser';
+import { useUserProfile } from '@/hooks/useUserProfile';
 import Link from 'next/link';
 import { RecommendedProblem } from '@/components/domain/RecommendedProblem';
+import { CustomProblemModal } from '@/components/domain/CustomProblemModal';
 
 interface Stats {
   totalSolved: number;
@@ -38,6 +40,8 @@ export default function DashboardPage() {
   const [needsRefresh, setNeedsRefresh] = useState<Problem[]>([]);
   const [recommended, setRecommended] = useState<Problem | null>(null);
   const [loading, setLoading] = useState(true);
+  const [customOpen, setCustomOpen] = useState(false);
+  const profile = useUserProfile();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -99,9 +103,14 @@ export default function DashboardPage() {
 
         {/* Recommendations */}
         <section className="mb-8">
-          <h2 className="mb-4 text-xl font-semibold text-[var(--color-text-primary)]">
-            Today&apos;s Suggestions
-          </h2>
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <h2 className="text-xl font-semibold text-[var(--color-text-primary)]">
+              Today&apos;s Suggestions
+            </h2>
+            <Button size="sm" variant="secondary" onClick={() => setCustomOpen(true)}>
+              Generate Practice Problem
+            </Button>
+          </div>
           <div className="mb-4">
             <RecommendedProblem />
           </div>
@@ -143,6 +152,12 @@ export default function DashboardPage() {
             </p>
           )}
         </section>
+
+        <CustomProblemModal
+          open={customOpen}
+          onClose={() => setCustomOpen(false)}
+          isPremium={profile.tier === 'PREMIUM'}
+        />
 
         {/* Recent Sessions */}
         <section>

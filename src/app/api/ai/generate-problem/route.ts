@@ -6,9 +6,25 @@ import { MODELS } from '@/lib/ai/models';
 import { prisma } from '@/lib/db/prisma';
 import { withAuth, handleApiError } from '@/lib/errors/api';
 import { checkTokenBudget, recordTokenUsage } from '@/lib/ai/token-counter';
+import type { Pattern } from '@/generated/prisma/enums';
 
 const requestSchema = z.object({
-  pattern: z.string().min(1),
+  pattern: z.enum([
+    'ARRAYS_STRINGS',
+    'HASH_MAPS',
+    'TWO_POINTERS',
+    'SLIDING_WINDOW',
+    'BINARY_SEARCH',
+    'LINKED_LISTS',
+    'STACKS_QUEUES',
+    'TREES',
+    'GRAPHS',
+    'RECURSION_BACKTRACKING',
+    'DYNAMIC_PROGRAMMING',
+    'HEAPS',
+    'SORTING',
+    'GREEDY',
+  ]),
   difficulty: z.enum(['EASY', 'MEDIUM', 'HARD']).optional(),
 });
 
@@ -42,6 +58,17 @@ function extractJson(text: string): unknown {
     throw new Error('Model did not return valid JSON');
   }
   return JSON.parse(text.slice(start, end + 1));
+}
+
+function buildSlug(title: string): string {
+  const base = title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 60);
+
+  const suffix = Math.random().toString(36).slice(2, 8);
+  return `${base || 'custom-problem'}-${suffix}`;
 }
 
 async function handler(req: NextRequest, { guestId }: { guestId: string }): Promise<Response> {
@@ -108,22 +135,54 @@ Return valid JSON only:
 
     const parsedResponse = responseSchema.parse(extractJson(result.text));
 
-    await prisma.customProblemRequest.update({
-      where: { id: request.id },
-      data: {
-        status: 'FULFILLED',
-        title: parsedResponse.title,
-        statement: parsedResponse.statement,
-        starterCode: parsedResponse.starterCode,
-        testCases: parsedResponse.testCases,
-      },
+    const createdProblem = await prisma.$transaction(async (tx) => {
+      const problem = await tx.problem.create({
+        data: {
+          title: parsedResponse.title,
+          slug: buildSlug(parsedResponse.title),
+          difficulty: difficulty ?? 'MEDIUM',
+          pattern: pattern as Pattern,
+          tags: [pattern.toLowerCase()],
+          constraints: [],
+          statement: parsedResponse.statement,
+          examples: parsedResponse.examples,
+          starterCode: parsedResponse.starterCode,
+          sourceType: 'INTERNAL',
+          isCurated: false,
+          sortOrder: 9999,
+        },
+        select: { id: true, slug: true, title: true },
+      });
+
+      await tx.testCase.createMany({
+        data: parsedResponse.testCases.map((testCase, index) => ({
+          problemId: problem.id,
+          input: testCase.input,
+          expected: testCase.expected,
+          isHidden: testCase.isHidden,
+          order: index,
+        })),
+      });
+
+      await tx.customProblemRequest.update({
+        where: { id: request.id },
+        data: {
+          status: 'FULFILLED',
+          title: parsedResponse.title,
+          statement: parsedResponse.statement,
+          starterCode: parsedResponse.starterCode,
+          testCases: parsedResponse.testCases,
+        },
+      });
+
+      return problem;
     });
 
     recordTokenUsage(guestId, 3_000).catch(() => {
       // best effort usage accounting
     });
 
-    return NextResponse.json({ requestId: request.id, ...parsedResponse });
+    return NextResponse.json({ requestId: request.id, problem: createdProblem, ...parsedResponse });
   } catch (error) {
     if (requestId) {
       await prisma.customProblemRequest
