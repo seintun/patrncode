@@ -18,13 +18,33 @@ function generateNonce(): string {
 export async function proxy(request: NextRequest) {
   const nonce = generateNonce();
 
-  // Pass nonce to downstream via request header (readable in Server Components via headers())
+  // CSP enforcement in production, report-only in development
+  const isProd = process.env.NODE_ENV === 'production';
+  const cspHeaderName = isProd ? 'Content-Security-Policy' : 'Content-Security-Policy-Report-Only';
+
+  const cspValue = [
+    "default-src 'self'",
+    `script-src 'self' 'nonce-${nonce}' 'unsafe-eval' https://cdn.jsdelivr.net https://vercel.live https://va.vercel-scripts.com`,
+    `style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net`,
+    "img-src 'self' data: blob: https:",
+    `connect-src 'self' https://cdn.jsdelivr.net https://api.openrouter.ai https://*.upstash.io https://openrouter.ai https://va.vercel-scripts.com ${process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''}`,
+    "worker-src 'self' blob:",
+    "font-src 'self' data:",
+    "frame-src 'self' https://vercel.live",
+    "frame-ancestors 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+  ].join('; ');
+
+  // Set CSP on request BEFORE updateSession() so Next.js can extract nonce during SSR
+  request.headers.set(cspHeaderName, cspValue);
   request.headers.set('x-csp-nonce', nonce);
 
-  // First, handle Supabase session refresh
+  // Handle Supabase session refresh
   const response = await updateSession(request);
 
-  // Ensure nonce is also on the response headers for client-side access
+  // Also set CSP on response for browser enforcement
+  response.headers.set(cspHeaderName, cspValue);
   response.headers.set('x-csp-nonce', nonce);
 
   // Handle guest ID cookie
@@ -53,25 +73,6 @@ export async function proxy(request: NextRequest) {
       );
     }
   }
-
-  // CSP enforcement in production, report-only in development
-  const isProd = process.env.NODE_ENV === 'production';
-  const cspHeaderName = isProd ? 'Content-Security-Policy' : 'Content-Security-Policy-Report-Only';
-
-  const cspValue = [
-    "default-src 'self'",
-    `script-src 'self' 'nonce-${nonce}' 'unsafe-eval' https://vercel.live`,
-    `style-src 'self' 'unsafe-inline'`,
-    "img-src 'self' data: blob: https:",
-    `connect-src 'self' https://api.openrouter.ai https://*.upstash.io https://openrouter.ai ${process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''}`,
-    "worker-src 'self' blob:",
-    "font-src 'self' data:",
-    "frame-ancestors 'none'",
-    "base-uri 'self'",
-    "form-action 'self'",
-  ].join('; ');
-
-  response.headers.set(cspHeaderName, cspValue);
 
   return response;
 }

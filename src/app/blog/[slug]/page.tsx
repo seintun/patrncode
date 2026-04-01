@@ -1,9 +1,21 @@
 import { notFound } from 'next/navigation';
+import { headers } from 'next/headers';
 import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import type { Metadata } from 'next';
 import { getPostBySlug, getAllPosts } from '@/lib/content';
+
+// Per-request nonce requires dynamic rendering
+export const dynamic = 'force-dynamic';
+
+async function getNonce(): Promise<string | undefined> {
+  const h = await headers();
+  const csp = h.get('content-security-policy') ?? h.get('content-security-policy-report-only');
+  if (!csp) return undefined;
+  const match = csp.match(/'nonce-([a-zA-Z0-9]+)'/);
+  return match?.[1];
+}
 
 export async function generateStaticParams() {
   const posts = getAllPosts('blog');
@@ -47,6 +59,8 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
   if (!post) notFound();
 
+  const nonce = await getNonce();
+
   // Article schema — content is from our own markdown files, JSON.stringify handles escaping
   const articleSchema = {
     '@context': 'https://schema.org',
@@ -64,9 +78,9 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
   return (
     <>
-      {}
       <script
         type="application/ld+json"
+        nonce={nonce}
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
       />
       <div className="mx-auto max-w-3xl px-4 py-16">

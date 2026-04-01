@@ -187,7 +187,7 @@ export function CodeEditor({
       smoothScrolling: true,
       lineNumbers: (isMobile ? 'off' : 'on') as 'on' | 'off',
       folding: !isMobile,
-      accessibilitySupport: 'on' as const,
+      accessibilitySupport: 'auto' as const,
       ariaLabel: 'Python code editor for solving the current problem',
       suggest: {
         showKeywords: true,
@@ -217,6 +217,7 @@ export function CodeEditor({
         beforeMount={handleEditorWillMount}
         onMount={handleEditorDidMount}
         options={options}
+        loading={<Skeleton className="h-full w-full" />}
       />
     </div>
   );
