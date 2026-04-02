@@ -55,9 +55,3 @@ CREATE INDEX IF NOT EXISTS "CustomProblemRequest_status_idx"
   ON "CustomProblemRequest"("status");
 
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
-
-CREATE INDEX IF NOT EXISTS "problem_title_trgm"
-  ON "Problem" USING gin (title gin_trgm_ops);
-
-CREATE INDEX IF NOT EXISTS "problem_statement_trgm"
-  ON "Problem" USING gin (statement gin_trgm_ops);

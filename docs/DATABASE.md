@@ -242,6 +242,31 @@ Run manually: `bunx prisma db seed`
 
 ---
 
+## 5.1 Wave 3 Trigram Index Safety
+
+Wave 3 uses trigram indexes on `Problem.title` and `Problem.statement` for search and recommendation quality.
+
+To avoid long write locks during deploy, those indexes are created in a separate migration with `CREATE INDEX CONCURRENTLY`:
+
+- `prisma/migrations/202604011700_wave3_trgm_indexes_concurrently/migration.sql`
+
+Rollback command:
+
+```bash
+psql "$DATABASE_URL" -f scripts/rollback-wave3-trgm-indexes.sql
+```
+
+Verification query:
+
+```sql
+SELECT indexname
+FROM pg_indexes
+WHERE tablename = 'Problem'
+  AND indexname IN ('problem_title_trgm', 'problem_statement_trgm');
+```
+
+---
+
 ## 5. Schema Sync and Migrations
 
 The project now includes versioned migrations under `prisma/migrations/` and should prefer migrate workflows over repeated `db push`.
