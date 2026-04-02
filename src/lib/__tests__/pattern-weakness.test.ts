@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { updatePatternWeakness } from '../pattern-weakness';
 import { prisma } from '@/lib/db/prisma';
@@ -15,7 +14,7 @@ describe('updatePatternWeakness', () => {
   });
 
   it('increments failed count for attempted outcomes', async () => {
-    vi.mocked(prisma.$executeRaw).mockResolvedValue(1 as any);
+    vi.mocked(prisma.$executeRaw).mockResolvedValue(1);
 
     await updatePatternWeakness({
       guestId: 'guest-1',
@@ -27,7 +26,7 @@ describe('updatePatternWeakness', () => {
   });
 
   it('increments success count for solved with zero hints', async () => {
-    vi.mocked(prisma.$executeRaw).mockResolvedValue(1 as any);
+    vi.mocked(prisma.$executeRaw).mockResolvedValue(1);
 
     await updatePatternWeakness({
       guestId: 'guest-1',
@@ -39,7 +38,7 @@ describe('updatePatternWeakness', () => {
   });
 
   it('treats solved with hints as a successful attempt', async () => {
-    vi.mocked(prisma.$executeRaw).mockResolvedValue(1 as any);
+    vi.mocked(prisma.$executeRaw).mockResolvedValue(1);
 
     await updatePatternWeakness({
       guestId: 'guest-1',

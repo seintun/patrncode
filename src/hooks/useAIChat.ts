@@ -175,10 +175,9 @@ export function useAIChat({
           {
             id: `hint-${level}-${Date.now()}`,
             role: 'assistant',
-            content: fullText,
             parts: [{ type: 'text', text: fullText }],
             annotations: [{ type: 'hint', level }],
-          } as any, // Cast to any to bypass strict SDK part vs content typing conflicts
+          },
         ]);
 
         return fullText;
