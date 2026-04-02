@@ -164,7 +164,7 @@ sophocode/
 │   │   ├── db/
 │   │   │   └── prisma.ts          # Prisma singleton
 │   │   ├── errors/
-│   │   │   └── index.ts           # handleApiError, withErrorHandling
+│   │   │   └── api.ts             # handleApiError and API guard wrappers
 │   │   ├── execution/
 │   │   │   └── runner.ts          # Pyodide Worker interface wrapper
 │   │   ├── supabase/
@@ -196,7 +196,7 @@ sophocode/
 
 Users can start practicing immediately with no account required. A random guest ID is generated and set as an httpOnly cookie (`sophocode_guest`) in `src/proxy.ts`. API routes read guest identity server-side and associate sessions/progress with that guest ID.
 
-When a user signs in (GitHub or Google OAuth via Supabase), migration logic in `src/lib/auth/migrate.ts` links prior anonymous activity to the authenticated user where applicable.
+When a user signs in (GitHub or Google OAuth via Supabase), `src/lib/auth/migrate.ts` currently migrates records with `userId = null` to the authenticated user. This behavior is not guest-cookie scoped yet and should be tightened in a follow-up.
 
 **Why:** Removes the biggest drop-off point in practice tools — the sign-up wall. Users build momentum before being asked to commit.
 

@@ -1,6 +1,6 @@
 # Roadmap
 
-> **Current status:** `0.2.x` beta. Core loop, adaptive tutoring foundations, and LeetCode import/static hint pipeline are live.
+> **Current status:** `0.2.x` beta. Core loop and adaptive tutoring foundations are live, including pattern weakness tracking, recommendations, custom problem generation, and reports.
 
 ## Recently Shipped (Wave 3)
 

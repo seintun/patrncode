@@ -114,7 +114,7 @@ All prompts share a common constraint: **"Do not provide a complete solution or 
 
 **Context awareness:** Includes the user's current code and test results so hints can target specific failing cases.
 
-**Static fallback:** Before invoking the model, hint API checks `ProblemHint` for `problemId + level`. If present, it returns the static hint immediately with `X-Hint-Source: static`.
+**Generation:** Hints are currently generated dynamically on each request; there is no static `ProblemHint` database fallback or `X-Hint-Source` header implemented yet.
 
 ### 4.3 Coach (`coach.ts`)
 

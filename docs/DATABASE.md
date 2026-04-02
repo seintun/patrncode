@@ -72,19 +72,7 @@ if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 | `curatedOrder`       | `Int?`          | Optional curated display order              |
 | `dailyChallengeDate` | `DateTime?`     | Daily challenge linkage                     |
 
-**Relations:** testCases, sessions, problemStates, problemHints
-
-#### ProblemHint
-
-| Field       | Type            | Notes               |
-| ----------- | --------------- | ------------------- |
-| `id`        | `String` (cuid) | Primary key         |
-| `problemId` | `String`        | FK -> Problem       |
-| `level`     | `Int`           | 1, 2, or 3          |
-| `content`   | `String`        | Static hint text    |
-| `source`    | `String`        | Default: `leetcode` |
-
-Unique constraint: `@@unique([problemId, level])`
+**Relations:** testCases, sessions, problemStates
 
 #### TestCase
 
@@ -220,17 +208,17 @@ Tracks AI generation lifecycle for observability and debugging.
 
 ### 2.2 Enums
 
-| Enum             | Values                                                                                                                                                                                  |
-| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Difficulty`     | EASY, MEDIUM, HARD                                                                                                                                                                      |
-| `Pattern`        | ARRAYS_STRINGS, HASH_MAPS, TWO_POINTERS, SLIDING_WINDOW, BINARY_SEARCH, LINKED_LISTS, STACKS_QUEUES, TREES, GRAPHS, RECURSION_BACKTRACKING, DYNAMIC_PROGRAMMING, HEAPS, SORTING, GREEDY |
-| `SourceType`     | INTERNAL, EXTERNAL                                                                                                                                                                      |
-| `SessionMode`    | SELF_PRACTICE, COACH_ME, MOCK_INTERVIEW                                                                                                                                                 |
-| `SessionStatus`  | IN_PROGRESS, COMPLETED, ABANDONED                                                                                                                                                       |
-| `SessionOutcome` | SOLVED, PARTIALLY_SOLVED, NOT_SOLVED                                                                                                                                                    |
-| `MasteryState`   | UNSEEN, IN_PROGRESS, MASTERED, NEEDS_REFRESH                                                                                                                                            |
-| `MessageRole`    | USER, ASSISTANT, SYSTEM                                                                                                                                                                 |
-| `RequestStatus`  | PENDING, FULFILLED, FAILED                                                                                                                                                              |
+| Enum             | Values                                                                                                                                                                                                                                                                  |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Difficulty`     | EASY, MEDIUM, HARD                                                                                                                                                                                                                                                      |
+| `Pattern`        | ARRAYS_STRINGS, HASH_MAPS, TWO_POINTERS, SLIDING_WINDOW, BINARY_SEARCH, LINKED_LISTS, STACKS_QUEUES, TREES, GRAPHS, RECURSION_BACKTRACKING, DYNAMIC_PROGRAMMING, HEAPS, SORTING, GREEDY, TRIES, BIT_MANIPULATION, INTERVALS, ADVANCED_GRAPHS, MATH_GEOMETRY, PREFIX_SUM |
+| `SourceType`     | INTERNAL, EXTERNAL                                                                                                                                                                                                                                                      |
+| `SessionMode`    | SELF_PRACTICE, COACH_ME, MOCK_INTERVIEW                                                                                                                                                                                                                                 |
+| `SessionStatus`  | IN_PROGRESS, COMPLETED, ABANDONED                                                                                                                                                                                                                                       |
+| `SessionOutcome` | SOLVED, PARTIALLY_SOLVED, NOT_SOLVED                                                                                                                                                                                                                                    |
+| `MasteryState`   | UNSEEN, IN_PROGRESS, MASTERED, NEEDS_REFRESH                                                                                                                                                                                                                            |
+| `MessageRole`    | USER, ASSISTANT, SYSTEM                                                                                                                                                                                                                                                 |
+| `RequestStatus`  | PENDING, FULFILLED, FAILED                                                                                                                                                                                                                                              |
 
 `Pattern` currently includes 20 values: ARRAYS_STRINGS, HASH_MAPS, TWO_POINTERS, SLIDING_WINDOW, BINARY_SEARCH, LINKED_LISTS, STACKS_QUEUES, TREES, GRAPHS, RECURSION_BACKTRACKING, DYNAMIC_PROGRAMMING, HEAPS, SORTING, GREEDY, TRIES, BIT_MANIPULATION, INTERVALS, ADVANCED_GRAPHS, MATH_GEOMETRY, PREFIX_SUM.
 

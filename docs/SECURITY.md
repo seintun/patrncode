@@ -41,7 +41,7 @@
 
 **Status:** implemented with `@upstash/ratelimit` via `src/lib/ratelimit.ts` and `withRateLimit` wrappers.
 
-- AI routes apply route-specific limits to reduce cost abuse risk.
+- AI routes currently use a shared API rate-limit bucket (`RATE_LIMITS.API`) through `withRateLimit`.
 - Fallback mode can still use local in-memory behavior when managed Redis is unavailable.
 
 **Remaining gap:** fallback mode is not globally shared across serverless instances, so abuse protection is weaker than centralized Redis-backed enforcement.
