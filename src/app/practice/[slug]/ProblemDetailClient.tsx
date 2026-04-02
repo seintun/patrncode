@@ -12,6 +12,11 @@ import JsonLdSchema from '@/components/seo/JsonLdSchema';
 import { SOPHIA_MODES } from '@/lib/sophia';
 import { useCodeExecution } from '@/hooks/useCodeExecution';
 import { SessionContinuationCard } from '@/components/domain/SessionContinuationCard';
+import {
+  decodeHtmlEntities,
+  formatExampleExplanation,
+  stripTrailingSections,
+} from '@/lib/problem-content/formatting';
 
 interface ProblemDetail {
   id: string;
@@ -35,6 +40,7 @@ interface ProblemDetail {
   tags?: string[];
   sourceType?: string;
   externalUrl?: string | null;
+  leetcodeNumber?: number | null;
 }
 
 type SessionMode = 'SELF_PRACTICE' | 'COACH_ME' | 'MOCK_INTERVIEW';
@@ -328,62 +334,45 @@ function ProblemDetailContent({
   }
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8">
-      <div className="mb-6">
-        <h1 className="mb-2 text-2xl font-bold text-[var(--color-text-primary)]">
-          {problem.title}
-        </h1>
-        <div className="flex flex-wrap items-center gap-2">
+    <div className="mx-auto max-w-5xl px-4 py-5 sm:py-6">
+      <section className="mb-4 rounded-2xl border border-[var(--color-border)]/90 bg-[var(--color-bg-secondary)]/70 p-4 shadow-[0_10px_30px_rgba(0,0,0,0.28)] backdrop-blur-sm sm:p-5">
+        <div className="mb-2.5 flex flex-wrap items-start justify-between gap-2.5">
+          <h1 className="text-2xl font-bold tracking-tight text-[var(--color-text-primary)] sm:text-3xl">
+            {problem.title}
+          </h1>
+          {(problem.leetcodeNumber || problem.externalUrl) && (
+            <div className="flex items-center gap-2 text-xs sm:text-sm">
+              {problem.leetcodeNumber ? (
+                <span className="rounded-full border border-[var(--color-border)] bg-[var(--color-bg-elevated)] px-2.5 py-1 font-semibold text-[var(--color-text-secondary)]">
+                  LC #{problem.leetcodeNumber}
+                </span>
+              ) : null}
+              {problem.externalUrl ? (
+                <a
+                  href={problem.externalUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-full border border-[var(--color-border)] px-3 py-1 font-medium text-[var(--color-accent)] transition hover:border-[var(--color-accent)]/40 hover:bg-[var(--color-accent)]/10"
+                >
+                  View source
+                </a>
+              ) : null}
+            </div>
+          )}
+        </div>
+
+        <div className="mb-3 flex flex-wrap items-center gap-2">
           <Badge variant="difficulty" value={difficultyLabel} />
           <Badge variant="pattern" value={formatPattern(problem.pattern)} />
         </div>
-      </div>
 
-      <div className="mb-8">
-        <div className="prose prose-invert max-w-none prose-headings:text-[var(--color-text-primary)] prose-p:text-[var(--color-text-secondary)] prose-strong:text-[var(--color-text-primary)] prose-code:text-[var(--color-accent)]">
+        <div className="prose prose-invert max-w-none text-[15px] leading-7 prose-headings:text-[var(--color-text-primary)] prose-p:text-[var(--color-text-secondary)] prose-strong:text-[var(--color-text-primary)] prose-code:rounded prose-code:bg-[var(--color-bg-elevated)] prose-code:px-1.5 prose-code:py-0.5 prose-code:text-[var(--color-accent)] prose-li:text-[var(--color-text-secondary)]">
           <ReactMarkdown remarkPlugins={[remarkGfm]}>{problem.statement}</ReactMarkdown>
         </div>
-      </div>
+      </section>
 
-      {problem.examples.length > 0 && (
-        <div className="mb-8">
-          <h2 className="mb-3 text-lg font-semibold text-[var(--color-text-primary)]">Examples</h2>
-          <div className="space-y-4">
-            {problem.examples.map((ex, i) => (
-              <Card key={i}>
-                <p className="mb-1 text-sm font-medium text-[var(--color-text-muted)]">
-                  Example {i + 1}
-                </p>
-                <div className="mb-2 font-[family-name:var(--font-geist-mono)] text-sm">
-                  <span className="text-[var(--color-text-muted)]">Input: </span>
-                  <span className="text-[var(--color-text-primary)]">{ex.input}</span>
-                </div>
-                <div className="mb-2 font-[family-name:var(--font-geist-mono)] text-sm">
-                  <span className="text-[var(--color-text-muted)]">Output: </span>
-                  <span className="text-[var(--color-text-primary)]">{ex.output}</span>
-                </div>
-                {ex.explanation && (
-                  <p className="text-sm text-[var(--color-text-secondary)]">{ex.explanation}</p>
-                )}
-              </Card>
-            ))}
-          </div>
-        </div>
-      )}
-
-      <div className="mb-8">
-        <h2 className="mb-3 text-lg font-semibold text-[var(--color-text-primary)]">Constraints</h2>
-        <ul className="list-disc space-y-1 pl-5 text-sm text-[var(--color-text-secondary)]">
-          {problem.constraints.map((c, i) => (
-            <li key={i} className="font-[family-name:var(--font-geist-mono)]">
-              {c}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <div className="mb-8">
-        <h2 className="mb-3 text-lg font-semibold text-[var(--color-text-primary)]">Select Mode</h2>
+      <section className="mb-5">
+        <h2 className="mb-2 text-lg font-semibold text-[var(--color-text-primary)]">Select Mode</h2>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
           {MODES.map((mode) => {
             const sophiaConfig = SOPHIA_MODES[mode.id];
@@ -392,24 +381,27 @@ function ProblemDetailContent({
               <Card
                 key={mode.id}
                 onClick={() => setSelectedMode(mode.id)}
-                className="cursor-pointer overflow-hidden p-0 transition-transform active:scale-[0.98] sm:hover:scale-[1.02]"
+                className="group relative overflow-hidden rounded-xl border p-0 transition-transform duration-200 active:scale-[0.98] sm:hover:-translate-y-0.5"
                 style={
                   isSelected
                     ? {
                         borderColor: sophiaConfig.colors.primary,
                         backgroundColor: sophiaConfig.colors.bg,
+                        boxShadow: `0 0 0 1px ${sophiaConfig.colors.primary}33, 0 10px 26px ${sophiaConfig.colors.primary}22`,
                       }
                     : {}
                 }
               >
-                {/* Mobile: image left, text right. sm+: image top, text below */}
+                {!isSelected && (
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[var(--color-bg-primary)]/15 opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+                )}
                 <div className="flex flex-row sm:flex-col">
-                  <div className="relative h-28 w-28 shrink-0 sm:h-36 sm:w-full overflow-hidden">
+                  <div className="relative h-28 w-28 shrink-0 overflow-hidden sm:h-36 sm:w-full">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={MODE_IMAGES[mode.id]}
                       alt={mode.title}
-                      className="h-full w-full object-cover"
+                      className="h-full w-full object-cover transition-transform duration-300 sm:group-hover:scale-[1.03]"
                     />
                     {isSelected && (
                       <div
@@ -420,53 +412,126 @@ function ProblemDetailContent({
                   </div>
                   <div className="flex flex-1 flex-col justify-center p-3">
                     <h3
-                      className="mb-1 font-semibold"
+                      className="mb-1 text-[15px] font-semibold"
                       style={{
                         color: isSelected ? sophiaConfig.colors.text : 'var(--color-text-primary)',
                       }}
                     >
                       {mode.title}
                     </h3>
-                    <p className="text-sm text-[var(--color-text-secondary)]">{mode.description}</p>
+                    <p className="text-sm leading-5 text-[var(--color-text-secondary)]">
+                      {mode.description}
+                    </p>
                   </div>
                 </div>
               </Card>
             );
           })}
         </div>
-      </div>
+      </section>
 
       {abandonedSession && (
-        <SessionContinuationCard
-          mode={abandonedSession.mode}
-          title="Previous Session Available"
-          description={
-            <>
-              We found an abandoned{' '}
-              <span className="font-semibold">{abandonedSession.mode.replace('_', ' ')}</span>{' '}
-              session for this problem. Resume with your previous code or start fresh.
-            </>
-          }
-          primaryAction={{
-            label: starting ? 'Starting...' : 'Resume with Previous Code',
-            onClick: handleResumeAbandonedSession,
-            disabled: starting,
-          }}
-          secondaryAction={{
-            label: 'Start Fresh',
-            onClick: handleStartSession,
-            disabled: starting,
-          }}
-        />
+        <div className="mb-5">
+          <SessionContinuationCard
+            mode={abandonedSession.mode}
+            title="Previous Session Available"
+            description={
+              <>
+                We found an abandoned{' '}
+                <span className="font-semibold">{abandonedSession.mode.replace('_', ' ')}</span>{' '}
+                session for this problem. Resume with your previous code or start fresh.
+              </>
+            }
+            primaryAction={{
+              label: starting ? 'Starting...' : 'Resume with Previous Code',
+              onClick: handleResumeAbandonedSession,
+              disabled: starting,
+            }}
+            secondaryAction={{
+              label: 'Start Fresh',
+              onClick: handleStartSession,
+              disabled: starting,
+            }}
+          />
+        </div>
       )}
 
       {!abandonedSession && (
-        <div className="flex justify-center">
+        <div className="mb-5 flex justify-center pt-0.5">
           <Button onClick={handleStartSession} disabled={starting} size="lg">
             {starting ? 'Starting...' : 'Start Session'}
           </Button>
         </div>
       )}
+
+      {problem.examples.length > 0 && (
+        <section className="mb-5">
+          <h2 className="mb-2 text-lg font-semibold text-[var(--color-text-primary)]">Examples</h2>
+          <div className="space-y-2.5">
+            {problem.examples.map((ex, i) => (
+              <Card
+                key={i}
+                className="rounded-xl border-[var(--color-border)]/80 bg-[var(--color-bg-secondary)]/75 p-0"
+              >
+                <div className="border-b border-[var(--color-border)]/70 px-4 py-1.5">
+                  <p className="text-sm font-semibold text-[var(--color-text-secondary)]">
+                    Example {i + 1}
+                  </p>
+                </div>
+                <div className="mx-3.5 my-3 space-y-2.5 font-[family-name:var(--font-geist-mono)] text-sm leading-7">
+                  <div className="rounded-lg border border-[var(--color-accent)]/35 bg-[var(--color-accent)]/8 px-3 py-2">
+                    <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-[var(--color-accent)]">
+                      Input
+                    </p>
+                    <p className="whitespace-pre-wrap break-words text-[var(--color-text-primary)]">
+                      {decodeHtmlEntities(ex.input)}
+                    </p>
+                  </div>
+
+                  <div className="rounded-lg border border-[var(--color-sophia-mock)]/35 bg-[var(--color-sophia-mock)]/10 px-3 py-2">
+                    <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-[var(--color-sophia-mock)]">
+                      Output
+                    </p>
+                    <p className="whitespace-pre-wrap break-words text-[var(--color-text-primary)]">
+                      {stripTrailingSections(decodeHtmlEntities(ex.output))}
+                    </p>
+                  </div>
+
+                  {ex.explanation && (
+                    <div className="rounded-lg border border-[var(--color-ai-coach)]/35 bg-[var(--color-ai-coach)]/8 px-3 py-2">
+                      <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-[var(--color-ai-coach)]">
+                        Explanation
+                      </p>
+                      <p className="whitespace-pre-line break-words text-[var(--color-text-primary)]/95">
+                        {formatExampleExplanation(ex.explanation)}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </Card>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <section className="mb-6">
+        <h2 className="mb-3 text-lg font-semibold text-[var(--color-text-primary)]">Constraints</h2>
+        <div className="rounded-xl border border-[var(--color-border)]/80 bg-[var(--color-bg-secondary)]/70 p-3.5 sm:p-4">
+          <ol className="space-y-2 text-sm text-[var(--color-text-secondary)]">
+            {problem.constraints.map((c, i) => (
+              <li
+                key={i}
+                className="flex items-start gap-2 rounded-lg border border-[var(--color-border)]/50 bg-[var(--color-bg-primary)]/60 px-3 py-1.5 font-[family-name:var(--font-geist-mono)]"
+              >
+                <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[var(--color-bg-elevated)] text-[11px] font-semibold text-[var(--color-accent)]">
+                  {i + 1}
+                </span>
+                <span>{c}</span>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
     </div>
   );
 }

@@ -1,0 +1,329 @@
+[
+  {
+    "leetcodeNumber": 1,
+    "title": "Two Sum",
+    "slug": "two-sum",
+    "difficulty": "EASY",
+    "pattern": "HASH_MAPS",
+    "tags": ["Array", "Hash Table"],
+    "constraints": [
+      "2 <= nums.length <= 10^4",
+      "-10^9 <= nums[i] <= 10^9",
+      "-10^9 <= target <= 10^9",
+      "Exactly one valid answer exists"
+    ],
+    "statement": "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target. You may not use the same element twice and may return indices in any order.",
+    "examples": [
+      {
+        "input": "nums = [2,7,11,15], target = 9",
+        "output": "[0,1]",
+        "explanation": "nums[0] + nums[1] == 9"
+      },
+      {
+        "input": "nums = [3,2,4], target = 6",
+        "output": "[1,2]"
+      }
+    ],
+    "starterCode": "def twoSum(nums: list[int], target: int) -> list[int]:\n    pass",
+    "approaches": [
+      {
+        "name": "Brute Force",
+        "description": "Try every pair and return the first pair that sums to target.",
+        "complexity": "Time O(n^2), Space O(1)"
+      },
+      {
+        "name": "Hash Map",
+        "description": "Store visited values and look up target - current in O(1) average time.",
+        "complexity": "Time O(n), Space O(n)"
+      }
+    ],
+    "hints": [
+      "If you know the current number, what complementary number do you need?",
+      "A hash map can tell you whether that complementary number was seen earlier.",
+      "Store value -> index as you scan from left to right."
+    ],
+    "externalUrl": "https://leetcode.com/problems/two-sum/"
+  },
+  {
+    "leetcodeNumber": 49,
+    "title": "Group Anagrams",
+    "slug": "group-anagrams",
+    "difficulty": "MEDIUM",
+    "pattern": "HASH_MAPS",
+    "tags": ["Array", "String", "Hash Table", "Sorting"],
+    "constraints": [
+      "1 <= strs.length <= 10^4",
+      "0 <= strs[i].length <= 100",
+      "strs[i] consists of lowercase English letters"
+    ],
+    "statement": "Given an array of strings strs, group the anagrams together. You can return the answer in any order.",
+    "examples": [
+      {
+        "input": "strs = [\"eat\",\"tea\",\"tan\",\"ate\",\"nat\",\"bat\"]",
+        "output": "[[\"eat\",\"tea\",\"ate\"],[\"tan\",\"nat\"],[\"bat\"]]",
+        "explanation": "Words with the same sorted signature belong in the same group."
+      },
+      {
+        "input": "strs = [\"\"]",
+        "output": "[[\"\"]]"
+      }
+    ],
+    "starterCode": "def groupAnagrams(strs: list[str]) -> list[list[str]]:\n    pass",
+    "approaches": [
+      {
+        "name": "Sorted Signature",
+        "description": "Sort each string and use the sorted result as a hash key.",
+        "complexity": "Time O(n * k log k), Space O(nk)"
+      },
+      {
+        "name": "Character Count Signature",
+        "description": "Use 26-length character counts as key to avoid sorting each string.",
+        "complexity": "Time O(nk), Space O(nk)"
+      }
+    ],
+    "hints": [
+      "How can you map words with the same letters to the same key?",
+      "A sorted string can serve as one stable key.",
+      "A 26-length frequency tuple avoids per-string sorting."
+    ],
+    "externalUrl": "https://leetcode.com/problems/group-anagrams/"
+  },
+  {
+    "leetcodeNumber": 3,
+    "title": "Longest Substring Without Repeating Characters",
+    "slug": "longest-substring-without-repeating-characters",
+    "difficulty": "MEDIUM",
+    "pattern": "SLIDING_WINDOW",
+    "tags": ["Hash Table", "String", "Sliding Window"],
+    "constraints": [
+      "0 <= s.length <= 5 * 10^4",
+      "s consists of English letters, digits, symbols and spaces"
+    ],
+    "statement": "Given a string s, find the length of the longest substring without repeating characters.",
+    "examples": [
+      {
+        "input": "s = \"abcabcbb\"",
+        "output": "3",
+        "explanation": "The answer is \"abc\", with length 3."
+      },
+      {
+        "input": "s = \"bbbbb\"",
+        "output": "1"
+      }
+    ],
+    "starterCode": "def lengthOfLongestSubstring(s: str) -> int:\n    pass",
+    "approaches": [
+      {
+        "name": "Sliding Window with Set",
+        "description": "Expand right pointer and shrink left pointer while duplicates exist.",
+        "complexity": "Time O(n), Space O(min(n, charset))"
+      },
+      {
+        "name": "Sliding Window with Last Seen Index",
+        "description": "Jump left pointer directly using the most recent index of each character.",
+        "complexity": "Time O(n), Space O(min(n, charset))"
+      }
+    ],
+    "hints": [
+      "A brute force over all substrings is too slow.",
+      "Maintain a moving window where all characters are unique.",
+      "Track each character's last index to skip over repeated sections faster."
+    ],
+    "externalUrl": "https://leetcode.com/problems/longest-substring-without-repeating-characters/"
+  },
+  {
+    "leetcodeNumber": 33,
+    "title": "Search in Rotated Sorted Array",
+    "slug": "search-in-rotated-sorted-array",
+    "difficulty": "MEDIUM",
+    "pattern": "BINARY_SEARCH",
+    "tags": ["Array", "Binary Search"],
+    "constraints": [
+      "1 <= nums.length <= 5000",
+      "-10^4 <= nums[i], target <= 10^4",
+      "All values are unique",
+      "nums is sorted then rotated"
+    ],
+    "statement": "Given nums sorted in ascending order then rotated at an unknown pivot, return the index of target if found, else return -1. You must run in O(log n) time.",
+    "examples": [
+      {
+        "input": "nums = [4,5,6,7,0,1,2], target = 0",
+        "output": "4"
+      },
+      {
+        "input": "nums = [4,5,6,7,0,1,2], target = 3",
+        "output": "-1"
+      }
+    ],
+    "starterCode": "def search(nums: list[int], target: int) -> int:\n    pass",
+    "approaches": [
+      {
+        "name": "Modified Binary Search",
+        "description": "At each step, one half is sorted; decide whether target lies in the sorted half.",
+        "complexity": "Time O(log n), Space O(1)"
+      }
+    ],
+    "hints": [
+      "Even after rotation, at least one half is always sorted.",
+      "Use bounds checks to decide which side to discard.",
+      "Keep classic binary-search pointer updates once side is chosen."
+    ],
+    "externalUrl": "https://leetcode.com/problems/search-in-rotated-sorted-array/"
+  },
+  {
+    "leetcodeNumber": 56,
+    "title": "Merge Intervals",
+    "slug": "merge-intervals",
+    "difficulty": "MEDIUM",
+    "pattern": "INTERVALS",
+    "tags": ["Array", "Sorting"],
+    "constraints": [
+      "1 <= intervals.length <= 10^4",
+      "intervals[i].length == 2",
+      "0 <= start <= end <= 10^4"
+    ],
+    "statement": "Given an array of intervals where intervals[i] = [start_i, end_i], merge all overlapping intervals and return non-overlapping intervals that cover all input intervals.",
+    "examples": [
+      {
+        "input": "intervals = [[1,3],[2,6],[8,10],[15,18]]",
+        "output": "[[1,6],[8,10],[15,18]]"
+      },
+      {
+        "input": "intervals = [[1,4],[4,5]]",
+        "output": "[[1,5]]"
+      }
+    ],
+    "starterCode": "def merge(intervals: list[list[int]]) -> list[list[int]]:\n    pass",
+    "approaches": [
+      {
+        "name": "Sort and Sweep",
+        "description": "Sort by interval start, then merge into an output list by checking overlap with the last interval.",
+        "complexity": "Time O(n log n), Space O(n)"
+      }
+    ],
+    "hints": [
+      "You cannot reliably merge until intervals are ordered by start.",
+      "Compare the current interval start with the end of the last merged interval.",
+      "If overlapping, extend end; otherwise append a new interval."
+    ],
+    "externalUrl": "https://leetcode.com/problems/merge-intervals/"
+  },
+  {
+    "leetcodeNumber": 200,
+    "title": "Number of Islands",
+    "slug": "number-of-islands",
+    "difficulty": "MEDIUM",
+    "pattern": "GRAPHS",
+    "tags": ["Array", "Depth-First Search", "Breadth-First Search", "Union Find", "Matrix"],
+    "constraints": [
+      "m == grid.length",
+      "n == grid[i].length",
+      "1 <= m, n <= 300",
+      "grid[i][j] is '0' or '1'"
+    ],
+    "statement": "Given a 2D binary grid of '1's (land) and '0's (water), return the number of islands. An island is formed by connecting adjacent lands horizontally or vertically.",
+    "examples": [
+      {
+        "input": "grid = [[\"1\",\"1\",\"1\",\"1\",\"0\"],[\"1\",\"1\",\"0\",\"1\",\"0\"],[\"1\",\"1\",\"0\",\"0\",\"0\"],[\"0\",\"0\",\"0\",\"0\",\"0\"]]",
+        "output": "1"
+      },
+      {
+        "input": "grid = [[\"1\",\"1\",\"0\",\"0\",\"0\"],[\"1\",\"1\",\"0\",\"0\",\"0\"],[\"0\",\"0\",\"1\",\"0\",\"0\"],[\"0\",\"0\",\"0\",\"1\",\"1\"]]",
+        "output": "3"
+      }
+    ],
+    "starterCode": "def numIslands(grid: list[list[str]]) -> int:\n    pass",
+    "approaches": [
+      {
+        "name": "DFS Flood Fill",
+        "description": "When a land cell is found, run DFS to mark the whole connected component visited.",
+        "complexity": "Time O(mn), Space O(mn) worst-case recursion/stack"
+      },
+      {
+        "name": "BFS Flood Fill",
+        "description": "Use a queue instead of recursion to traverse each island.",
+        "complexity": "Time O(mn), Space O(min(mn, frontier))"
+      }
+    ],
+    "hints": [
+      "Count components, not individual land cells.",
+      "From each unvisited land cell, traverse all connected land in 4 directions.",
+      "Mark visited cells immediately so each cell is processed once."
+    ],
+    "externalUrl": "https://leetcode.com/problems/number-of-islands/"
+  },
+  {
+    "leetcodeNumber": 322,
+    "title": "Coin Change",
+    "slug": "coin-change",
+    "difficulty": "MEDIUM",
+    "pattern": "DYNAMIC_PROGRAMMING",
+    "tags": ["Array", "Dynamic Programming", "Breadth-First Search"],
+    "constraints": ["1 <= coins.length <= 12", "1 <= coins[i] <= 2^31 - 1", "0 <= amount <= 10^4"],
+    "statement": "Given coins of different denominations and an integer amount, return the fewest number of coins needed to make up that amount. Return -1 if it cannot be formed.",
+    "examples": [
+      {
+        "input": "coins = [1,2,5], amount = 11",
+        "output": "3",
+        "explanation": "11 = 5 + 5 + 1"
+      },
+      {
+        "input": "coins = [2], amount = 3",
+        "output": "-1"
+      }
+    ],
+    "starterCode": "def coinChange(coins: list[int], amount: int) -> int:\n    pass",
+    "approaches": [
+      {
+        "name": "Bottom-Up DP",
+        "description": "Build dp[a] as min coins needed for amount a using previous states.",
+        "complexity": "Time O(amount * len(coins)), Space O(amount)"
+      }
+    ],
+    "hints": [
+      "Try defining the best answer for each smaller amount first.",
+      "For each amount a, try every coin c where a - c >= 0.",
+      "Initialize impossible states as infinity and convert to -1 at the end."
+    ],
+    "externalUrl": "https://leetcode.com/problems/coin-change/"
+  },
+  {
+    "leetcodeNumber": 76,
+    "title": "Minimum Window Substring",
+    "slug": "minimum-window-substring",
+    "difficulty": "HARD",
+    "pattern": "SLIDING_WINDOW",
+    "tags": ["Hash Table", "String", "Sliding Window"],
+    "constraints": [
+      "m == s.length",
+      "n == t.length",
+      "1 <= m, n <= 10^5",
+      "s and t consist of English letters"
+    ],
+    "statement": "Given strings s and t, return the minimum window substring of s such that every character in t (including duplicates) is included. If no such substring exists, return the empty string.",
+    "examples": [
+      {
+        "input": "s = \"ADOBECODEBANC\", t = \"ABC\"",
+        "output": "\"BANC\""
+      },
+      {
+        "input": "s = \"a\", t = \"aa\"",
+        "output": "\"\""
+      }
+    ],
+    "starterCode": "def minWindow(s: str, t: str) -> str:\n    pass",
+    "approaches": [
+      {
+        "name": "Variable Sliding Window",
+        "description": "Expand right pointer until requirements are met, then shrink left pointer to find a minimal valid window.",
+        "complexity": "Time O(m + n), Space O(k) where k is unique chars"
+      }
+    ],
+    "hints": [
+      "Track required character frequencies from t.",
+      "Keep a counter for how many required character types are currently satisfied.",
+      "Only attempt to shrink when all requirements are satisfied."
+    ],
+    "externalUrl": "https://leetcode.com/problems/minimum-window-substring/"
+  }
+]

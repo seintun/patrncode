@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import { handleApiError } from '@/lib/errors/api';
+import { normalizePythonStarterCode } from '@/lib/leetcode/mappers';
 
 export async function GET(
   _request: NextRequest,
@@ -16,6 +17,9 @@ export async function GET(
           where: { isHidden: false },
           orderBy: { order: 'asc' },
         },
+        problemHints: {
+          orderBy: { level: 'asc' },
+        },
       },
     });
 
@@ -23,11 +27,17 @@ export async function GET(
       return NextResponse.json({ error: 'Problem not found' }, { status: 404 });
     }
 
-    return NextResponse.json(problem, {
-      headers: {
-        'Cache-Control': 'public, max-age=300, stale-while-revalidate=3600',
+    return NextResponse.json(
+      {
+        ...problem,
+        starterCode: normalizePythonStarterCode(problem.starterCode ?? ''),
       },
-    });
+      {
+        headers: {
+          'Cache-Control': 'public, max-age=300, stale-while-revalidate=3600',
+        },
+      },
+    );
   } catch (error) {
     return handleApiError(new Response('', { status: 500 }), error, 'GET /api/problems/[slug]');
   }

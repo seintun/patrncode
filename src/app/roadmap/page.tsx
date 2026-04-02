@@ -16,6 +16,7 @@ interface RoadmapProblem {
   slug: string;
   difficulty: string;
   pattern: string;
+  leetcodeNumber?: number | null;
   mastery: string | null;
   curatedOrder: number | null;
 }
@@ -155,6 +156,11 @@ export default function RoadmapPage() {
                       <span className="text-lg font-bold text-[var(--color-text-primary)]">
                         {problem.curatedOrder ?? '-'}
                       </span>
+                      {problem.leetcodeNumber ? (
+                        <span className="text-[10px] font-semibold text-[var(--color-text-muted)]">
+                          LC #{problem.leetcodeNumber}
+                        </span>
+                      ) : null}
                       <div
                         className={`h-3 w-3 rounded-full ${MASTERY_COLORS[getMasteryKey(problem.mastery)]}`}
                         title={problem.mastery ?? 'UNSEEN'}

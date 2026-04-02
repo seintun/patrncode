@@ -24,7 +24,8 @@ export async function GET(request: NextRequest): Promise<Response> {
     const searchParams = request.nextUrl.searchParams;
     const pattern = searchParams.get('pattern') as Pattern | null;
     const difficulty = searchParams.get('difficulty') as Difficulty | null;
-    const search = searchParams.get('search') || '';
+    const rawSearch = searchParams.get('search') ?? '';
+    const search = rawSearch.trim().slice(0, 120);
     const curated = searchParams.get('curated') === 'true';
 
     const cookieStore = await cookies();
@@ -47,6 +48,7 @@ export async function GET(request: NextRequest): Promise<Response> {
       slug: string;
       difficulty: Difficulty;
       pattern: string;
+      leetcodeNumber: number | null;
       curatedOrder: number | null;
       testCaseCount: number;
     };
@@ -76,6 +78,7 @@ export async function GET(request: NextRequest): Promise<Response> {
             p.slug,
             p.difficulty,
             p.pattern::text AS pattern,
+            p."leetcodeNumber",
             p."curatedOrder",
             COALESCE(tc.count, 0)::int AS "testCaseCount"
           FROM ranked r
@@ -94,6 +97,7 @@ export async function GET(request: NextRequest): Promise<Response> {
             p.slug,
             p.difficulty,
             p.pattern::text AS pattern,
+            p."leetcodeNumber",
             p."curatedOrder",
             COALESCE(tc.count, 0)::int AS "testCaseCount"
           FROM "Problem" p
@@ -129,7 +133,8 @@ export async function GET(request: NextRequest): Promise<Response> {
           guestId,
           problemId: { in: problems.map((problem) => problem.id) },
         },
-        orderBy: { startedAt: 'desc' },
+        orderBy: [{ problemId: 'asc' }, { startedAt: 'desc' }],
+        distinct: ['problemId'],
         select: {
           problemId: true,
           status: true,
@@ -169,12 +174,13 @@ export async function GET(request: NextRequest): Promise<Response> {
       }
     }
 
-    const result = problems.map((p: (typeof problems)[number]) => ({
+    const result = problems.map((p) => ({
       id: p.id,
       title: p.title,
       slug: p.slug,
       difficulty: p.difficulty,
       pattern: p.pattern,
+      leetcodeNumber: p.leetcodeNumber,
       curatedOrder: p.curatedOrder,
       testCaseCount: p.testCaseCount,
       mastery: masteryMap[p.id] ?? null,

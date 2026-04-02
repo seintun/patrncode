@@ -3,6 +3,7 @@ import { prisma } from '@/lib/db/prisma';
 import type { SessionStatus, SessionOutcome, MasteryState } from '@/generated/prisma/enums';
 import { handleApiError, withAuthAndId } from '@/lib/errors/api';
 import { requireOwnership } from '@/lib/auth/session-auth';
+import { normalizePythonStarterCode } from '@/lib/leetcode/mappers';
 
 async function getHandler(
   _request: NextRequest,
@@ -26,6 +27,15 @@ async function getHandler(
             starterCode: true,
             difficulty: true,
             pattern: true,
+            leetcodeNumber: true,
+            externalUrl: true,
+            problemHints: {
+              select: {
+                level: true,
+                content: true,
+              },
+              orderBy: { level: 'asc' },
+            },
             testCases: {
               select: {
                 id: true,
@@ -55,7 +65,13 @@ async function getHandler(
       return NextResponse.json({ error: 'Session not found' }, { status: 404 });
     }
 
-    return NextResponse.json(session);
+    return NextResponse.json({
+      ...session,
+      problem: {
+        ...session.problem,
+        starterCode: normalizePythonStarterCode(session.problem.starterCode ?? ''),
+      },
+    });
   } catch (error) {
     return handleApiError(new Response('', { status: 500 }), error, 'GET /api/sessions/[id]');
   }

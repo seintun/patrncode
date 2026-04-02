@@ -16,6 +16,7 @@ model Problem {
   tags               String[]
   constraints        String[]
   sourceType         SourceType @default(INTERNAL)
+  leetcodeNumber     Int?
   externalUrl        String?
   statement          String
   examples           Json
@@ -31,6 +32,7 @@ model Problem {
   testCases     TestCase[]
   sessions      Session[]
   problemStates UserProblemState[]
+  problemHints  ProblemHint[]
 
   @@index([difficulty, pattern])
   @@index([createdAt])
@@ -49,6 +51,8 @@ model TestCase {
   updatedAt DateTime @updatedAt
 
   problem Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  @@index([problemId, isHidden, order])
 }
 
 model Session {
@@ -72,6 +76,7 @@ model Session {
   messages SessionMessage[]
 
   @@index([guestId])
+  @@index([guestId, problemId, startedAt(sort: Desc)])
   @@index([userId])
   @@index([problemId])
 }
@@ -96,6 +101,21 @@ model Hint {
   createdAt DateTime @default(now())
 
   session Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+}
+
+model ProblemHint {
+  id        String   @id @default(cuid())
+  problemId String
+  level     Int
+  content   String
+  source    String   @default("leetcode")
+  createdAt DateTime @default(now())
+
+  problem Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  @@unique([problemId, level])
+  @@index([problemId])
+  @@index([problemId, source])
 }
 
 model SessionFeedback {

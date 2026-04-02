@@ -1,6 +1,14 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import ProblemList from '../ProblemList';
 
+const mockReplace = vi.fn();
+
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ replace: mockReplace }),
+  usePathname: () => '/practice',
+  useSearchParams: () => new URLSearchParams(''),
+}));
+
 vi.mock('next/link', () => ({
   default: ({ children, href, ...props }: { children: React.ReactNode; href: string }) => (
     <a href={href} {...props}>

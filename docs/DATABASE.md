@@ -283,6 +283,22 @@ bunx prisma migrate dev
 # Production/staging: apply committed migrations
 bunx prisma migrate deploy
 
+# Verify extension/index rollout after deploy
+bunx prisma db execute --stdin <<'SQL'
+SELECT extname FROM pg_extension WHERE extname = 'pg_trgm';
+SELECT indexname
+FROM pg_indexes
+WHERE schemaname = 'public'
+  AND indexname IN (
+    'problem_title_trgm',
+    'problem_statement_trgm',
+    'Session_guestId_problemId_startedAt_idx',
+    'TestCase_problemId_isHidden_order_idx',
+    'ProblemHint_problemId_source_idx'
+  )
+ORDER BY indexname;
+SQL
+
 # Generate Prisma client after schema changes
 bunx prisma generate
 
@@ -298,3 +314,15 @@ bunx prisma migrate resolve --applied <migration_name>
 ```
 
 Use `bunx prisma db push` only as an emergency sync path in non-production contexts.
+
+### 5.1 Search setup note (`pg_trgm`)
+
+`GET /api/problems?search=...` now relies on case-insensitive substring ranking and ships with trigram indexes for scale. The migration `202604012240_perf_indexes_and_search` enables `pg_trgm` and creates search/perf indexes.
+
+If your database role cannot create extensions, have a DBA run:
+
+```sql
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+```
+
+before running `bunx prisma migrate deploy`.
