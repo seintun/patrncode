@@ -47,9 +47,9 @@ Sophocode tracks:
 - Your mastery level per pattern
 - Problems scheduled for spaced-repetition review
 
-You don't need an account to start practicing. Guest sessions are stored locally and you can create an account later to sync progress across devices.
+You don't need an account to start practicing. Anonymous session identity is managed with a secure cookie and you can create an account later to link your progress.
 
-## The 14 Patterns
+## Pattern Taxonomy
 
 | Pattern                | What It Solves                                      |
 | ---------------------- | --------------------------------------------------- |

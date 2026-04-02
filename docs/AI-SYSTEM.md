@@ -50,12 +50,12 @@ Model IDs are centralized in `src/lib/ai/models.ts`:
 
 ```ts
 export const MODELS = {
-  reasoning: 'stepfun/step-3.5-flash:free',
-  summary: 'stepfun/step-3.5-flash:free',
+  reasoning: process.env.AI_MODEL_REASONING || 'x-ai/grok-4.1-fast',
+  summary: process.env.AI_MODEL_SUMMARY || 'x-ai/grok-4.1-fast',
 } as const;
 ```
 
-Both reasoning and summary currently use the same free model. Swapping models requires changing a single constant — no prompt or streaming logic changes needed.
+Both reasoning and summary default to the same model but can be overridden per environment variable. Swapping models does not require prompt or streaming logic changes.
 
 ---
 
@@ -113,6 +113,8 @@ All prompts share a common constraint: **"Do not provide a complete solution or 
 **Input:** title, statement, pattern, currentCode, testResults, level (1-3).
 
 **Context awareness:** Includes the user's current code and test results so hints can target specific failing cases.
+
+**Static fallback:** Before invoking the model, hint API checks `ProblemHint` for `problemId + level`. If present, it returns the static hint immediately with `X-Hint-Source: static`.
 
 ### 4.3 Coach (`coach.ts`)
 

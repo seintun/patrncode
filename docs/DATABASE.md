@@ -36,7 +36,7 @@ The generated client outputs to `src/generated/prisma/`.
 
 **Connection pooling:** `@prisma/adapter-pg` with `@prisma/pg-worker` enables edge-compatible pooling for Vercel serverless/edge runtimes.
 
-**Singleton pattern** (`src/lib/db/index.ts`) prevents multiple Prisma client instances during dev hot reloads:
+**Singleton pattern** (`src/lib/db/prisma.ts`) prevents multiple Prisma client instances during dev hot reloads:
 
 ```ts
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
@@ -52,24 +52,39 @@ if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 
 #### Problem
 
-| Field         | Type            | Notes                                    |
-| ------------- | --------------- | ---------------------------------------- |
-| `id`          | `String` (cuid) | Primary key                              |
-| `title`       | `String`        |                                          |
-| `slug`        | `String`        | Unique                                   |
-| `difficulty`  | `Difficulty`    | Enum: EASY, MEDIUM, HARD                 |
-| `pattern`     | `Pattern`       | Enum: 14 algorithm patterns              |
-| `tags`        | `String[]`      |                                          |
-| `constraints` | `String[]`      |                                          |
-| `sourceType`  | `SourceType`    | Default: INTERNAL                        |
-| `externalUrl` | `String?`       | For external problems (LeetCode links)   |
-| `statement`   | `String`        | Problem description                      |
-| `examples`    | `Json`          | Array of {input, output, explanation?}   |
-| `starterCode` | `String`        | Default: ""                              |
-| `approaches`  | `Json?`         | Array of {name, description, complexity} |
-| `sortOrder`   | `Int`           | Default: 0                               |
+| Field                | Type            | Notes                                       |
+| -------------------- | --------------- | ------------------------------------------- |
+| `id`                 | `String` (cuid) | Primary key                                 |
+| `title`              | `String`        |                                             |
+| `slug`               | `String`        | Unique                                      |
+| `difficulty`         | `Difficulty`    | Enum: EASY, MEDIUM, HARD                    |
+| `pattern`            | `Pattern`       | Enum: platform pattern taxonomy (20 values) |
+| `tags`               | `String[]`      |                                             |
+| `constraints`        | `String[]`      |                                             |
+| `sourceType`         | `SourceType`    | Default: INTERNAL                           |
+| `externalUrl`        | `String?`       | For external problems (LeetCode links)      |
+| `statement`          | `String`        | Problem description                         |
+| `examples`           | `Json`          | Array of {input, output, explanation?}      |
+| `starterCode`        | `String`        | Default: ""                                 |
+| `approaches`         | `Json?`         | Array of {name, description, complexity}    |
+| `sortOrder`          | `Int`           | Default: 0                                  |
+| `isCurated`          | `Boolean`       | Default: false                              |
+| `curatedOrder`       | `Int?`          | Optional curated display order              |
+| `dailyChallengeDate` | `DateTime?`     | Daily challenge linkage                     |
 
-**Relations:** testCases, sessions, problemStates
+**Relations:** testCases, sessions, problemStates, problemHints
+
+#### ProblemHint
+
+| Field       | Type            | Notes               |
+| ----------- | --------------- | ------------------- |
+| `id`        | `String` (cuid) | Primary key         |
+| `problemId` | `String`        | FK -> Problem       |
+| `level`     | `Int`           | 1, 2, or 3          |
+| `content`   | `String`        | Static hint text    |
+| `source`    | `String`        | Default: `leetcode` |
+
+Unique constraint: `@@unique([problemId, level])`
 
 #### TestCase
 
@@ -216,6 +231,8 @@ Tracks AI generation lifecycle for observability and debugging.
 | `MasteryState`   | UNSEEN, IN_PROGRESS, MASTERED, NEEDS_REFRESH                                                                                                                                            |
 | `MessageRole`    | USER, ASSISTANT, SYSTEM                                                                                                                                                                 |
 | `RequestStatus`  | PENDING, FULFILLED, FAILED                                                                                                                                                              |
+
+`Pattern` currently includes 20 values: ARRAYS_STRINGS, HASH_MAPS, TWO_POINTERS, SLIDING_WINDOW, BINARY_SEARCH, LINKED_LISTS, STACKS_QUEUES, TREES, GRAPHS, RECURSION_BACKTRACKING, DYNAMIC_PROGRAMMING, HEAPS, SORTING, GREEDY, TRIES, BIT_MANIPULATION, INTERVALS, ADVANCED_GRAPHS, MATH_GEOMETRY, PREFIX_SUM.
 
 ---
 

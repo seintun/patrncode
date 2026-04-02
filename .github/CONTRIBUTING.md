@@ -1,6 +1,6 @@
 # Contributing to sophocode
 
-> **Active Beta** — The project is at `0.1.0-beta.x`. APIs and data models may change between commits.
+> **Active Beta** — The project is on `0.2.x`. APIs and data models may change between commits.
 
 ## Table of Contents
 
@@ -30,7 +30,7 @@
 
 ```bash
 # 1. Clone and install
-git clone https://github.com/your-org/sophocode.git
+git clone https://github.com/seintun/sophocode.git
 cd sophocode
 bun install
 
@@ -39,8 +39,8 @@ cp .env.example .env.local
 # Fill in NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY,
 # DATABASE_URL, DIRECT_URL, OPENROUTER_API_KEY
 
-# 3. Set up database (create tables + seed sample problems)
-bunx prisma db push
+# 3. Set up database (apply migrations + seed sample problems)
+bunx prisma migrate dev
 bunx prisma db seed
 
 # 4. Start dev server
@@ -93,7 +93,7 @@ git commit -m "chore(deps): upgrade vitest to 4.2.0"
 git commit -m "docs: update architecture diagram"
 ```
 
-Commits that do not follow this format will be **rejected** by the pre-commit hook.
+Commits that do not follow this format will be **rejected** by the commit-msg hook.
 
 ---
 
@@ -149,7 +149,7 @@ bun run changeset
 | E2E         | Playwright           | For critical user flows (auth, session, progress)            |
 
 ```bash
-bun run test              # unit tests (also runs in pre-commit)
+bun run test              # unit tests
 bun run test:coverage     # coverage report
 bun run test:e2e          # playwright (requires running dev server or CI)
 ```

@@ -4,7 +4,7 @@ AI-coached coding interview practice. Learn patterns, not just problems.
 
 **[sophoco.de](https://sophoco.de)** · [Architecture](ARCHITECTURE.md) · [Contributing](.github/CONTRIBUTING.md)
 
-> **Beta** (`0.1.0-beta.x`) — APIs and data models may change between commits.
+> **Beta** (`0.2.x`) — APIs and data models may still evolve between commits.
 
 ---
 
@@ -27,7 +27,7 @@ sophocode is a session-based Python algorithm practice platform with an AI coach
 - **Zero-friction entry** — start practicing immediately, no sign-up required. Guest data migrates to your account when you're ready.
 - **In-browser Python** — code runs via Pyodide (WebAssembly), no server sandbox needed. Instant feedback, works offline after first load.
 - **Progressive hints** — 3 levels (direction → approach → specific) that never spoil the solution.
-- **Pattern-based learning** — master 14 DSA patterns (Two Pointers, Sliding Window, BFS/DFS, DP, etc.), not memorize 1000 problems.
+- **Pattern-based learning** — master the platform's DSA pattern taxonomy (core + advanced), not memorize 1000 problems.
 - **Spaced repetition** — problems resurface based on mastery state and review intervals.
 - **AI coaching** — five specialized prompt contexts (explanation, hint, coach, interviewer, summary) powered by OpenRouter.
 - **Mastery heatmap** — visualize your pattern coverage on the dashboard.
@@ -48,8 +48,8 @@ cp .env.example .env.local
 # Fill in: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY,
 #          DATABASE_URL, DIRECT_URL, OPENROUTER_API_KEY
 
-# Database — create tables, then seed sample problems
-bunx prisma db push
+# Database — apply migrations, then seed sample problems
+bunx prisma migrate dev
 bunx prisma db seed
 
 # Run
@@ -62,19 +62,19 @@ Open [http://localhost:3000](http://localhost:3000). The landing page is at `src
 
 ## Tech Stack
 
-| Layer            | Technology                                   |
-| ---------------- | -------------------------------------------- |
-| Framework        | Next.js 16 (App Router, RSC)                 |
-| UI               | React 19, Tailwind CSS v4, Monaco Editor     |
-| Database         | Supabase Postgres, Prisma 7                  |
-| Auth             | Supabase OAuth (GitHub/Google) + guest UUIDs |
-| AI               | OpenRouter + Vercel AI SDK (streaming)       |
-| Python execution | Pyodide (WASM, in-browser)                   |
-| Testing          | Vitest (unit), Playwright (E2E)              |
-| CI/CD            | GitHub Actions (4 workflows)                 |
-| Deployment       | Vercel                                       |
-| Package manager  | Bun                                          |
-| Versioning       | Changesets                                   |
+| Layer            | Technology                                             |
+| ---------------- | ------------------------------------------------------ |
+| Framework        | Next.js 16 (App Router, RSC)                           |
+| UI               | React 19, Tailwind CSS v4, Monaco Editor               |
+| Database         | Supabase Postgres, Prisma 7                            |
+| Auth             | Supabase OAuth (GitHub/Google) + guest cookie identity |
+| AI               | OpenRouter + Vercel AI SDK (streaming)                 |
+| Python execution | Pyodide (WASM, in-browser)                             |
+| Testing          | Vitest (unit), Playwright (E2E)                        |
+| CI/CD            | GitHub Actions (4 workflows)                           |
+| Deployment       | Vercel                                                 |
+| Package manager  | Bun                                                    |
+| Versioning       | Changesets                                             |
 
 ---
 
@@ -95,7 +95,7 @@ src/
 │   ├── supabase/           # Auth clients
 │   └── mastery.ts          # Spaced repetition state machine
 ├── types/                  # Domain types (mirror Prisma enums)
-└── middleware.ts            # Supabase session refresh
+└── proxy.ts                 # CSP, session refresh, guest cookie, route gating
 ```
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for the full system design, or the [docs/](docs/) directory for detailed references:
