@@ -67,19 +67,25 @@ export default function Navbar() {
 
         {/* Desktop streak + coins */}
         <div className="hidden items-center gap-3 sm:flex">
-          <div className="group relative">
+          <div className="group relative" tabIndex={0} aria-describedby="streak-tooltip">
             <StreakCounter
               currentStreak={profile.currentStreak}
               longestStreak={profile.longestStreak}
               lastActivityAt={profile.lastActivityAt}
             />
-            <span className="pointer-events-none absolute -bottom-9 left-1/2 hidden -translate-x-1/2 whitespace-nowrap rounded-md border border-[var(--color-border)] bg-[var(--color-bg-elevated)] px-2 py-1 text-xs text-[var(--color-text-secondary)] shadow-lg group-hover:block group-focus-within:block">
+            <span
+              className="pointer-events-none absolute -bottom-9 left-1/2 hidden -translate-x-1/2 whitespace-nowrap rounded-md border border-[var(--color-border)] bg-[var(--color-bg-elevated)] px-2 py-1 text-xs text-[var(--color-text-secondary)] shadow-lg group-hover:block group-focus-within:block"
+              id="streak-tooltip"
+            >
               Practice streak
             </span>
           </div>
-          <div className="group relative">
+          <div className="group relative" tabIndex={0} aria-describedby="coin-tooltip">
             <CoinBalance coins={profile.coins} tier={profile.tier} />
-            <span className="pointer-events-none absolute -bottom-9 left-1/2 hidden -translate-x-1/2 whitespace-nowrap rounded-md border border-[var(--color-border)] bg-[var(--color-bg-elevated)] px-2 py-1 text-xs text-[var(--color-text-secondary)] shadow-lg group-hover:block group-focus-within:block">
+            <span
+              className="pointer-events-none absolute -bottom-9 left-1/2 hidden -translate-x-1/2 whitespace-nowrap rounded-md border border-[var(--color-border)] bg-[var(--color-bg-elevated)] px-2 py-1 text-xs text-[var(--color-text-secondary)] shadow-lg group-hover:block group-focus-within:block"
+              id="coin-tooltip"
+            >
               Tokens earned
             </span>
           </div>

@@ -87,6 +87,7 @@ export default function ProblemList() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const didSyncFromUrlRef = useRef(false);
+  const latestProblemRequestIdRef = useRef(0);
   const [problems, setProblems] = useState<ProblemItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -101,33 +102,69 @@ export default function ProblemList() {
   const [sortBy, setSortBy] = useState('difficulty');
   const [curationFilter, setCurationFilter] = useState<'all' | 'curated'>('all');
   const [dailyChallenge, setDailyChallenge] = useState<DailyChallenge | null>(null);
-
-  const fetchProblems = useCallback(async () => {
-    setLoading(true);
-    setError('');
-
-    try {
-      const params = new URLSearchParams();
-      if (pattern) params.set('pattern', pattern);
-      if (difficultyFilter) params.set('difficulty', difficultyFilter);
-      if (search) params.set('search', search);
-      if (curationFilter === 'curated') params.set('curated', 'true');
-
-      const res = await fetch(`/api/problems?${params.toString()}`, { cache: 'no-store' });
-      if (!res.ok) throw new Error('Failed to fetch problems');
-
-      const data: ProblemItem[] = await res.json();
-      setProblems(data);
-    } catch {
-      setError('Failed to load problems. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  }, [pattern, difficultyFilter, search, curationFilter]);
+  const [debouncedSearch, setDebouncedSearch] = useState(search);
+  const [refreshNonce, setRefreshNonce] = useState(0);
 
   useEffect(() => {
-    fetchProblems();
-  }, [fetchProblems]);
+    const timeoutId = window.setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 250);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [search]);
+
+  const fetchProblems = useCallback(
+    async (signal: AbortSignal) => {
+      const requestId = ++latestProblemRequestIdRef.current;
+      setLoading(true);
+      setError('');
+
+      try {
+        const params = new URLSearchParams();
+        if (pattern) params.set('pattern', pattern);
+        if (difficultyFilter) params.set('difficulty', difficultyFilter);
+        if (debouncedSearch) params.set('search', debouncedSearch);
+        if (curationFilter === 'curated') params.set('curated', 'true');
+
+        const res = await fetch(`/api/problems?${params.toString()}`, {
+          cache: 'no-store',
+          signal,
+        });
+        if (!res.ok) throw new Error('Failed to fetch problems');
+
+        const data: ProblemItem[] = await res.json();
+        if (signal.aborted || requestId !== latestProblemRequestIdRef.current) {
+          return;
+        }
+        setProblems(data);
+      } catch (err) {
+        if (
+          (err as Error).name === 'AbortError' ||
+          signal.aborted ||
+          requestId !== latestProblemRequestIdRef.current
+        ) {
+          return;
+        }
+        setError('Failed to load problems. Please try again.');
+      } finally {
+        if (!signal.aborted && requestId === latestProblemRequestIdRef.current) {
+          setLoading(false);
+        }
+      }
+    },
+    [pattern, difficultyFilter, debouncedSearch, curationFilter],
+  );
+
+  useEffect(() => {
+    const controller = new AbortController();
+    void fetchProblems(controller.signal);
+
+    return () => {
+      controller.abort();
+    };
+  }, [fetchProblems, refreshNonce]);
 
   useEffect(() => {
     const urlPattern = searchParams.get('pattern') ?? '';
@@ -141,6 +178,7 @@ export default function ProblemList() {
     setPattern((prev) => (prev === urlPattern ? prev : urlPattern));
     setDifficultyFilter((prev) => (prev === normalizedDifficulty ? prev : normalizedDifficulty));
     setSearch((prev) => (prev === urlSearch ? prev : urlSearch));
+    setDebouncedSearch((prev) => (prev === urlSearch ? prev : urlSearch));
 
     didSyncFromUrlRef.current = true;
   }, [searchParams]);
@@ -156,7 +194,7 @@ export default function ProblemList() {
     if (difficultyFilter) next.set('difficulty', difficultyFilter);
     else next.delete('difficulty');
 
-    if (search) next.set('search', search);
+    if (debouncedSearch) next.set('search', debouncedSearch);
     else next.delete('search');
 
     const nextQuery = next.toString();
@@ -164,7 +202,7 @@ export default function ProblemList() {
     if (nextQuery !== currentQuery) {
       router.replace(nextQuery ? `${pathname}?${nextQuery}` : pathname, { scroll: false });
     }
-  }, [difficultyFilter, pathname, pattern, router, search, searchParams]);
+  }, [debouncedSearch, difficultyFilter, pathname, pattern, router, searchParams]);
 
   useEffect(() => {
     fetch('/api/daily-challenge')
@@ -296,7 +334,7 @@ export default function ProblemList() {
       ) : error ? (
         <div className="text-center">
           <p className="mb-3 text-[var(--color-error)]">{error}</p>
-          <Button variant="secondary" onClick={fetchProblems}>
+          <Button variant="secondary" onClick={() => setRefreshNonce((n) => n + 1)}>
             Retry
           </Button>
         </div>

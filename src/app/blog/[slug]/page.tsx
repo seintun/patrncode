@@ -6,7 +6,7 @@ import type { Metadata } from 'next';
 import { getPostBySlug, getAllPosts } from '@/lib/content';
 
 function formatDate(date: string) {
-  return new Date(date).toLocaleDateString('en-US', {
+  return new Date(`${date}T00:00:00`).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',

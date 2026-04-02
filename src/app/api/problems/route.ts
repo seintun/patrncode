@@ -8,6 +8,11 @@ import { cookies } from 'next/headers';
 import { cleanupExpiredSessions } from '@/lib/session/expiry';
 
 let dbPatternCache: Set<string> | null = null;
+const DIFFICULTY_VALUES = new Set<Difficulty>(['EASY', 'MEDIUM', 'HARD']);
+
+function escapeLikeTerm(value: string): string {
+  return value.replace(/\\/g, '\\\\').replace(/%/g, '\\%').replace(/_/g, '\\_');
+}
 
 async function getDbPatternValues(): Promise<Set<string>> {
   if (dbPatternCache) return dbPatternCache;
@@ -26,6 +31,7 @@ export async function GET(request: NextRequest): Promise<Response> {
     const difficulty = searchParams.get('difficulty') as Difficulty | null;
     const rawSearch = searchParams.get('search') ?? '';
     const search = rawSearch.trim().slice(0, 120);
+    const escapedSearch = escapeLikeTerm(search);
     const curated = searchParams.get('curated') === 'true';
 
     const cookieStore = await cookies();
@@ -33,12 +39,15 @@ export async function GET(request: NextRequest): Promise<Response> {
 
     const dbPatternValues = await getDbPatternValues();
     const safePattern = pattern && dbPatternValues.has(pattern) ? pattern : null;
+    const safeDifficulty = difficulty && DIFFICULTY_VALUES.has(difficulty) ? difficulty : null;
+    const searchContains = `%${escapedSearch}%`;
+    const useFuzzySearch = search.length >= 3;
 
     const patternFilter = safePattern
       ? Prisma.sql`AND p.pattern = ${safePattern}::"Pattern"`
       : Prisma.empty;
-    const difficultyFilter = difficulty
-      ? Prisma.sql`AND p.difficulty = ${difficulty}::"Difficulty"`
+    const difficultyFilter = safeDifficulty
+      ? Prisma.sql`AND p.difficulty = ${safeDifficulty}::"Difficulty"`
       : Prisma.empty;
     const curatedFilter = curated ? Prisma.sql`AND p."isCurated" = true` : Prisma.empty;
 
@@ -58,7 +67,17 @@ export async function GET(request: NextRequest): Promise<Response> {
           WITH ranked AS (
             SELECT p.id,
               ROW_NUMBER() OVER (
-                ORDER BY GREATEST(similarity(p.title, ${search}), similarity(p.statement, ${search})) DESC
+                ORDER BY
+                  ${
+                    useFuzzySearch
+                      ? Prisma.sql`GREATEST(similarity(p.title, ${search}), similarity(p.statement, ${search})) DESC`
+                      : Prisma.sql`CASE
+                        WHEN lower(p.title) = lower(${search}) THEN 400
+                        WHEN p.title ILIKE ${`${escapedSearch}%`} ESCAPE '\\' THEN 300
+                        WHEN p.title ILIKE ${searchContains} ESCAPE '\\' THEN 200
+                        ELSE 100
+                      END DESC`
+                  }
               ) AS rank
             FROM "Problem" p
             WHERE 1=1
@@ -66,9 +85,15 @@ export async function GET(request: NextRequest): Promise<Response> {
               ${difficultyFilter}
               ${curatedFilter}
               AND (
-                similarity(p.title, ${search}) > 0.1
-                OR similarity(p.statement, ${search}) > 0.1
-                OR p.title ILIKE ${`%${search}%`}
+                ${
+                  useFuzzySearch
+                    ? Prisma.sql`(
+                      similarity(p.title, ${search}) > 0.1
+                      OR similarity(p.statement, ${search}) > 0.1
+                      OR p.title ILIKE ${searchContains} ESCAPE '\\'
+                    )`
+                    : Prisma.sql`p.title ILIKE ${searchContains} ESCAPE '\\'`
+                }
               )
             LIMIT 100
           )
@@ -83,11 +108,11 @@ export async function GET(request: NextRequest): Promise<Response> {
             COALESCE(tc.count, 0)::int AS "testCaseCount"
           FROM ranked r
           JOIN "Problem" p ON p.id = r.id
-          LEFT JOIN (
-            SELECT "problemId", COUNT(*)::int AS count
-            FROM "TestCase"
-            GROUP BY "problemId"
-          ) tc ON tc."problemId" = p.id
+          LEFT JOIN LATERAL (
+            SELECT COUNT(*)::int AS count
+            FROM "TestCase" tc
+            WHERE tc."problemId" = p.id
+          ) tc ON true
           ORDER BY r.rank ASC
         `)
       : await prisma.$queryRaw<ProblemRow[]>(Prisma.sql`
@@ -101,11 +126,11 @@ export async function GET(request: NextRequest): Promise<Response> {
             p."curatedOrder",
             COALESCE(tc.count, 0)::int AS "testCaseCount"
           FROM "Problem" p
-          LEFT JOIN (
-            SELECT "problemId", COUNT(*)::int AS count
-            FROM "TestCase"
-            GROUP BY "problemId"
-          ) tc ON tc."problemId" = p.id
+           LEFT JOIN LATERAL (
+             SELECT COUNT(*)::int AS count
+             FROM "TestCase" tc
+             WHERE tc."problemId" = p.id
+           ) tc ON true
           WHERE 1=1
             ${patternFilter}
             ${difficultyFilter}
@@ -123,24 +148,32 @@ export async function GET(request: NextRequest): Promise<Response> {
         console.error('Failed to clean up expired sessions for guest', guestId, err);
       });
 
-      const states = await prisma.userProblemState.findMany({
-        where: { guestId },
-        select: { problemId: true, mastery: true },
-      });
-
-      const latestSessions = await prisma.session.findMany({
-        where: {
-          guestId,
-          problemId: { in: problems.map((problem) => problem.id) },
-        },
-        orderBy: [{ problemId: 'asc' }, { startedAt: 'desc' }],
-        distinct: ['problemId'],
-        select: {
-          problemId: true,
-          status: true,
-          expiresAt: true,
-        },
-      });
+      const problemIds = problems.map((problem) => problem.id);
+      const [states, latestSessions] =
+        problemIds.length > 0
+          ? await Promise.all([
+              prisma.userProblemState.findMany({
+                where: {
+                  guestId,
+                  problemId: { in: problemIds },
+                },
+                select: { problemId: true, mastery: true },
+              }),
+              prisma.session.findMany({
+                where: {
+                  guestId,
+                  problemId: { in: problemIds },
+                },
+                orderBy: [{ problemId: 'asc' }, { startedAt: 'desc' }],
+                distinct: ['problemId'],
+                select: {
+                  problemId: true,
+                  status: true,
+                  expiresAt: true,
+                },
+              }),
+            ])
+          : [[], []];
 
       masteryMap = Object.fromEntries(
         states.map((s: { problemId: string; mastery: string }) => [s.problemId, s.mastery]),
