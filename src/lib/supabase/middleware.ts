@@ -1,18 +1,19 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
-export async function updateSession(request: NextRequest) {
+export async function updateSession(request: NextRequest, requestHeaders?: Headers) {
+  const forwardedHeaders = requestHeaders ?? request.headers;
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY;
 
   // If Supabase isn't configured, skip auth middleware (guest mode)
   if (!supabaseUrl || !supabaseKey) {
-    return NextResponse.next({ request: { headers: request.headers } });
+    return NextResponse.next({ request: { headers: forwardedHeaders } });
   }
 
   const response = NextResponse.next({
     request: {
-      headers: request.headers,
+      headers: forwardedHeaders,
     },
   });
 

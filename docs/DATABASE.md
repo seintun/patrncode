@@ -168,6 +168,39 @@ Cascade delete on Session.
 
 Cascade delete on Problem.
 
+#### PatternWeakness (Wave 3)
+
+| Field             | Type            | Notes                                   |
+| ----------------- | --------------- | --------------------------------------- |
+| `id`              | `String` (cuid) | Primary key                             |
+| `guestId`         | `String`        | Indexed                                 |
+| `pattern`         | `Pattern`       | Indexed with `guestId` (unique pair)    |
+| `failedCount`     | `Int`           | Default: 0                              |
+| `successCount`    | `Int`           | Default: 0                              |
+| `lastPracticedAt` | `DateTime?`     | Last update timestamp from session flow |
+| `confidenceScore` | `Float`         | Default: 0.5                            |
+
+**Unique constraint:** `@@unique([guestId, pattern])`
+
+Used by adaptive recommendation logic to rank weak patterns.
+
+#### CustomProblemRequest (Wave 3)
+
+| Field          | Type            | Notes                                                  |
+| -------------- | --------------- | ------------------------------------------------------ |
+| `id`           | `String` (cuid) | Primary key                                            |
+| `guestId`      | `String`        | Indexed with `createdAt`                               |
+| `pattern`      | `Pattern`       | Requested pattern                                      |
+| `difficulty`   | `Difficulty?`   | Optional requested difficulty                          |
+| `status`       | `RequestStatus` | `PENDING`, `FULFILLED`, `FAILED`                       |
+| `title`        | `String?`       | Generated title snapshot                               |
+| `statement`    | `String?`       | Generated statement snapshot                           |
+| `starterCode`  | `String?`       | Generated starter code snapshot                        |
+| `testCases`    | `Json?`         | Generated test cases snapshot                          |
+| `errorMessage` | `String?`       | Persisted failure reason when generation/parsing fails |
+
+Tracks AI generation lifecycle for observability and debugging.
+
 ---
 
 ### 2.2 Enums
@@ -182,6 +215,7 @@ Cascade delete on Problem.
 | `SessionOutcome` | SOLVED, PARTIALLY_SOLVED, NOT_SOLVED                                                                                                                                                    |
 | `MasteryState`   | UNSEEN, IN_PROGRESS, MASTERED, NEEDS_REFRESH                                                                                                                                            |
 | `MessageRole`    | USER, ASSISTANT, SYSTEM                                                                                                                                                                 |
+| `RequestStatus`  | PENDING, FULFILLED, FAILED                                                                                                                                                              |
 
 ---
 
@@ -208,20 +242,29 @@ Run manually: `bunx prisma db seed`
 
 ---
 
-## 5. Schema Sync
+## 5. Schema Sync and Migrations
 
-The project currently uses `db push` (no migration history). This is suitable for rapid development during beta.
+The project now includes versioned migrations under `prisma/migrations/` and should prefer migrate workflows over repeated `db push`.
 
 ```bash
-# Sync schema to database (creates/alters tables to match schema.prisma)
-bunx prisma db push
+# Development: create/apply migration from schema changes
+bunx prisma migrate dev
 
-# Seed sample problems (8 problems with test cases)
-bunx prisma db seed
+# Production/staging: apply committed migrations
+bunx prisma migrate deploy
 
 # Generate Prisma client after schema changes
 bunx prisma generate
+
+# Seed sample problems
+bunx prisma db seed
 ```
 
-> [!NOTE]
-> When the project stabilizes post-beta, switch to `prisma migrate dev` for versioned, reviewable migrations. See the [Prisma docs on migrate vs db push](https://www.prisma.io/docs/orm/prisma-migrate/understanding-prisma-migrate/mental-model#choosing-db-push-or-prisma-migrate).
+If you're adopting Prisma Migrate on an existing non-empty database, baseline first:
+
+```bash
+# One-time baseline for an already-applied migration
+bunx prisma migrate resolve --applied <migration_name>
+```
+
+Use `bunx prisma db push` only as an emergency sync path in non-production contexts.

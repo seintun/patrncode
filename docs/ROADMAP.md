@@ -1,6 +1,14 @@
 # Roadmap
 
-> **Current status:** Beta (`0.1.0-beta.x`). The MVP is functional with core features: guest mode, problem practice, AI coaching, Pyodide execution, and progress tracking.
+> **Current status:** Beta (`0.1.0-beta.x`). The MVP is functional with core features: guest mode, problem practice, AI coaching, Pyodide execution, progress tracking, and Wave 3 adaptive tutoring foundations.
+
+## Recently Shipped (Wave 3)
+
+- Pattern weakness tracking (`PatternWeakness`) to capture confidence by algorithm pattern.
+- Cached next-problem recommendation API with weak-pattern-first ranking and roadmap fallback.
+- AI custom problem generation endpoint with request lifecycle persistence (`CustomProblemRequest`).
+- Session report API (`GET/PATCH`) and dashboard/roadmap recommendation surfaces.
+- Mode-aware coaching safety hardening (prompt constraints + render-time sanitization).
 
 ---
 
@@ -62,7 +70,7 @@
 #### Analytics & Insights
 
 - Time-per-pattern analytics.
-- Weak spot identification and targeted recommendations.
+- Weak spot identification and targeted recommendations. (Shipped in Wave 3)
 - Streak tracking and motivation systems.
 
 ---

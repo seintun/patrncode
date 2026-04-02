@@ -4,6 +4,11 @@
 
 sophocode's AI coaching is powered by **OpenRouter** (model-agnostic gateway) with the **Vercel AI SDK** for streaming. Five specialized prompt contexts enforce strict no-spoiler rules — the AI teaches patterns and thinking, never solutions.
 
+Wave 3 adds two important guardrails around this core system:
+
+- **Mode-aware control** (`sessionMode`) is passed into chat/coaching contexts so behavior stays aligned with `SELF_PRACTICE`, `COACH_ME`, and `MOCK_INTERVIEW` expectations.
+- **Defense-in-depth safety** applies both prompt constraints and render-time sanitization (`sanitizeCoachingContent`) so accidental code/pseudocode leakage is filtered before display.
+
 ---
 
 ## 1. Architecture
@@ -157,3 +162,32 @@ All prompts share a common constraint: **"Do not provide a complete solution or 
 - If `OPENROUTER_API_KEY` is not set, AI routes return `503 Service Unavailable`.
 - Core coding and execution features work independently of AI availability (Pyodide runs locally).
 - The UI shows a banner (`AIBanner` component) when AI is unavailable.
+
+---
+
+## 6. Wave 3 Tutor Additions
+
+### 6.1 Custom Problem Generation (`POST /api/ai/generate-problem`)
+
+Wave 3 introduces an AI generation endpoint that creates targeted practice problems by `pattern` and optional `difficulty`.
+
+**Flow:**
+
+1. Validate request payload with zod.
+2. Enforce token budget (`checkTokenBudget`).
+3. Persist `CustomProblemRequest` as `PENDING`.
+4. Generate structured JSON via reasoning model.
+5. Parse and validate response with zod.
+6. Transactionally persist `Problem` + `TestCase[]`.
+7. Mark request `FULFILLED` (or `FAILED` with error details on failure).
+
+**Why this design:** request lifecycle persistence makes generation observable and recoverable, and strict schema validation reduces malformed AI output risks.
+
+### 6.2 Session Reports (`GET/PATCH /api/sessions/[id]/report`)
+
+Session report retrieval/update is now an explicit API capability:
+
+- `GET` returns existing feedback or generates/stores summary feedback when missing.
+- `PATCH` upserts user-editable report fields.
+
+This keeps report generation deterministic at the API layer and avoids coupling report state to a single UI surface.

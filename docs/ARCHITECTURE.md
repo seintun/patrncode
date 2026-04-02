@@ -19,7 +19,7 @@
 
 sophocode is a session-based Python algorithm practice platform with integrated AI coaching. Users work through curated algorithm problems inside a structured coding session — running Python code directly in the browser via WebAssembly, receiving AI hints that never spoil solutions, and accumulating a mastery score through spaced repetition.
 
-The system is designed with two guiding principles: **zero-friction entry** (anonymous guests can start practicing immediately with no sign-up required) and **no server-side code execution** (Python runs in-browser via Pyodide, eliminating sandbox complexity and server cost). AI coaching is powered by OpenRouter (model-agnostic) with five specialized prompt contexts, each enforcing strict no-spoiler rules.
+The system is designed with two guiding principles: **zero-friction entry** (anonymous guests can start practicing immediately with no sign-up required) and **no server-side code execution** (Python runs in-browser via Pyodide, eliminating sandbox complexity and server cost). AI coaching is powered by OpenRouter (model-agnostic) with five specialized prompt contexts, and Wave 3 adds an adaptive loop (weak-pattern tracking + recommendations + custom generation) to close the practice-feedback cycle.
 
 ```mermaid
 graph TB
@@ -386,6 +386,25 @@ sequenceDiagram
     Hook-->>UI: "Append tokens incrementally"
 ```
 
+### 5.4 Adaptive Recommendation + Custom Generation Flow (Wave 3)
+
+```mermaid
+flowchart TD
+    SESSION["Session completion"] --> WEAK["updatePatternWeakness"]
+    SESSION --> INV["invalidateRecommendation"]
+
+    DASH["Dashboard / Roadmap"] --> NEXTAPI["GET /api/recommendations/next"]
+    NEXTAPI --> CACHE["Recommendation cache"]
+    NEXTAPI --> WEAKDB["PatternWeakness"]
+    NEXTAPI --> PROBLEM["Curated Problem catalog"]
+
+    DASH --> GENAPI["POST /api/ai/generate-problem"]
+    GENAPI --> REQ["CustomProblemRequest (PENDING)"]
+    GENAPI --> LLM["OpenRouter reasoning model"]
+    LLM --> TX["Create Problem + TestCase[]"]
+    TX --> REQDONE["FULFILLED / FAILED"]
+```
+
 ---
 
 ## 6. Authentication & Guest Flow
@@ -434,6 +453,8 @@ Five specialized prompt builders live in `src/lib/ai/prompts/`. Each enforces st
 | `summary`     | `summary.ts`     | Post-session debrief. Summarizes what went well, what to review, next steps.                           |
 
 All prompts share a common system instruction: **"Do not provide a complete solution or code that directly solves the problem."**
+
+Wave 3 additionally passes `sessionMode` through chat requests and applies `sanitizeCoachingContent` at render time in coaching/hint surfaces as a second safety layer.
 
 ### 7.2 Model Configuration
 
