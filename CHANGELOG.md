@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.2.1
+
+### Patch Changes
+
+- docs: maintenance refresh across architecture, security, onboarding, and contributor guides
+  - Updated auth/runtime narrative from legacy localStorage + middleware references to current proxy + httpOnly guest cookie flow
+  - Synced security and roadmap docs with implemented auth ownership and rate-limit controls
+  - Refreshed database and AI docs for current schema/model defaults (ProblemHint, expanded Pattern enum, env-configured model IDs)
+  - Updated README/CONTRIBUTING/getting-started messaging and setup commands for current `0.2.x` workflow
+
 ## 0.2.0
 
 ### Minor Changes

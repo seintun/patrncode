@@ -22,13 +22,13 @@ Key principles:
 
 ### 2.1 The 60-30-10 Color System
 
-The design follows a **60-30-10 rule** for a consistent dark-first UI that balances analytical focus with a calm learning environment.
+The design follows a **60-30-10 rule** for a calm, focused UI. Actual token values are sourced from `src/app/globals.css` and may evolve over time.
 
-| Layer               | Color         | HEX       | Role                                                 |
-| ------------------- | ------------- | --------- | ---------------------------------------------------- |
-| **Dominant (60%)**  | Deep Ink      | `#0F172A` | Page background, reduces eye strain, "premium" feel  |
-| **Secondary (30%)** | Slate         | `#1E293B` | Cards, panels, distinguishes regions without clutter |
-| **Accent (10%)**    | Electric Cyan | `#22D3EE` | Interactive elements, CTAs, highlights               |
+| Layer               | Color              | HEX               | Role                                              |
+| ------------------- | ------------------ | ----------------- | ------------------------------------------------- |
+| **Dominant (60%)**  | Primary background | See `globals.css` | Page shell and large surfaces                     |
+| **Secondary (30%)** | Secondary surfaces | See `globals.css` | Cards, panels, contextual containers              |
+| **Accent (10%)**    | Accent interaction | See `globals.css` | Primary actions, links, and high-attention states |
 
 ### 2.2 Full Token Set (globals.css)
 
@@ -94,7 +94,7 @@ These tokens are defined via Tailwind v4's `@theme` directive in `src/app/global
 
 ## 3. Typography
 
-- **Primary font:** Clean, legible sans-serif (Inter, SF Pro, or system default).
+- **Primary font:** Geist Sans (configured in `src/app/layout.tsx`).
 - **Code font:** Monospaced (JetBrains Mono, Fira Code) in editor and inline snippets.
 
 **Hierarchy:**
@@ -178,7 +178,7 @@ The design system's data contracts are defined in `src/types/index.ts`:
 
 ```ts
 type Difficulty = 'EASY' | 'MEDIUM' | 'HARD';
-type Pattern = 'ARRAYS_STRINGS' | 'HASH_MAPS' | 'TWO_POINTERS' | ...; // 14 patterns
+type Pattern = 'ARRAYS_STRINGS' | 'HASH_MAPS' | 'TWO_POINTERS' | ...; // mirrors current Prisma enum (20 values)
 type MasteryState = 'UNSEEN' | 'IN_PROGRESS' | 'MASTERED' | 'NEEDS_REFRESH';
 type SessionMode = 'SELF_PRACTICE' | 'COACH_ME' | 'MOCK_INTERVIEW';
 type SessionStatus = 'IN_PROGRESS' | 'COMPLETED' | 'ABANDONED';

@@ -88,6 +88,7 @@ These target users comparing tools:
 2. **Pattern deep-dive posts** should link to each other (Sliding Window ↔ Two Pointers)
 3. **The docs getting-started page** should link to the top 3 recommended first problems
 4. **The blog index** feeds naturally from `/` — add a "Latest from the blog" section to the landing page when there are 5+ posts
+5. Include links to recommendation and roadmap surfaces when relevant (`/dashboard`, `/roadmap`) to reflect the current adaptive practice loop
 
 ---
 
