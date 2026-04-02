@@ -56,6 +56,7 @@ export const ModelName = {
   Session: 'Session',
   TestRun: 'TestRun',
   Hint: 'Hint',
+  ProblemHint: 'ProblemHint',
   SessionFeedback: 'SessionFeedback',
   SessionMessage: 'SessionMessage',
   UserProblemState: 'UserProblemState',
@@ -89,6 +90,7 @@ export const ProblemScalarFieldEnum = {
   tags: 'tags',
   constraints: 'constraints',
   sourceType: 'sourceType',
+  leetcodeNumber: 'leetcodeNumber',
   externalUrl: 'externalUrl',
   statement: 'statement',
   examples: 'examples',
@@ -159,6 +161,18 @@ export const HintScalarFieldEnum = {
 } as const
 
 export type HintScalarFieldEnum = (typeof HintScalarFieldEnum)[keyof typeof HintScalarFieldEnum]
+
+
+export const ProblemHintScalarFieldEnum = {
+  id: 'id',
+  problemId: 'problemId',
+  level: 'level',
+  content: 'content',
+  source: 'source',
+  createdAt: 'createdAt'
+} as const
+
+export type ProblemHintScalarFieldEnum = (typeof ProblemHintScalarFieldEnum)[keyof typeof ProblemHintScalarFieldEnum]
 
 
 export const SessionFeedbackScalarFieldEnum = {

@@ -389,6 +389,7 @@ export const ModelName = {
   Session: 'Session',
   TestRun: 'TestRun',
   Hint: 'Hint',
+  ProblemHint: 'ProblemHint',
   SessionFeedback: 'SessionFeedback',
   SessionMessage: 'SessionMessage',
   UserProblemState: 'UserProblemState',
@@ -410,7 +411,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "problem" | "testCase" | "session" | "testRun" | "hint" | "sessionFeedback" | "sessionMessage" | "userProblemState" | "patternWeakness" | "customProblemRequest" | "userProfile"
+    modelProps: "problem" | "testCase" | "session" | "testRun" | "hint" | "problemHint" | "sessionFeedback" | "sessionMessage" | "userProblemState" | "patternWeakness" | "customProblemRequest" | "userProfile"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -781,6 +782,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.HintCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.HintCountAggregateOutputType> | number
+        }
+      }
+    }
+    ProblemHint: {
+      payload: Prisma.$ProblemHintPayload<ExtArgs>
+      fields: Prisma.ProblemHintFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ProblemHintFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProblemHintPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ProblemHintFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProblemHintPayload>
+        }
+        findFirst: {
+          args: Prisma.ProblemHintFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProblemHintPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ProblemHintFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProblemHintPayload>
+        }
+        findMany: {
+          args: Prisma.ProblemHintFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProblemHintPayload>[]
+        }
+        create: {
+          args: Prisma.ProblemHintCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProblemHintPayload>
+        }
+        createMany: {
+          args: Prisma.ProblemHintCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ProblemHintCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProblemHintPayload>[]
+        }
+        delete: {
+          args: Prisma.ProblemHintDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProblemHintPayload>
+        }
+        update: {
+          args: Prisma.ProblemHintUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProblemHintPayload>
+        }
+        deleteMany: {
+          args: Prisma.ProblemHintDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ProblemHintUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ProblemHintUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProblemHintPayload>[]
+        }
+        upsert: {
+          args: Prisma.ProblemHintUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProblemHintPayload>
+        }
+        aggregate: {
+          args: Prisma.ProblemHintAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateProblemHint>
+        }
+        groupBy: {
+          args: Prisma.ProblemHintGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProblemHintGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ProblemHintCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProblemHintCountAggregateOutputType> | number
         }
       }
     }
@@ -1276,6 +1351,7 @@ export const ProblemScalarFieldEnum = {
   tags: 'tags',
   constraints: 'constraints',
   sourceType: 'sourceType',
+  leetcodeNumber: 'leetcodeNumber',
   externalUrl: 'externalUrl',
   statement: 'statement',
   examples: 'examples',
@@ -1346,6 +1422,18 @@ export const HintScalarFieldEnum = {
 } as const
 
 export type HintScalarFieldEnum = (typeof HintScalarFieldEnum)[keyof typeof HintScalarFieldEnum]
+
+
+export const ProblemHintScalarFieldEnum = {
+  id: 'id',
+  problemId: 'problemId',
+  level: 'level',
+  content: 'content',
+  source: 'source',
+  createdAt: 'createdAt'
+} as const
+
+export type ProblemHintScalarFieldEnum = (typeof ProblemHintScalarFieldEnum)[keyof typeof ProblemHintScalarFieldEnum]
 
 
 export const SessionFeedbackScalarFieldEnum = {
@@ -1553,20 +1641,6 @@ export type ListEnumSourceTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$P
 
 
 /**
- * Reference to a field of type 'Json'
- */
-export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
-    
-
-
-/**
- * Reference to a field of type 'QueryMode'
- */
-export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
-    
-
-
-/**
  * Reference to a field of type 'Int'
  */
 export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
@@ -1577,6 +1651,20 @@ export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'In
  * Reference to a field of type 'Int[]'
  */
 export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Json'
+ */
+export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+/**
+ * Reference to a field of type 'QueryMode'
+ */
+export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
 
 
@@ -1854,6 +1942,7 @@ export type GlobalOmitConfig = {
   session?: Prisma.SessionOmit
   testRun?: Prisma.TestRunOmit
   hint?: Prisma.HintOmit
+  problemHint?: Prisma.ProblemHintOmit
   sessionFeedback?: Prisma.SessionFeedbackOmit
   sessionMessage?: Prisma.SessionMessageOmit
   userProblemState?: Prisma.UserProblemStateOmit

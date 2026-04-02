@@ -79,10 +79,84 @@ function cleanError(raw, offset) {
   return errorLine || 'Unknown Error';
 }
 
+function splitTopLevelComma(value) {
+  const parts = [];
+  let start = 0;
+  let depth = 0;
+  let quote = null;
+  let escape = false;
+
+  for (let i = 0; i < value.length; i++) {
+    const ch = value[i];
+
+    if (escape) {
+      escape = false;
+      continue;
+    }
+
+    if (quote) {
+      if (ch === '\\') {
+        escape = true;
+      } else if (ch === quote) {
+        quote = null;
+      }
+      continue;
+    }
+
+    if (ch === '"' || ch === "'") {
+      quote = ch;
+      continue;
+    }
+
+    if (ch === '[' || ch === '{' || ch === '(') {
+      depth++;
+      continue;
+    }
+    if (ch === ']' || ch === '}' || ch === ')') {
+      depth = Math.max(0, depth - 1);
+      continue;
+    }
+
+    if (ch === ',' && depth === 0) {
+      parts.push(value.slice(start, i).trim());
+      start = i + 1;
+    }
+  }
+
+  const tail = value.slice(start).trim();
+  if (tail) parts.push(tail);
+  return parts;
+}
+
+function getFunctionArgsPayload(input) {
+  const raw = (input || '').trim();
+  if (!raw) return JSON.stringify([]);
+
+  // JSON-style payloads are handled directly.
+  try {
+    JSON.parse(raw);
+    return raw;
+  } catch {
+    // fallback handled below
+  }
+
+  // LeetCode-style payloads: "a = [...], b = 1" => "[[...], 1]"
+  const segments = splitTopLevelComma(raw);
+  if (segments.length === 0) return JSON.stringify([]);
+
+  const values = segments.map((segment) => {
+    const eqIndex = segment.indexOf('=');
+    return eqIndex >= 0 ? segment.slice(eqIndex + 1).trim() : segment.trim();
+  });
+
+  return `[${values.join(', ')}]`;
+}
+
 /**
  * Executes a single test case
  */
 function runTestCase(py, code, input, funcName) {
+  const argsPayload = getFunctionArgsPayload(input);
   const indentedCode = code
     .split('\n')
     .map((line) => '    ' + line)
@@ -119,9 +193,21 @@ ${
   funcName
     ? `
     try:
-        _args = json.loads(${JSON.stringify(input)})
-        if isinstance(_args, list): _result = ${funcName}(*_args)
-        else: _result = ${funcName}(_args)
+        import ast
+        try:
+            _args = json.loads(${JSON.stringify(argsPayload)})
+        except Exception:
+            _args = ast.literal_eval(${JSON.stringify(argsPayload)})
+        _target = globals().get(${JSON.stringify(funcName)})
+        if _target is None and 'Solution' in globals():
+            _instance = Solution()
+            if hasattr(_instance, ${JSON.stringify(funcName)}):
+                _target = getattr(_instance, ${JSON.stringify(funcName)})
+        if _target is None:
+            raise NameError(${JSON.stringify(`Function not found: ${funcName}`)})
+        if isinstance(_args, list): _result = _target(*_args)
+        elif isinstance(_args, tuple): _result = _target(*list(_args))
+        else: _result = _target(_args)
         if _result is not None: print(json.dumps(_result))
     except Exception as _e: raise _e
 `

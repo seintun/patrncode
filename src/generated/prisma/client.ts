@@ -67,6 +67,11 @@ export type TestRun = Prisma.TestRunModel
  */
 export type Hint = Prisma.HintModel
 /**
+ * Model ProblemHint
+ * 
+ */
+export type ProblemHint = Prisma.ProblemHintModel
+/**
  * Model SessionFeedback
  * 
  */

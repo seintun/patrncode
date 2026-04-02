@@ -17,6 +17,7 @@ interface ProblemItem {
   slug: string;
   difficulty: Difficulty;
   pattern: Pattern;
+  leetcodeNumber?: number | null;
   testCaseCount: number;
   mastery: MasteryState | null;
   sessionStatus: 'ACTIVE' | 'ABANDONED' | null;
@@ -47,6 +48,11 @@ const SORT_OPTIONS = [
   { value: 'title', label: 'Title' },
 ];
 
+const CURATION_OPTIONS = [
+  { value: 'all', label: 'All Problems' },
+  { value: 'curated', label: 'NeetCode Set' },
+];
+
 function formatPattern(pattern: Pattern): string {
   return pattern
     .replace(/_/g, ' ')
@@ -68,6 +74,7 @@ export default function ProblemList() {
   const [pattern, setPattern] = useState('');
   const [difficultyFilter, setDifficultyFilter] = useState<Difficulty | ''>('');
   const [sortBy, setSortBy] = useState('difficulty');
+  const [curationFilter, setCurationFilter] = useState<'all' | 'curated'>('all');
   const [dailyChallenge, setDailyChallenge] = useState<DailyChallenge | null>(null);
 
   const fetchProblems = useCallback(async () => {
@@ -79,6 +86,7 @@ export default function ProblemList() {
       if (pattern) params.set('pattern', pattern);
       if (difficultyFilter) params.set('difficulty', difficultyFilter);
       if (search) params.set('search', search);
+      if (curationFilter === 'curated') params.set('curated', 'true');
 
       const res = await fetch(`/api/problems?${params.toString()}`, { cache: 'no-store' });
       if (!res.ok) throw new Error('Failed to fetch problems');
@@ -90,7 +98,7 @@ export default function ProblemList() {
     } finally {
       setLoading(false);
     }
-  }, [pattern, difficultyFilter, search]);
+  }, [pattern, difficultyFilter, search, curationFilter]);
 
   useEffect(() => {
     fetchProblems();
@@ -168,6 +176,17 @@ export default function ProblemList() {
             className="w-full sm:w-36"
             aria-label="Sort problems"
           />
+          <label htmlFor="curation-select" className="sr-only">
+            Filter by curation
+          </label>
+          <Select
+            id="curation-select"
+            options={CURATION_OPTIONS}
+            value={curationFilter}
+            onChange={(v) => setCurationFilter(v as 'all' | 'curated')}
+            className="col-span-2 w-full sm:col-span-1 sm:w-40"
+            aria-label="Filter by curation"
+          />
         </div>
       </div>
 
@@ -240,9 +259,16 @@ export default function ProblemList() {
             <Link key={problem.id} href={`/practice/${problem.slug}`} className="block">
               <Card className="flex flex-col items-start gap-2 p-3 transition-colors hover:bg-[var(--color-bg-elevated)] sm:flex-row sm:items-center sm:gap-4 sm:p-4">
                 <div className="min-w-0 flex-1">
-                  <p className="break-words text-base font-medium leading-snug text-[var(--color-text-primary)] sm:truncate">
-                    {problem.title}
-                  </p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="break-words text-base font-medium leading-snug text-[var(--color-text-primary)] sm:truncate">
+                      {problem.title}
+                    </p>
+                    {problem.leetcodeNumber ? (
+                      <span className="rounded-full border border-[var(--color-border)] bg-[var(--color-bg-elevated)] px-2 py-0.5 text-[10px] font-semibold text-[var(--color-text-secondary)]">
+                        LC #{problem.leetcodeNumber}
+                      </span>
+                    ) : null}
+                  </div>
                   <p className="text-xs text-[var(--color-text-muted)] sm:text-sm">
                     {problem.testCaseCount} test cases
                   </p>

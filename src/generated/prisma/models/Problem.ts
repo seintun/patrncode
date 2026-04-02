@@ -27,11 +27,13 @@ export type AggregateProblem = {
 }
 
 export type ProblemAvgAggregateOutputType = {
+  leetcodeNumber: number | null
   sortOrder: number | null
   curatedOrder: number | null
 }
 
 export type ProblemSumAggregateOutputType = {
+  leetcodeNumber: number | null
   sortOrder: number | null
   curatedOrder: number | null
 }
@@ -43,6 +45,7 @@ export type ProblemMinAggregateOutputType = {
   difficulty: $Enums.Difficulty | null
   pattern: $Enums.Pattern | null
   sourceType: $Enums.SourceType | null
+  leetcodeNumber: number | null
   externalUrl: string | null
   statement: string | null
   starterCode: string | null
@@ -61,6 +64,7 @@ export type ProblemMaxAggregateOutputType = {
   difficulty: $Enums.Difficulty | null
   pattern: $Enums.Pattern | null
   sourceType: $Enums.SourceType | null
+  leetcodeNumber: number | null
   externalUrl: string | null
   statement: string | null
   starterCode: string | null
@@ -81,6 +85,7 @@ export type ProblemCountAggregateOutputType = {
   tags: number
   constraints: number
   sourceType: number
+  leetcodeNumber: number
   externalUrl: number
   statement: number
   examples: number
@@ -97,11 +102,13 @@ export type ProblemCountAggregateOutputType = {
 
 
 export type ProblemAvgAggregateInputType = {
+  leetcodeNumber?: true
   sortOrder?: true
   curatedOrder?: true
 }
 
 export type ProblemSumAggregateInputType = {
+  leetcodeNumber?: true
   sortOrder?: true
   curatedOrder?: true
 }
@@ -113,6 +120,7 @@ export type ProblemMinAggregateInputType = {
   difficulty?: true
   pattern?: true
   sourceType?: true
+  leetcodeNumber?: true
   externalUrl?: true
   statement?: true
   starterCode?: true
@@ -131,6 +139,7 @@ export type ProblemMaxAggregateInputType = {
   difficulty?: true
   pattern?: true
   sourceType?: true
+  leetcodeNumber?: true
   externalUrl?: true
   statement?: true
   starterCode?: true
@@ -151,6 +160,7 @@ export type ProblemCountAggregateInputType = {
   tags?: true
   constraints?: true
   sourceType?: true
+  leetcodeNumber?: true
   externalUrl?: true
   statement?: true
   examples?: true
@@ -260,6 +270,7 @@ export type ProblemGroupByOutputType = {
   tags: string[]
   constraints: string[]
   sourceType: $Enums.SourceType
+  leetcodeNumber: number | null
   externalUrl: string | null
   statement: string
   examples: runtime.JsonValue
@@ -305,6 +316,7 @@ export type ProblemWhereInput = {
   tags?: Prisma.StringNullableListFilter<"Problem">
   constraints?: Prisma.StringNullableListFilter<"Problem">
   sourceType?: Prisma.EnumSourceTypeFilter<"Problem"> | $Enums.SourceType
+  leetcodeNumber?: Prisma.IntNullableFilter<"Problem"> | number | null
   externalUrl?: Prisma.StringNullableFilter<"Problem"> | string | null
   statement?: Prisma.StringFilter<"Problem"> | string
   examples?: Prisma.JsonFilter<"Problem">
@@ -319,6 +331,7 @@ export type ProblemWhereInput = {
   testCases?: Prisma.TestCaseListRelationFilter
   sessions?: Prisma.SessionListRelationFilter
   problemStates?: Prisma.UserProblemStateListRelationFilter
+  problemHints?: Prisma.ProblemHintListRelationFilter
 }
 
 export type ProblemOrderByWithRelationInput = {
@@ -330,6 +343,7 @@ export type ProblemOrderByWithRelationInput = {
   tags?: Prisma.SortOrder
   constraints?: Prisma.SortOrder
   sourceType?: Prisma.SortOrder
+  leetcodeNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   externalUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   statement?: Prisma.SortOrder
   examples?: Prisma.SortOrder
@@ -344,6 +358,7 @@ export type ProblemOrderByWithRelationInput = {
   testCases?: Prisma.TestCaseOrderByRelationAggregateInput
   sessions?: Prisma.SessionOrderByRelationAggregateInput
   problemStates?: Prisma.UserProblemStateOrderByRelationAggregateInput
+  problemHints?: Prisma.ProblemHintOrderByRelationAggregateInput
 }
 
 export type ProblemWhereUniqueInput = Prisma.AtLeast<{
@@ -358,6 +373,7 @@ export type ProblemWhereUniqueInput = Prisma.AtLeast<{
   tags?: Prisma.StringNullableListFilter<"Problem">
   constraints?: Prisma.StringNullableListFilter<"Problem">
   sourceType?: Prisma.EnumSourceTypeFilter<"Problem"> | $Enums.SourceType
+  leetcodeNumber?: Prisma.IntNullableFilter<"Problem"> | number | null
   externalUrl?: Prisma.StringNullableFilter<"Problem"> | string | null
   statement?: Prisma.StringFilter<"Problem"> | string
   examples?: Prisma.JsonFilter<"Problem">
@@ -372,6 +388,7 @@ export type ProblemWhereUniqueInput = Prisma.AtLeast<{
   testCases?: Prisma.TestCaseListRelationFilter
   sessions?: Prisma.SessionListRelationFilter
   problemStates?: Prisma.UserProblemStateListRelationFilter
+  problemHints?: Prisma.ProblemHintListRelationFilter
 }, "id" | "slug">
 
 export type ProblemOrderByWithAggregationInput = {
@@ -383,6 +400,7 @@ export type ProblemOrderByWithAggregationInput = {
   tags?: Prisma.SortOrder
   constraints?: Prisma.SortOrder
   sourceType?: Prisma.SortOrder
+  leetcodeNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   externalUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   statement?: Prisma.SortOrder
   examples?: Prisma.SortOrder
@@ -413,6 +431,7 @@ export type ProblemScalarWhereWithAggregatesInput = {
   tags?: Prisma.StringNullableListFilter<"Problem">
   constraints?: Prisma.StringNullableListFilter<"Problem">
   sourceType?: Prisma.EnumSourceTypeWithAggregatesFilter<"Problem"> | $Enums.SourceType
+  leetcodeNumber?: Prisma.IntNullableWithAggregatesFilter<"Problem"> | number | null
   externalUrl?: Prisma.StringNullableWithAggregatesFilter<"Problem"> | string | null
   statement?: Prisma.StringWithAggregatesFilter<"Problem"> | string
   examples?: Prisma.JsonWithAggregatesFilter<"Problem">
@@ -435,6 +454,7 @@ export type ProblemCreateInput = {
   tags?: Prisma.ProblemCreatetagsInput | string[]
   constraints?: Prisma.ProblemCreateconstraintsInput | string[]
   sourceType?: $Enums.SourceType
+  leetcodeNumber?: number | null
   externalUrl?: string | null
   statement: string
   examples: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -449,6 +469,7 @@ export type ProblemCreateInput = {
   testCases?: Prisma.TestCaseCreateNestedManyWithoutProblemInput
   sessions?: Prisma.SessionCreateNestedManyWithoutProblemInput
   problemStates?: Prisma.UserProblemStateCreateNestedManyWithoutProblemInput
+  problemHints?: Prisma.ProblemHintCreateNestedManyWithoutProblemInput
 }
 
 export type ProblemUncheckedCreateInput = {
@@ -460,6 +481,7 @@ export type ProblemUncheckedCreateInput = {
   tags?: Prisma.ProblemCreatetagsInput | string[]
   constraints?: Prisma.ProblemCreateconstraintsInput | string[]
   sourceType?: $Enums.SourceType
+  leetcodeNumber?: number | null
   externalUrl?: string | null
   statement: string
   examples: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -474,6 +496,7 @@ export type ProblemUncheckedCreateInput = {
   testCases?: Prisma.TestCaseUncheckedCreateNestedManyWithoutProblemInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutProblemInput
   problemStates?: Prisma.UserProblemStateUncheckedCreateNestedManyWithoutProblemInput
+  problemHints?: Prisma.ProblemHintUncheckedCreateNestedManyWithoutProblemInput
 }
 
 export type ProblemUpdateInput = {
@@ -485,6 +508,7 @@ export type ProblemUpdateInput = {
   tags?: Prisma.ProblemUpdatetagsInput | string[]
   constraints?: Prisma.ProblemUpdateconstraintsInput | string[]
   sourceType?: Prisma.EnumSourceTypeFieldUpdateOperationsInput | $Enums.SourceType
+  leetcodeNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   externalUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   statement?: Prisma.StringFieldUpdateOperationsInput | string
   examples?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -499,6 +523,7 @@ export type ProblemUpdateInput = {
   testCases?: Prisma.TestCaseUpdateManyWithoutProblemNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutProblemNestedInput
   problemStates?: Prisma.UserProblemStateUpdateManyWithoutProblemNestedInput
+  problemHints?: Prisma.ProblemHintUpdateManyWithoutProblemNestedInput
 }
 
 export type ProblemUncheckedUpdateInput = {
@@ -510,6 +535,7 @@ export type ProblemUncheckedUpdateInput = {
   tags?: Prisma.ProblemUpdatetagsInput | string[]
   constraints?: Prisma.ProblemUpdateconstraintsInput | string[]
   sourceType?: Prisma.EnumSourceTypeFieldUpdateOperationsInput | $Enums.SourceType
+  leetcodeNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   externalUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   statement?: Prisma.StringFieldUpdateOperationsInput | string
   examples?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -524,6 +550,7 @@ export type ProblemUncheckedUpdateInput = {
   testCases?: Prisma.TestCaseUncheckedUpdateManyWithoutProblemNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutProblemNestedInput
   problemStates?: Prisma.UserProblemStateUncheckedUpdateManyWithoutProblemNestedInput
+  problemHints?: Prisma.ProblemHintUncheckedUpdateManyWithoutProblemNestedInput
 }
 
 export type ProblemCreateManyInput = {
@@ -535,6 +562,7 @@ export type ProblemCreateManyInput = {
   tags?: Prisma.ProblemCreatetagsInput | string[]
   constraints?: Prisma.ProblemCreateconstraintsInput | string[]
   sourceType?: $Enums.SourceType
+  leetcodeNumber?: number | null
   externalUrl?: string | null
   statement: string
   examples: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -557,6 +585,7 @@ export type ProblemUpdateManyMutationInput = {
   tags?: Prisma.ProblemUpdatetagsInput | string[]
   constraints?: Prisma.ProblemUpdateconstraintsInput | string[]
   sourceType?: Prisma.EnumSourceTypeFieldUpdateOperationsInput | $Enums.SourceType
+  leetcodeNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   externalUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   statement?: Prisma.StringFieldUpdateOperationsInput | string
   examples?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -579,6 +608,7 @@ export type ProblemUncheckedUpdateManyInput = {
   tags?: Prisma.ProblemUpdatetagsInput | string[]
   constraints?: Prisma.ProblemUpdateconstraintsInput | string[]
   sourceType?: Prisma.EnumSourceTypeFieldUpdateOperationsInput | $Enums.SourceType
+  leetcodeNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   externalUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   statement?: Prisma.StringFieldUpdateOperationsInput | string
   examples?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -609,6 +639,7 @@ export type ProblemCountOrderByAggregateInput = {
   tags?: Prisma.SortOrder
   constraints?: Prisma.SortOrder
   sourceType?: Prisma.SortOrder
+  leetcodeNumber?: Prisma.SortOrder
   externalUrl?: Prisma.SortOrder
   statement?: Prisma.SortOrder
   examples?: Prisma.SortOrder
@@ -623,6 +654,7 @@ export type ProblemCountOrderByAggregateInput = {
 }
 
 export type ProblemAvgOrderByAggregateInput = {
+  leetcodeNumber?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   curatedOrder?: Prisma.SortOrder
 }
@@ -634,6 +666,7 @@ export type ProblemMaxOrderByAggregateInput = {
   difficulty?: Prisma.SortOrder
   pattern?: Prisma.SortOrder
   sourceType?: Prisma.SortOrder
+  leetcodeNumber?: Prisma.SortOrder
   externalUrl?: Prisma.SortOrder
   statement?: Prisma.SortOrder
   starterCode?: Prisma.SortOrder
@@ -652,6 +685,7 @@ export type ProblemMinOrderByAggregateInput = {
   difficulty?: Prisma.SortOrder
   pattern?: Prisma.SortOrder
   sourceType?: Prisma.SortOrder
+  leetcodeNumber?: Prisma.SortOrder
   externalUrl?: Prisma.SortOrder
   statement?: Prisma.SortOrder
   starterCode?: Prisma.SortOrder
@@ -664,6 +698,7 @@ export type ProblemMinOrderByAggregateInput = {
 }
 
 export type ProblemSumOrderByAggregateInput = {
+  leetcodeNumber?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   curatedOrder?: Prisma.SortOrder
 }
@@ -707,6 +742,14 @@ export type EnumSourceTypeFieldUpdateOperationsInput = {
   set?: $Enums.SourceType
 }
 
+export type NullableIntFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
 export type NullableStringFieldUpdateOperationsInput = {
   set?: string | null
 }
@@ -721,14 +764,6 @@ export type IntFieldUpdateOperationsInput = {
 
 export type BoolFieldUpdateOperationsInput = {
   set?: boolean
-}
-
-export type NullableIntFieldUpdateOperationsInput = {
-  set?: number | null
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
 }
 
 export type NullableDateTimeFieldUpdateOperationsInput = {
@@ -767,6 +802,20 @@ export type ProblemUpdateOneRequiredWithoutSessionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProblemUpdateToOneWithWhereWithoutSessionsInput, Prisma.ProblemUpdateWithoutSessionsInput>, Prisma.ProblemUncheckedUpdateWithoutSessionsInput>
 }
 
+export type ProblemCreateNestedOneWithoutProblemHintsInput = {
+  create?: Prisma.XOR<Prisma.ProblemCreateWithoutProblemHintsInput, Prisma.ProblemUncheckedCreateWithoutProblemHintsInput>
+  connectOrCreate?: Prisma.ProblemCreateOrConnectWithoutProblemHintsInput
+  connect?: Prisma.ProblemWhereUniqueInput
+}
+
+export type ProblemUpdateOneRequiredWithoutProblemHintsNestedInput = {
+  create?: Prisma.XOR<Prisma.ProblemCreateWithoutProblemHintsInput, Prisma.ProblemUncheckedCreateWithoutProblemHintsInput>
+  connectOrCreate?: Prisma.ProblemCreateOrConnectWithoutProblemHintsInput
+  upsert?: Prisma.ProblemUpsertWithoutProblemHintsInput
+  connect?: Prisma.ProblemWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProblemUpdateToOneWithWhereWithoutProblemHintsInput, Prisma.ProblemUpdateWithoutProblemHintsInput>, Prisma.ProblemUncheckedUpdateWithoutProblemHintsInput>
+}
+
 export type ProblemCreateNestedOneWithoutProblemStatesInput = {
   create?: Prisma.XOR<Prisma.ProblemCreateWithoutProblemStatesInput, Prisma.ProblemUncheckedCreateWithoutProblemStatesInput>
   connectOrCreate?: Prisma.ProblemCreateOrConnectWithoutProblemStatesInput
@@ -790,6 +839,7 @@ export type ProblemCreateWithoutTestCasesInput = {
   tags?: Prisma.ProblemCreatetagsInput | string[]
   constraints?: Prisma.ProblemCreateconstraintsInput | string[]
   sourceType?: $Enums.SourceType
+  leetcodeNumber?: number | null
   externalUrl?: string | null
   statement: string
   examples: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -803,6 +853,7 @@ export type ProblemCreateWithoutTestCasesInput = {
   updatedAt?: Date | string
   sessions?: Prisma.SessionCreateNestedManyWithoutProblemInput
   problemStates?: Prisma.UserProblemStateCreateNestedManyWithoutProblemInput
+  problemHints?: Prisma.ProblemHintCreateNestedManyWithoutProblemInput
 }
 
 export type ProblemUncheckedCreateWithoutTestCasesInput = {
@@ -814,6 +865,7 @@ export type ProblemUncheckedCreateWithoutTestCasesInput = {
   tags?: Prisma.ProblemCreatetagsInput | string[]
   constraints?: Prisma.ProblemCreateconstraintsInput | string[]
   sourceType?: $Enums.SourceType
+  leetcodeNumber?: number | null
   externalUrl?: string | null
   statement: string
   examples: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -827,6 +879,7 @@ export type ProblemUncheckedCreateWithoutTestCasesInput = {
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutProblemInput
   problemStates?: Prisma.UserProblemStateUncheckedCreateNestedManyWithoutProblemInput
+  problemHints?: Prisma.ProblemHintUncheckedCreateNestedManyWithoutProblemInput
 }
 
 export type ProblemCreateOrConnectWithoutTestCasesInput = {
@@ -854,6 +907,7 @@ export type ProblemUpdateWithoutTestCasesInput = {
   tags?: Prisma.ProblemUpdatetagsInput | string[]
   constraints?: Prisma.ProblemUpdateconstraintsInput | string[]
   sourceType?: Prisma.EnumSourceTypeFieldUpdateOperationsInput | $Enums.SourceType
+  leetcodeNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   externalUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   statement?: Prisma.StringFieldUpdateOperationsInput | string
   examples?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -867,6 +921,7 @@ export type ProblemUpdateWithoutTestCasesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUpdateManyWithoutProblemNestedInput
   problemStates?: Prisma.UserProblemStateUpdateManyWithoutProblemNestedInput
+  problemHints?: Prisma.ProblemHintUpdateManyWithoutProblemNestedInput
 }
 
 export type ProblemUncheckedUpdateWithoutTestCasesInput = {
@@ -878,6 +933,7 @@ export type ProblemUncheckedUpdateWithoutTestCasesInput = {
   tags?: Prisma.ProblemUpdatetagsInput | string[]
   constraints?: Prisma.ProblemUpdateconstraintsInput | string[]
   sourceType?: Prisma.EnumSourceTypeFieldUpdateOperationsInput | $Enums.SourceType
+  leetcodeNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   externalUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   statement?: Prisma.StringFieldUpdateOperationsInput | string
   examples?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -891,6 +947,7 @@ export type ProblemUncheckedUpdateWithoutTestCasesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutProblemNestedInput
   problemStates?: Prisma.UserProblemStateUncheckedUpdateManyWithoutProblemNestedInput
+  problemHints?: Prisma.ProblemHintUncheckedUpdateManyWithoutProblemNestedInput
 }
 
 export type ProblemCreateWithoutSessionsInput = {
@@ -902,6 +959,7 @@ export type ProblemCreateWithoutSessionsInput = {
   tags?: Prisma.ProblemCreatetagsInput | string[]
   constraints?: Prisma.ProblemCreateconstraintsInput | string[]
   sourceType?: $Enums.SourceType
+  leetcodeNumber?: number | null
   externalUrl?: string | null
   statement: string
   examples: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -915,6 +973,7 @@ export type ProblemCreateWithoutSessionsInput = {
   updatedAt?: Date | string
   testCases?: Prisma.TestCaseCreateNestedManyWithoutProblemInput
   problemStates?: Prisma.UserProblemStateCreateNestedManyWithoutProblemInput
+  problemHints?: Prisma.ProblemHintCreateNestedManyWithoutProblemInput
 }
 
 export type ProblemUncheckedCreateWithoutSessionsInput = {
@@ -926,6 +985,7 @@ export type ProblemUncheckedCreateWithoutSessionsInput = {
   tags?: Prisma.ProblemCreatetagsInput | string[]
   constraints?: Prisma.ProblemCreateconstraintsInput | string[]
   sourceType?: $Enums.SourceType
+  leetcodeNumber?: number | null
   externalUrl?: string | null
   statement: string
   examples: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -939,6 +999,7 @@ export type ProblemUncheckedCreateWithoutSessionsInput = {
   updatedAt?: Date | string
   testCases?: Prisma.TestCaseUncheckedCreateNestedManyWithoutProblemInput
   problemStates?: Prisma.UserProblemStateUncheckedCreateNestedManyWithoutProblemInput
+  problemHints?: Prisma.ProblemHintUncheckedCreateNestedManyWithoutProblemInput
 }
 
 export type ProblemCreateOrConnectWithoutSessionsInput = {
@@ -966,6 +1027,7 @@ export type ProblemUpdateWithoutSessionsInput = {
   tags?: Prisma.ProblemUpdatetagsInput | string[]
   constraints?: Prisma.ProblemUpdateconstraintsInput | string[]
   sourceType?: Prisma.EnumSourceTypeFieldUpdateOperationsInput | $Enums.SourceType
+  leetcodeNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   externalUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   statement?: Prisma.StringFieldUpdateOperationsInput | string
   examples?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -979,6 +1041,7 @@ export type ProblemUpdateWithoutSessionsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   testCases?: Prisma.TestCaseUpdateManyWithoutProblemNestedInput
   problemStates?: Prisma.UserProblemStateUpdateManyWithoutProblemNestedInput
+  problemHints?: Prisma.ProblemHintUpdateManyWithoutProblemNestedInput
 }
 
 export type ProblemUncheckedUpdateWithoutSessionsInput = {
@@ -990,6 +1053,7 @@ export type ProblemUncheckedUpdateWithoutSessionsInput = {
   tags?: Prisma.ProblemUpdatetagsInput | string[]
   constraints?: Prisma.ProblemUpdateconstraintsInput | string[]
   sourceType?: Prisma.EnumSourceTypeFieldUpdateOperationsInput | $Enums.SourceType
+  leetcodeNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   externalUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   statement?: Prisma.StringFieldUpdateOperationsInput | string
   examples?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -1003,9 +1067,10 @@ export type ProblemUncheckedUpdateWithoutSessionsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   testCases?: Prisma.TestCaseUncheckedUpdateManyWithoutProblemNestedInput
   problemStates?: Prisma.UserProblemStateUncheckedUpdateManyWithoutProblemNestedInput
+  problemHints?: Prisma.ProblemHintUncheckedUpdateManyWithoutProblemNestedInput
 }
 
-export type ProblemCreateWithoutProblemStatesInput = {
+export type ProblemCreateWithoutProblemHintsInput = {
   id?: string
   title: string
   slug: string
@@ -1014,6 +1079,7 @@ export type ProblemCreateWithoutProblemStatesInput = {
   tags?: Prisma.ProblemCreatetagsInput | string[]
   constraints?: Prisma.ProblemCreateconstraintsInput | string[]
   sourceType?: $Enums.SourceType
+  leetcodeNumber?: number | null
   externalUrl?: string | null
   statement: string
   examples: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -1027,9 +1093,10 @@ export type ProblemCreateWithoutProblemStatesInput = {
   updatedAt?: Date | string
   testCases?: Prisma.TestCaseCreateNestedManyWithoutProblemInput
   sessions?: Prisma.SessionCreateNestedManyWithoutProblemInput
+  problemStates?: Prisma.UserProblemStateCreateNestedManyWithoutProblemInput
 }
 
-export type ProblemUncheckedCreateWithoutProblemStatesInput = {
+export type ProblemUncheckedCreateWithoutProblemHintsInput = {
   id?: string
   title: string
   slug: string
@@ -1038,6 +1105,7 @@ export type ProblemUncheckedCreateWithoutProblemStatesInput = {
   tags?: Prisma.ProblemCreatetagsInput | string[]
   constraints?: Prisma.ProblemCreateconstraintsInput | string[]
   sourceType?: $Enums.SourceType
+  leetcodeNumber?: number | null
   externalUrl?: string | null
   statement: string
   examples: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -1051,6 +1119,127 @@ export type ProblemUncheckedCreateWithoutProblemStatesInput = {
   updatedAt?: Date | string
   testCases?: Prisma.TestCaseUncheckedCreateNestedManyWithoutProblemInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutProblemInput
+  problemStates?: Prisma.UserProblemStateUncheckedCreateNestedManyWithoutProblemInput
+}
+
+export type ProblemCreateOrConnectWithoutProblemHintsInput = {
+  where: Prisma.ProblemWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProblemCreateWithoutProblemHintsInput, Prisma.ProblemUncheckedCreateWithoutProblemHintsInput>
+}
+
+export type ProblemUpsertWithoutProblemHintsInput = {
+  update: Prisma.XOR<Prisma.ProblemUpdateWithoutProblemHintsInput, Prisma.ProblemUncheckedUpdateWithoutProblemHintsInput>
+  create: Prisma.XOR<Prisma.ProblemCreateWithoutProblemHintsInput, Prisma.ProblemUncheckedCreateWithoutProblemHintsInput>
+  where?: Prisma.ProblemWhereInput
+}
+
+export type ProblemUpdateToOneWithWhereWithoutProblemHintsInput = {
+  where?: Prisma.ProblemWhereInput
+  data: Prisma.XOR<Prisma.ProblemUpdateWithoutProblemHintsInput, Prisma.ProblemUncheckedUpdateWithoutProblemHintsInput>
+}
+
+export type ProblemUpdateWithoutProblemHintsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  difficulty?: Prisma.EnumDifficultyFieldUpdateOperationsInput | $Enums.Difficulty
+  pattern?: Prisma.EnumPatternFieldUpdateOperationsInput | $Enums.Pattern
+  tags?: Prisma.ProblemUpdatetagsInput | string[]
+  constraints?: Prisma.ProblemUpdateconstraintsInput | string[]
+  sourceType?: Prisma.EnumSourceTypeFieldUpdateOperationsInput | $Enums.SourceType
+  leetcodeNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  externalUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  statement?: Prisma.StringFieldUpdateOperationsInput | string
+  examples?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  starterCode?: Prisma.StringFieldUpdateOperationsInput | string
+  approaches?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  isCurated?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  curatedOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  dailyChallengeDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  testCases?: Prisma.TestCaseUpdateManyWithoutProblemNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutProblemNestedInput
+  problemStates?: Prisma.UserProblemStateUpdateManyWithoutProblemNestedInput
+}
+
+export type ProblemUncheckedUpdateWithoutProblemHintsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  difficulty?: Prisma.EnumDifficultyFieldUpdateOperationsInput | $Enums.Difficulty
+  pattern?: Prisma.EnumPatternFieldUpdateOperationsInput | $Enums.Pattern
+  tags?: Prisma.ProblemUpdatetagsInput | string[]
+  constraints?: Prisma.ProblemUpdateconstraintsInput | string[]
+  sourceType?: Prisma.EnumSourceTypeFieldUpdateOperationsInput | $Enums.SourceType
+  leetcodeNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  externalUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  statement?: Prisma.StringFieldUpdateOperationsInput | string
+  examples?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  starterCode?: Prisma.StringFieldUpdateOperationsInput | string
+  approaches?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  isCurated?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  curatedOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  dailyChallengeDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  testCases?: Prisma.TestCaseUncheckedUpdateManyWithoutProblemNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutProblemNestedInput
+  problemStates?: Prisma.UserProblemStateUncheckedUpdateManyWithoutProblemNestedInput
+}
+
+export type ProblemCreateWithoutProblemStatesInput = {
+  id?: string
+  title: string
+  slug: string
+  difficulty: $Enums.Difficulty
+  pattern: $Enums.Pattern
+  tags?: Prisma.ProblemCreatetagsInput | string[]
+  constraints?: Prisma.ProblemCreateconstraintsInput | string[]
+  sourceType?: $Enums.SourceType
+  leetcodeNumber?: number | null
+  externalUrl?: string | null
+  statement: string
+  examples: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  starterCode?: string
+  approaches?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sortOrder?: number
+  isCurated?: boolean
+  curatedOrder?: number | null
+  dailyChallengeDate?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  testCases?: Prisma.TestCaseCreateNestedManyWithoutProblemInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutProblemInput
+  problemHints?: Prisma.ProblemHintCreateNestedManyWithoutProblemInput
+}
+
+export type ProblemUncheckedCreateWithoutProblemStatesInput = {
+  id?: string
+  title: string
+  slug: string
+  difficulty: $Enums.Difficulty
+  pattern: $Enums.Pattern
+  tags?: Prisma.ProblemCreatetagsInput | string[]
+  constraints?: Prisma.ProblemCreateconstraintsInput | string[]
+  sourceType?: $Enums.SourceType
+  leetcodeNumber?: number | null
+  externalUrl?: string | null
+  statement: string
+  examples: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  starterCode?: string
+  approaches?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  sortOrder?: number
+  isCurated?: boolean
+  curatedOrder?: number | null
+  dailyChallengeDate?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  testCases?: Prisma.TestCaseUncheckedCreateNestedManyWithoutProblemInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutProblemInput
+  problemHints?: Prisma.ProblemHintUncheckedCreateNestedManyWithoutProblemInput
 }
 
 export type ProblemCreateOrConnectWithoutProblemStatesInput = {
@@ -1078,6 +1267,7 @@ export type ProblemUpdateWithoutProblemStatesInput = {
   tags?: Prisma.ProblemUpdatetagsInput | string[]
   constraints?: Prisma.ProblemUpdateconstraintsInput | string[]
   sourceType?: Prisma.EnumSourceTypeFieldUpdateOperationsInput | $Enums.SourceType
+  leetcodeNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   externalUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   statement?: Prisma.StringFieldUpdateOperationsInput | string
   examples?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -1091,6 +1281,7 @@ export type ProblemUpdateWithoutProblemStatesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   testCases?: Prisma.TestCaseUpdateManyWithoutProblemNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutProblemNestedInput
+  problemHints?: Prisma.ProblemHintUpdateManyWithoutProblemNestedInput
 }
 
 export type ProblemUncheckedUpdateWithoutProblemStatesInput = {
@@ -1102,6 +1293,7 @@ export type ProblemUncheckedUpdateWithoutProblemStatesInput = {
   tags?: Prisma.ProblemUpdatetagsInput | string[]
   constraints?: Prisma.ProblemUpdateconstraintsInput | string[]
   sourceType?: Prisma.EnumSourceTypeFieldUpdateOperationsInput | $Enums.SourceType
+  leetcodeNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   externalUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   statement?: Prisma.StringFieldUpdateOperationsInput | string
   examples?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -1115,6 +1307,7 @@ export type ProblemUncheckedUpdateWithoutProblemStatesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   testCases?: Prisma.TestCaseUncheckedUpdateManyWithoutProblemNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutProblemNestedInput
+  problemHints?: Prisma.ProblemHintUncheckedUpdateManyWithoutProblemNestedInput
 }
 
 
@@ -1126,12 +1319,14 @@ export type ProblemCountOutputType = {
   testCases: number
   sessions: number
   problemStates: number
+  problemHints: number
 }
 
 export type ProblemCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   testCases?: boolean | ProblemCountOutputTypeCountTestCasesArgs
   sessions?: boolean | ProblemCountOutputTypeCountSessionsArgs
   problemStates?: boolean | ProblemCountOutputTypeCountProblemStatesArgs
+  problemHints?: boolean | ProblemCountOutputTypeCountProblemHintsArgs
 }
 
 /**
@@ -1165,6 +1360,13 @@ export type ProblemCountOutputTypeCountProblemStatesArgs<ExtArgs extends runtime
   where?: Prisma.UserProblemStateWhereInput
 }
 
+/**
+ * ProblemCountOutputType without action
+ */
+export type ProblemCountOutputTypeCountProblemHintsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProblemHintWhereInput
+}
+
 
 export type ProblemSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1175,6 +1377,7 @@ export type ProblemSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   tags?: boolean
   constraints?: boolean
   sourceType?: boolean
+  leetcodeNumber?: boolean
   externalUrl?: boolean
   statement?: boolean
   examples?: boolean
@@ -1189,6 +1392,7 @@ export type ProblemSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   testCases?: boolean | Prisma.Problem$testCasesArgs<ExtArgs>
   sessions?: boolean | Prisma.Problem$sessionsArgs<ExtArgs>
   problemStates?: boolean | Prisma.Problem$problemStatesArgs<ExtArgs>
+  problemHints?: boolean | Prisma.Problem$problemHintsArgs<ExtArgs>
   _count?: boolean | Prisma.ProblemCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["problem"]>
 
@@ -1201,6 +1405,7 @@ export type ProblemSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   tags?: boolean
   constraints?: boolean
   sourceType?: boolean
+  leetcodeNumber?: boolean
   externalUrl?: boolean
   statement?: boolean
   examples?: boolean
@@ -1223,6 +1428,7 @@ export type ProblemSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   tags?: boolean
   constraints?: boolean
   sourceType?: boolean
+  leetcodeNumber?: boolean
   externalUrl?: boolean
   statement?: boolean
   examples?: boolean
@@ -1245,6 +1451,7 @@ export type ProblemSelectScalar = {
   tags?: boolean
   constraints?: boolean
   sourceType?: boolean
+  leetcodeNumber?: boolean
   externalUrl?: boolean
   statement?: boolean
   examples?: boolean
@@ -1258,11 +1465,12 @@ export type ProblemSelectScalar = {
   updatedAt?: boolean
 }
 
-export type ProblemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "slug" | "difficulty" | "pattern" | "tags" | "constraints" | "sourceType" | "externalUrl" | "statement" | "examples" | "starterCode" | "approaches" | "sortOrder" | "isCurated" | "curatedOrder" | "dailyChallengeDate" | "createdAt" | "updatedAt", ExtArgs["result"]["problem"]>
+export type ProblemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "slug" | "difficulty" | "pattern" | "tags" | "constraints" | "sourceType" | "leetcodeNumber" | "externalUrl" | "statement" | "examples" | "starterCode" | "approaches" | "sortOrder" | "isCurated" | "curatedOrder" | "dailyChallengeDate" | "createdAt" | "updatedAt", ExtArgs["result"]["problem"]>
 export type ProblemInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   testCases?: boolean | Prisma.Problem$testCasesArgs<ExtArgs>
   sessions?: boolean | Prisma.Problem$sessionsArgs<ExtArgs>
   problemStates?: boolean | Prisma.Problem$problemStatesArgs<ExtArgs>
+  problemHints?: boolean | Prisma.Problem$problemHintsArgs<ExtArgs>
   _count?: boolean | Prisma.ProblemCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ProblemIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1274,6 +1482,7 @@ export type $ProblemPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     testCases: Prisma.$TestCasePayload<ExtArgs>[]
     sessions: Prisma.$SessionPayload<ExtArgs>[]
     problemStates: Prisma.$UserProblemStatePayload<ExtArgs>[]
+    problemHints: Prisma.$ProblemHintPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1284,6 +1493,7 @@ export type $ProblemPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     tags: string[]
     constraints: string[]
     sourceType: $Enums.SourceType
+    leetcodeNumber: number | null
     externalUrl: string | null
     statement: string
     examples: runtime.JsonValue
@@ -1692,6 +1902,7 @@ export interface Prisma__ProblemClient<T, Null = never, ExtArgs extends runtime.
   testCases<T extends Prisma.Problem$testCasesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Problem$testCasesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TestCasePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   sessions<T extends Prisma.Problem$sessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Problem$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   problemStates<T extends Prisma.Problem$problemStatesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Problem$problemStatesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserProblemStatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  problemHints<T extends Prisma.Problem$problemHintsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Problem$problemHintsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProblemHintPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1729,6 +1940,7 @@ export interface ProblemFieldRefs {
   readonly tags: Prisma.FieldRef<"Problem", 'String[]'>
   readonly constraints: Prisma.FieldRef<"Problem", 'String[]'>
   readonly sourceType: Prisma.FieldRef<"Problem", 'SourceType'>
+  readonly leetcodeNumber: Prisma.FieldRef<"Problem", 'Int'>
   readonly externalUrl: Prisma.FieldRef<"Problem", 'String'>
   readonly statement: Prisma.FieldRef<"Problem", 'String'>
   readonly examples: Prisma.FieldRef<"Problem", 'Json'>
@@ -2202,6 +2414,30 @@ export type Problem$problemStatesArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   distinct?: Prisma.UserProblemStateScalarFieldEnum | Prisma.UserProblemStateScalarFieldEnum[]
+}
+
+/**
+ * Problem.problemHints
+ */
+export type Problem$problemHintsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ProblemHint
+   */
+  select?: Prisma.ProblemHintSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ProblemHint
+   */
+  omit?: Prisma.ProblemHintOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProblemHintInclude<ExtArgs> | null
+  where?: Prisma.ProblemHintWhereInput
+  orderBy?: Prisma.ProblemHintOrderByWithRelationInput | Prisma.ProblemHintOrderByWithRelationInput[]
+  cursor?: Prisma.ProblemHintWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProblemHintScalarFieldEnum | Prisma.ProblemHintScalarFieldEnum[]
 }
 
 /**

@@ -6,6 +6,11 @@ import { StreamedMarkdownMessage } from '@/components/ui/StreamedMarkdownMessage
 import { useExplanationCache } from '@/hooks/useExplanationCache';
 import { ExplanationLoader } from '@/components/ui/ExplanationLoader';
 import type { SessionMode } from '@/generated/prisma/enums';
+import {
+  decodeHtmlEntities,
+  formatExampleExplanation,
+  stripTrailingSections,
+} from '@/lib/problem-content/formatting';
 
 type TabKey = 'statement' | 'examples' | 'notes' | 'explanation';
 
@@ -21,6 +26,9 @@ interface ProblemPanelProps {
     statement: string;
     examples: Example[];
     constraints: string[];
+    problemHints?: Array<{ level: number; content: string }>;
+    externalUrl?: string | null;
+    leetcodeNumber?: number | null;
     starterCode?: string;
     pattern: string;
     difficulty: string;
@@ -71,6 +79,23 @@ export function ProblemPanel({
         className="border-b border-[var(--color-border)] px-4 py-3 cursor-grab active:cursor-grabbing touch-none select-none"
       >
         <h2 className="text-lg font-semibold text-[var(--color-text-primary)]">{problem.title}</h2>
+        <div className="mt-1 flex flex-wrap items-center gap-3 text-xs">
+          {problem.leetcodeNumber ? (
+            <span className="rounded-full border border-[var(--color-border)] bg-[var(--color-bg-elevated)] px-2 py-0.5 font-semibold text-[var(--color-text-secondary)]">
+              LC #{problem.leetcodeNumber}
+            </span>
+          ) : null}
+          {problem.externalUrl ? (
+            <a
+              href={problem.externalUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-[var(--color-accent)] hover:underline"
+            >
+              View on LeetCode
+            </a>
+          ) : null}
+        </div>
       </div>
 
       <div
@@ -114,11 +139,16 @@ export function ProblemPanel({
                   <h3 className="mb-2 text-sm font-semibold text-[var(--color-text-secondary)]">
                     Constraints
                   </h3>
-                  <ul className="list-inside list-disc space-y-1 text-sm text-[var(--color-text-primary)]">
+                  <ol className="space-y-1.5 text-sm text-[var(--color-text-primary)]">
                     {problem.constraints.map((constraint, i) => (
-                      <li key={i}>{constraint}</li>
+                      <li key={i} className="flex items-start gap-2">
+                        <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[var(--color-bg-elevated)] text-[11px] font-semibold text-[var(--color-accent)]">
+                          {i + 1}
+                        </span>
+                        <span>{constraint}</span>
+                      </li>
                     ))}
-                  </ul>
+                  </ol>
                 </div>
               )}
             </div>
@@ -143,20 +173,30 @@ export function ProblemPanel({
                     Example {i + 1}
                   </div>
                   <div className="space-y-2 font-[family-name:var(--font-geist-mono)] text-sm">
-                    <div>
-                      <span className="text-[var(--color-text-muted)]">Input: </span>
-                      <span className="text-[var(--color-text-primary)]">{example.input}</span>
+                    <div className="rounded-md border border-[var(--color-accent)]/35 bg-[var(--color-accent)]/8 px-2.5 py-1.5">
+                      <p className="mb-0.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--color-accent)]">
+                        Input
+                      </p>
+                      <p className="text-[var(--color-text-primary)]">
+                        {decodeHtmlEntities(example.input)}
+                      </p>
                     </div>
-                    <div>
-                      <span className="text-[var(--color-text-muted)]">Output: </span>
-                      <span className="text-[var(--color-text-primary)]">{example.output}</span>
+                    <div className="rounded-md border border-[var(--color-sophia-mock)]/35 bg-[var(--color-sophia-mock)]/10 px-2.5 py-1.5">
+                      <p className="mb-0.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--color-sophia-mock)]">
+                        Output
+                      </p>
+                      <p className="text-[var(--color-text-primary)]">
+                        {stripTrailingSections(decodeHtmlEntities(example.output))}
+                      </p>
                     </div>
                     {example.explanation && (
-                      <div>
-                        <span className="text-[var(--color-text-muted)]">Explanation: </span>
-                        <span className="text-[var(--color-text-secondary)]">
-                          {example.explanation}
-                        </span>
+                      <div className="rounded-md border border-[var(--color-ai-coach)]/35 bg-[var(--color-ai-coach)]/8 px-2.5 py-1.5">
+                        <p className="mb-0.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--color-ai-coach)]">
+                          Explanation
+                        </p>
+                        <p className="whitespace-pre-line text-[var(--color-text-secondary)]">
+                          {formatExampleExplanation(example.explanation)}
+                        </p>
                       </div>
                     )}
                   </div>

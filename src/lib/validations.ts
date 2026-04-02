@@ -80,6 +80,7 @@ export const hintRequestSchema = z.object({
   testResults: z.any().optional(),
   level: z.number().int().min(1).max(3),
   mode: z.string().optional(),
+  problemId: z.string().min(1).max(100),
 });
 
 // ── Summary Request ─────────────────────────────────────────────────────────

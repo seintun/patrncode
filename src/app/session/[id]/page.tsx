@@ -47,6 +47,12 @@ interface SessionData {
     statement: string;
     pattern: string;
     difficulty: string;
+    leetcodeNumber?: number | null;
+    externalUrl?: string | null;
+    problemHints?: Array<{
+      level: number;
+      content: string;
+    }>;
     examples: unknown[];
     constraints: string[];
     starterCode: string;
@@ -368,6 +374,7 @@ function SessionContent({
   }, [session?.problem.starterCode]);
 
   const problemContext = {
+    id: session.problem.id,
     title: session.problem.title,
     statement: session.problem.statement,
     pattern: session.problem.pattern,
@@ -575,6 +582,9 @@ function SessionContent({
           constraints: session.problem.constraints,
           pattern: session.problem.pattern,
           difficulty: session.problem.difficulty,
+          leetcodeNumber: session.problem.leetcodeNumber,
+          externalUrl: session.problem.externalUrl,
+          problemHints: session.problem.problemHints,
         }}
         notes={notes}
         onNotesChange={setNotes}

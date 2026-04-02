@@ -44,6 +44,8 @@ export async function GET(request: NextRequest): Promise<Response> {
             ? Prisma.sql`AND difficulty = ${difficulty}::"Difficulty"`
             : Prisma.empty;
           const curatedFilter = curated ? Prisma.sql`AND "isCurated" = true` : Prisma.empty;
+          const searchPrefix = `${search}%`;
+          const searchContains = `%${search}%`;
 
           const ranked = await prisma.$queryRaw<Array<{ id: string }>>(Prisma.sql`
             SELECT id
@@ -53,11 +55,17 @@ export async function GET(request: NextRequest): Promise<Response> {
             ${difficultyFilter}
             ${curatedFilter}
             AND (
-              similarity(title, ${search}) > 0.1
-              OR similarity(statement, ${search}) > 0.1
-              OR title ILIKE ${`%${search}%`}
+              title ILIKE ${searchContains}
+              OR statement ILIKE ${searchContains}
             )
-            ORDER BY GREATEST(similarity(title, ${search}), similarity(statement, ${search})) DESC
+            ORDER BY
+              CASE
+                WHEN lower(title) = lower(${search}) THEN 400
+                WHEN title ILIKE ${searchPrefix} THEN 300
+                WHEN title ILIKE ${searchContains} THEN 200
+                ELSE 100
+              END DESC,
+              title ASC
             LIMIT 100
           `);
 
@@ -102,7 +110,8 @@ export async function GET(request: NextRequest): Promise<Response> {
           guestId,
           problemId: { in: problems.map((problem) => problem.id) },
         },
-        orderBy: { startedAt: 'desc' },
+        orderBy: [{ problemId: 'asc' }, { startedAt: 'desc' }],
+        distinct: ['problemId'],
         select: {
           problemId: true,
           status: true,
@@ -148,6 +157,7 @@ export async function GET(request: NextRequest): Promise<Response> {
       slug: p.slug,
       difficulty: p.difficulty,
       pattern: p.pattern,
+      leetcodeNumber: p.leetcodeNumber,
       curatedOrder: p.curatedOrder,
       testCaseCount: p._count.testCases,
       mastery: masteryMap[p.id] ?? null,

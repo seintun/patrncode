@@ -6,6 +6,7 @@ import { DefaultChatTransport } from 'ai';
 import type { SessionMode } from '@/generated/prisma/enums';
 
 interface ProblemContext {
+  id: string;
   title: string;
   statement: string;
   pattern: string;
@@ -132,6 +133,7 @@ export function useAIChat({
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
+            problemId: problem.id,
             title: problem.title,
             statement: problem.statement,
             pattern: problem.pattern,
@@ -151,6 +153,25 @@ export function useAIChat({
             isLoading: false,
           });
           return '';
+        }
+
+        const hintSource = res.headers.get('X-Hint-Source');
+        if (hintSource === 'static') {
+          const staticHint = await res.text();
+          setHintStream({ text: staticHint, isLoading: false });
+
+          setMessages((prev) => [
+            ...prev,
+            {
+              id: `hint-${level}-${Date.now()}`,
+              role: 'assistant',
+              content: staticHint,
+              parts: [{ type: 'text', text: staticHint }],
+              annotations: [{ type: 'hint', level }],
+            } as any,
+          ]);
+
+          return staticHint;
         }
 
         if (!res.body) {
