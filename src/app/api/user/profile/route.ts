@@ -23,6 +23,9 @@ export async function GET(_request: NextRequest): Promise<Response> {
         lastActivityAt: null,
         coins: 0,
         tier: 'FREE',
+        theme: 'SYSTEM',
+        fontSize: 'MEDIUM',
+        keybindingScheme: 'VSCODE',
       });
     }
 
@@ -34,6 +37,9 @@ export async function GET(_request: NextRequest): Promise<Response> {
       lastActivityAt: profile?.lastActivityAt?.toISOString() ?? null,
       coins: profile?.coins ?? 0,
       tier: profile?.tier ?? 'FREE',
+      theme: profile?.theme ?? 'SYSTEM',
+      fontSize: profile?.fontSize ?? 'MEDIUM',
+      keybindingScheme: profile?.keybindingScheme ?? 'VSCODE',
     });
   } catch (error) {
     return handleApiError(new Response('', { status: 500 }), error, 'GET /api/user/profile');

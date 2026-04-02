@@ -15,6 +15,48 @@ const reportUpdateSchema = z.object({
   complexityNote: z.string().default(''),
 });
 
+function escapeRegExp(input: string): string {
+  return input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function extractSection(markdown: string, heading: string): string {
+  const pattern = new RegExp(
+    `##\\s+${escapeRegExp(heading)}\\s*\\n([\\s\\S]*?)(?=\\n##\\s+|$)`,
+    'i',
+  );
+  const match = markdown.match(pattern);
+  return match?.[1]?.trim() ?? '';
+}
+
+function parseSummarySections(markdown: string): {
+  strengths: string;
+  areasToImprove: string;
+  nextSteps: string;
+  complexityNote: string;
+} {
+  const normalized = markdown.replace(/\r\n/g, '\n').trim();
+  const strengths = extractSection(normalized, 'Strengths');
+  const areasToImprove = extractSection(normalized, 'Areas for Improvement');
+  const nextSteps = extractSection(normalized, 'Suggestions for Next Steps');
+  const complexityNote = extractSection(normalized, 'Complexity Note');
+
+  if (strengths || areasToImprove || nextSteps || complexityNote) {
+    return {
+      strengths,
+      areasToImprove,
+      nextSteps,
+      complexityNote,
+    };
+  }
+
+  return {
+    strengths: normalized,
+    areasToImprove: '',
+    nextSteps: '',
+    complexityNote: '',
+  };
+}
+
 async function handler(
   _request: NextRequest,
   { params, guestId }: { params: Promise<{ id: string }>; guestId: string },
@@ -76,20 +118,22 @@ async function handler(
       prompt: prompt.user,
     });
 
+    const parsed = parseSummarySections(result.text);
+
     const feedback = await prisma.sessionFeedback.upsert({
       where: { sessionId: session.id },
       update: {
-        strengths: result.text,
-        weaknesses: '',
-        suggestions: '',
-        complexityNote: '',
+        strengths: parsed.strengths,
+        weaknesses: parsed.areasToImprove,
+        suggestions: parsed.nextSteps,
+        complexityNote: parsed.complexityNote,
       },
       create: {
         sessionId: session.id,
-        strengths: result.text,
-        weaknesses: '',
-        suggestions: '',
-        complexityNote: '',
+        strengths: parsed.strengths,
+        weaknesses: parsed.areasToImprove,
+        suggestions: parsed.nextSteps,
+        complexityNote: parsed.complexityNote,
       },
     });
 

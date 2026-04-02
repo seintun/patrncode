@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { PREMIUM_GATING_ENABLED } from '@/lib/feature-flags';
 
@@ -76,7 +77,12 @@ export function CustomProblemModal({ open, onClose, isPremium }: CustomProblemMo
           <h3 className="text-lg font-semibold text-[var(--color-text-primary)]">
             Generate Practice Problem
           </h3>
-          <button onClick={onClose} className="text-[var(--color-text-muted)]">
+          <button
+            type="button"
+            aria-label="Close custom problem generator"
+            onClick={onClose}
+            className="text-[var(--color-text-muted)]"
+          >
             ×
           </button>
         </div>
@@ -139,9 +145,9 @@ export function CustomProblemModal({ open, onClose, isPremium }: CustomProblemMo
               {generated.statement}
             </p>
             {generated.problem?.slug && (
-              <a href={`/practice/${generated.problem.slug}`} className="mt-3 inline-block">
+              <Link href={`/practice/${generated.problem.slug}`} className="mt-3 inline-block">
                 <Button size="sm">Start This Problem</Button>
-              </a>
+              </Link>
             )}
           </div>
         )}

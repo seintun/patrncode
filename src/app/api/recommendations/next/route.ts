@@ -15,7 +15,7 @@ async function handler(req: NextRequest, { guestId }: { guestId: string }): Prom
   const weakPatterns = await getWeakPatterns(effectiveGuestId, 3);
 
   const userStates = await prisma.userProblemState.findMany({
-    where: { guestId: effectiveGuestId, mastery: { not: 'MASTERED' } },
+    where: { guestId: effectiveGuestId },
     select: { problemId: true },
   });
 

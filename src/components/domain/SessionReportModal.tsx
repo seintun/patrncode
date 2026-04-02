@@ -30,9 +30,28 @@ export function SessionReportModal({ open, sessionId, onClose }: SessionReportMo
       setError(null);
       try {
         const res = await fetch(`/api/sessions/${sessionId}/report`, { cache: 'no-store' });
-        const json = await res.json();
-        if (!res.ok) throw new Error(json?.error ?? 'Failed to load report');
-        if (mounted) setReport(json.report as SessionReport);
+        const text = await res.text();
+        let json: Record<string, unknown> | null = null;
+
+        if (text) {
+          try {
+            json = JSON.parse(text) as Record<string, unknown>;
+          } catch {
+            json = null;
+          }
+        }
+
+        if (!res.ok) {
+          const message =
+            (json && typeof json.error === 'string' ? json.error : null) ||
+            text ||
+            'Failed to load report';
+          throw new Error(message);
+        }
+
+        if (mounted && json && json.report) {
+          setReport(json.report as SessionReport);
+        }
       } catch (err) {
         if (mounted) setError(err instanceof Error ? err.message : 'Failed to load report');
       } finally {
@@ -53,7 +72,12 @@ export function SessionReportModal({ open, sessionId, onClose }: SessionReportMo
       <div className="w-full max-w-2xl rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-elevated)] p-5">
         <div className="mb-4 flex items-center justify-between">
           <h3 className="text-lg font-semibold text-[var(--color-text-primary)]">Session Report</h3>
-          <button onClick={onClose} className="text-[var(--color-text-muted)]">
+          <button
+            type="button"
+            aria-label="Close session report"
+            onClick={onClose}
+            className="text-[var(--color-text-muted)]"
+          >
             ×
           </button>
         </div>

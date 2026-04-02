@@ -17,6 +17,7 @@ export function SettingsPanel({ open, onClose }: SettingsPanelProps) {
   const [fontSize, setFontSize] = useState<FontSize>('MEDIUM');
   const [keybindingScheme, setKeybindingScheme] = useState<KeybindingScheme>('VSCODE');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -35,13 +36,22 @@ export function SettingsPanel({ open, onClose }: SettingsPanelProps) {
 
   const save = async () => {
     setLoading(true);
+    setError(null);
     try {
-      await fetch('/api/user/profile', {
+      const res = await fetch('/api/user/profile', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ theme, fontSize, keybindingScheme }),
       });
+
+      if (!res.ok) {
+        const payload = await res.json().catch(() => null);
+        throw new Error(payload?.error ?? 'Failed to save settings');
+      }
+
       onClose();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to save settings');
     } finally {
       setLoading(false);
     }
@@ -52,7 +62,12 @@ export function SettingsPanel({ open, onClose }: SettingsPanelProps) {
       <div className="h-full w-full max-w-md border-l border-[var(--color-border)] bg-[var(--color-bg-elevated)] p-5">
         <div className="mb-4 flex items-center justify-between">
           <h3 className="text-lg font-semibold text-[var(--color-text-primary)]">Settings</h3>
-          <button onClick={onClose} className="text-[var(--color-text-muted)]">
+          <button
+            type="button"
+            aria-label="Close settings"
+            onClick={onClose}
+            className="text-[var(--color-text-muted)]"
+          >
             ×
           </button>
         </div>
@@ -101,6 +116,7 @@ export function SettingsPanel({ open, onClose }: SettingsPanelProps) {
           <Button onClick={save} disabled={loading}>
             {loading ? 'Saving...' : 'Save Changes'}
           </Button>
+          {error ? <p className="text-sm text-[var(--color-error)]">{error}</p> : null}
         </div>
       </div>
     </div>

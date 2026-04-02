@@ -5,10 +5,7 @@ import { prisma } from '@/lib/db/prisma';
 
 vi.mock('@/lib/db/prisma', () => ({
   prisma: {
-    patternWeakness: {
-      upsert: vi.fn(),
-      update: vi.fn(),
-    },
+    $executeRaw: vi.fn(),
   },
 }));
 
@@ -18,12 +15,7 @@ describe('updatePatternWeakness', () => {
   });
 
   it('increments failed count for attempted outcomes', async () => {
-    vi.mocked(prisma.patternWeakness.upsert).mockResolvedValue({
-      id: 'pw1',
-      failedCount: 3,
-      successCount: 1,
-    } as any);
-    vi.mocked(prisma.patternWeakness.update).mockResolvedValue({} as any);
+    vi.mocked(prisma.$executeRaw).mockResolvedValue(1 as any);
 
     await updatePatternWeakness({
       guestId: 'guest-1',
@@ -31,21 +23,11 @@ describe('updatePatternWeakness', () => {
       outcome: 'ATTEMPTED',
     });
 
-    expect(prisma.patternWeakness.upsert).toHaveBeenCalled();
-    expect(prisma.patternWeakness.update).toHaveBeenCalledWith(
-      expect.objectContaining({
-        data: expect.objectContaining({ confidenceScore: 0.25 }),
-      }),
-    );
+    expect(prisma.$executeRaw).toHaveBeenCalledOnce();
   });
 
   it('increments success count for solved with zero hints', async () => {
-    vi.mocked(prisma.patternWeakness.upsert).mockResolvedValue({
-      id: 'pw2',
-      failedCount: 1,
-      successCount: 3,
-    } as any);
-    vi.mocked(prisma.patternWeakness.update).mockResolvedValue({} as any);
+    vi.mocked(prisma.$executeRaw).mockResolvedValue(1 as any);
 
     await updatePatternWeakness({
       guestId: 'guest-1',
@@ -53,10 +35,6 @@ describe('updatePatternWeakness', () => {
       outcome: 'SOLVED_ZERO_HINTS',
     });
 
-    expect(prisma.patternWeakness.update).toHaveBeenCalledWith(
-      expect.objectContaining({
-        data: expect.objectContaining({ confidenceScore: 0.75 }),
-      }),
-    );
+    expect(prisma.$executeRaw).toHaveBeenCalledOnce();
   });
 });

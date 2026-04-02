@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/db/prisma';
+import { Prisma } from '@/generated/prisma/client';
 import type { Pattern } from '@/generated/prisma/enums';
 import { isPrismaMissingTableError } from '@/lib/db/prisma-errors';
 
@@ -22,38 +23,59 @@ export async function updatePatternWeakness(params: {
     const isSuccess = outcome === 'SOLVED_ZERO_HINTS';
     const failedIncrement = outcome === 'ATTEMPTED' ? 1 : 0;
     const successIncrement = isSuccess ? 1 : 0;
+    const now = new Date();
 
-    const weakness = await prisma.patternWeakness.upsert({
-      where: {
-        guestId_pattern: { guestId, pattern },
-      },
-      update: {
-        failedCount: { increment: failedIncrement },
-        successCount: { increment: successIncrement },
-        lastPracticedAt: new Date(),
-      },
-      create: {
-        guestId,
-        pattern,
-        failedCount: failedIncrement,
-        successCount: successIncrement,
-        confidenceScore: isSuccess ? 1 : 0,
-        lastPracticedAt: new Date(),
-      },
-      select: {
-        id: true,
-        failedCount: true,
-        successCount: true,
-      },
-    });
-
-    const total = weakness.failedCount + weakness.successCount;
-    const confidenceScore = total > 0 ? weakness.successCount / total : 0.5;
-
-    await prisma.patternWeakness.update({
-      where: { id: weakness.id },
-      data: { confidenceScore },
-    });
+    await prisma.$executeRaw(Prisma.sql`
+      INSERT INTO "PatternWeakness" (
+        "id",
+        "guestId",
+        "pattern",
+        "failedCount",
+        "successCount",
+        "confidenceScore",
+        "createdAt",
+        "updatedAt",
+        "lastPracticedAt"
+      )
+      VALUES (
+        ${`${guestId}:${pattern}`},
+        ${guestId},
+        ${pattern}::"Pattern",
+        ${failedIncrement},
+        ${successIncrement},
+        CASE
+          WHEN (${failedIncrement} + ${successIncrement}) > 0
+            THEN ${successIncrement}::double precision / (${failedIncrement} + ${successIncrement})
+          ELSE 0.5
+        END,
+        ${now},
+        ${now},
+        ${now}
+      )
+      ON CONFLICT ("guestId", "pattern")
+      DO UPDATE SET
+        "failedCount" = "PatternWeakness"."failedCount" + EXCLUDED."failedCount",
+        "successCount" = "PatternWeakness"."successCount" + EXCLUDED."successCount",
+        "lastPracticedAt" = EXCLUDED."lastPracticedAt",
+        "updatedAt" = EXCLUDED."updatedAt",
+        "confidenceScore" = CASE
+          WHEN (
+            "PatternWeakness"."failedCount"
+            + "PatternWeakness"."successCount"
+            + EXCLUDED."failedCount"
+            + EXCLUDED."successCount"
+          ) > 0
+            THEN (
+              "PatternWeakness"."successCount" + EXCLUDED."successCount"
+            )::double precision / (
+              "PatternWeakness"."failedCount"
+              + "PatternWeakness"."successCount"
+              + EXCLUDED."failedCount"
+              + EXCLUDED."successCount"
+            )
+          ELSE 0.5
+        END
+    `);
   } catch (error) {
     if (isPrismaMissingTableError(error, 'PatternWeakness')) {
       return;
