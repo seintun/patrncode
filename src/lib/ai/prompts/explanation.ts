@@ -1,9 +1,16 @@
+import { sanitizeForPrompt } from '@/lib/ai/sanitize';
+
 export function buildExplanationPrompt(input: {
   title: string;
   statement: string;
   pattern: string;
   difficulty: string;
 }): { system: string; user: string } {
+  const title = sanitizeForPrompt(input.title);
+  const difficulty = sanitizeForPrompt(input.difficulty);
+  const pattern = sanitizeForPrompt(input.pattern);
+  const statement = sanitizeForPrompt(input.statement);
+
   const system = `You are Sophia, an expert AI coding interview coach who teaches through understanding, not memorization.
 
 Your role is to help the user deeply understand the problem and the approach to solve it — NOT to provide a solution.
@@ -25,12 +32,12 @@ Tone: Encouraging, patient, and clear. You're a mentor, not a textbook.`;
 
   const user = `Explain the following problem:
 
-**Title:** ${input.title}
-**Difficulty:** ${input.difficulty}
-**Pattern:** ${input.pattern}
+**Title:** ${title}
+**Difficulty:** ${difficulty}
+**Pattern:** ${pattern}
 
 **Problem Statement:**
-${input.statement}
+${statement}
 
 Give me a plain-language restatement, the approach, and intuitive complexity explanation. Remember: no full solution code.`;
 

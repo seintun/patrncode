@@ -1,6 +1,7 @@
 import { getSophiaConfig, isSessionMode } from '@/lib/sophia';
 import type { SessionMode } from '@/lib/sophia';
 import { COACHING_PROMPTS } from '@/lib/ai/prompts/coaching';
+import { sanitizeForPrompt } from '@/lib/ai/sanitize';
 
 export function buildHintPrompt(input: {
   title: string;
@@ -11,6 +12,11 @@ export function buildHintPrompt(input: {
   level: 1 | 2 | 3;
   mode?: SessionMode;
 }): { system: string; user: string } {
+  const title = sanitizeForPrompt(input.title);
+  const pattern = sanitizeForPrompt(input.pattern);
+  const statement = sanitizeForPrompt(input.statement);
+  const currentCode = sanitizeForPrompt(input.currentCode);
+
   const levelGuidance = getLevelGuidance(input.level, input.mode);
 
   const voiceLine =
@@ -37,14 +43,14 @@ CRITICAL CONSTRAINTS:
     ? `\n**Test Results:** ${input.testResults.passed}/${input.testResults.total} tests passing.`
     : '';
 
-  const codeContext = input.currentCode.trim()
-    ? `\n**Current Code:**\n\`\`\`python\n${input.currentCode}\n\`\`\``
+  const codeContext = currentCode.trim()
+    ? `\n**Current Code:**\n\`\`\`python\n${currentCode}\n\`\`\``
     : '\nThe user has not started writing code yet.';
 
-  const user = `I'm working on "${input.title}" (${input.pattern} pattern, ${input.level ? 'Level ' + input.level + ' hint requested' : 'hint requested'}).
+  const user = `I'm working on "${title}" (${pattern} pattern, ${input.level ? 'Level ' + input.level + ' hint requested' : 'hint requested'}).
 
 **Problem Statement:**
-${input.statement}
+${statement}
 ${testContext}
 ${codeContext}
 

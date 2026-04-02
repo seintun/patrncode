@@ -1,5 +1,6 @@
 import { getSophiaConfig, isSessionMode } from '@/lib/sophia';
 import type { SessionMode } from '@/lib/sophia';
+import { sanitizeForPrompt } from '@/lib/ai/sanitize';
 
 export function buildSummaryPrompt(input: {
   title: string;
@@ -10,6 +11,10 @@ export function buildSummaryPrompt(input: {
   timeSpentSeconds: number;
   mode?: SessionMode;
 }): { system: string; user: string } {
+  const title = sanitizeForPrompt(input.title);
+  const pattern = sanitizeForPrompt(input.pattern);
+  const finalCode = sanitizeForPrompt(input.finalCode);
+
   const modeFraming = getModeFraming(input.mode);
   const voiceLine =
     input.mode && isSessionMode(input.mode)
@@ -55,14 +60,14 @@ Keep the entire summary concise — no more than 200 words total.`;
 
   const user = `Generate a post-session summary for:
 
-- **Problem:** ${input.title}
-- **Pattern:** ${input.pattern}
+- **Problem:** ${title}
+- **Pattern:** ${pattern}
 - **Test Results:** ${input.testResults.passed}/${input.testResults.total} tests passing
 - **Hints Used:** ${input.hintsUsed}
 - **Time Spent:** ${timeMinutes} minute${timeMinutes !== 1 ? 's' : ''}
 - **Final Code:**
 \`\`\`python
-${input.finalCode}
+${finalCode}
 \`\`\`
 
 Provide structured feedback in four sections using exactly these markdown headings and this order:

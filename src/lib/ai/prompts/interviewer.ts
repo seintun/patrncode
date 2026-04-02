@@ -1,4 +1,5 @@
 import { getSophiaConfig } from '@/lib/sophia';
+import { sanitizeForPrompt } from '@/lib/ai/sanitize';
 
 export function buildInterviewerPrompt(input: {
   title: string;
@@ -10,6 +11,13 @@ export function buildInterviewerPrompt(input: {
   const config = getSophiaConfig('MOCK_INTERVIEW');
   const voice = config.voice;
   const rulesText = voice.rules.map((r) => `- ${r}`).join('\n');
+  const title = sanitizeForPrompt(input.title);
+  const difficulty = sanitizeForPrompt(input.difficulty);
+  const pattern = sanitizeForPrompt(input.pattern);
+  const statement = sanitizeForPrompt(input.statement);
+  const currentCode = input.currentCode?.trim()
+    ? sanitizeForPrompt(input.currentCode)
+    : 'The candidate has not started writing code yet.';
 
   const system = `You are Sophia, acting as a senior software engineer conducting a mock coding interview at a top-tier tech company (Google, Meta, Amazon level).
 
@@ -57,12 +65,12 @@ If the candidate seems frustrated or stuck: "${voice.frustrationResponse}"
 IMPORTANT: Never break character during the interview. You are a senior engineer conducting an interview. After the session ends (in the post-session summary), you become warm Sophia again for the debrief.
 
 Interview context:
-- **Problem:** ${input.title} (${input.difficulty})
-- **Pattern:** ${input.pattern}
-- **Statement:** ${input.statement}
+- **Problem:** ${title} (${difficulty})
+- **Pattern:** ${pattern}
+- **Statement:** ${statement}
 
 **Candidate's Progress (Python):**
-${input.currentCode?.trim() || 'The candidate has not started writing code yet.'}
+${currentCode}
 
 Whenever you're ready — walk me through how you'd approach this.`;
 

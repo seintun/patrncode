@@ -1,6 +1,7 @@
 import { getSophiaConfig } from '@/lib/sophia';
 import type { SessionMode } from '@/generated/prisma/enums';
 import { COACHING_PROMPTS } from '@/lib/ai/prompts/coaching';
+import { sanitizeForPrompt } from '@/lib/ai/sanitize';
 
 export function buildCoachPrompt(input: {
   title: string;
@@ -15,6 +16,13 @@ export function buildCoachPrompt(input: {
   const voice = config.voice;
   const rulesText = voice.rules.map((r) => `- ${r}`).join('\n');
   const modePrompt = COACHING_PROMPTS[sessionMode];
+  const title = sanitizeForPrompt(input.title);
+  const difficulty = sanitizeForPrompt(input.difficulty);
+  const pattern = sanitizeForPrompt(input.pattern);
+  const statement = sanitizeForPrompt(input.statement);
+  const currentCode = input.currentCode?.trim()
+    ? sanitizeForPrompt(input.currentCode)
+    : 'The user has not started writing code yet.';
 
   const system = `${modePrompt.system}
 
@@ -66,12 +74,12 @@ Mode-specific guidance:
 - Hint level 3 style: ${modePrompt.hintLevel3}
 
 Context for this session:
-- **Problem:** ${input.title} (${input.difficulty})
-- **Pattern:** ${input.pattern}
-- **Statement:** ${input.statement}
+- **Problem:** ${title} (${difficulty})
+- **Pattern:** ${pattern}
+- **Statement:** ${statement}
 
 **User's Current Progress (Python):**
-${input.currentCode?.trim() || 'The user has not started writing code yet.'}`;
+${currentCode}`;
 
   return { system };
 }
