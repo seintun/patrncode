@@ -126,6 +126,10 @@ function decodeHtmlEntities(text: string): string {
   return decoded;
 }
 
+function stripTrailingMetaSections(text: string): string {
+  return text.split(/\b(?:Constraints|Follow-up|Note)\s*:/i)[0].trim();
+}
+
 /**
  * Extract examples from LeetCode HTML content.
  * LeetCode content is HTML with example blocks.
@@ -160,8 +164,9 @@ export function extractExamples(content: string): ParsedExample[] {
     if (inputMatch && outputMatch) {
       examples.push({
         input: decodeHtmlEntities(inputMatch[1]).trim(),
-        output: decodeHtmlEntities(outputMatch[1]).trim(),
-        explanation: decodeHtmlEntities(explanationMatch?.[1] || '').trim() || undefined,
+        output: stripTrailingMetaSections(decodeHtmlEntities(outputMatch[1])),
+        explanation:
+          stripTrailingMetaSections(decodeHtmlEntities(explanationMatch?.[1] || '')) || undefined,
       });
     }
   }
@@ -179,16 +184,16 @@ export function extractExamples(content: string): ParsedExample[] {
       const section = match[1];
       const inp = section.match(/Input[:\s]*([\s\S]*?)(?=\nOutput)/i);
       const out = section.match(
-        /Output[:\s]*([\s\S]*?)(?=\nExplanation|\nConstraints|\nFollow-up|\nNote|\nExample|$)/i,
+        /Output[:\s]*([\s\S]*?)(?=\s*(?:Explanation|Constraints|Follow-up|Note|Example\s*\d*\s*:?)|$)/i,
       );
       const exp = section.match(
-        /Explanation[:\s]*([\s\S]*?)(?=\n\s*(?:Constraints|Follow-up|Note|Example\s*\d*\s*:?)|$)/i,
+        /Explanation[:\s]*([\s\S]*?)(?=\s*(?:Constraints|Follow-up|Note|Example\s*\d*\s*:?)|$)/i,
       );
       if (inp && out) {
         examples.push({
           input: decodeHtmlEntities(inp[1]).trim(),
-          output: decodeHtmlEntities(out[1]).trim(),
-          explanation: decodeHtmlEntities(exp?.[1] || '').trim() || undefined,
+          output: stripTrailingMetaSections(decodeHtmlEntities(out[1])),
+          explanation: stripTrailingMetaSections(decodeHtmlEntities(exp?.[1] || '')) || undefined,
         });
       }
     }

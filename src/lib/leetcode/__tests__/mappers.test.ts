@@ -56,6 +56,18 @@ describe('extractExamples', () => {
     expect(example.explanation).not.toContain('Constraints');
     expect(example.explanation).not.toContain('Follow-up');
   });
+
+  it('does not leak constraints into output when parsed from non-pre example text', () => {
+    const html = `
+      <p>Example 3:<br/>Input: nums = [1,1,1,3,3,4,3,2,4,2]<br/>Output: true &nbsp; Constraints: 1 &lt;= nums.length &lt;= 10^5</p>
+    `;
+
+    const [example] = extractExamples(html);
+
+    expect(example.input).toBe('nums = [1,1,1,3,3,4,3,2,4,2]');
+    expect(example.output).toBe('true');
+    expect(example.output).not.toContain('Constraints');
+  });
 });
 
 describe('extractConstraints', () => {
