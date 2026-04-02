@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.3.0
+
+### Minor Changes
+
+- Prepare and publish v0.3.0 release from main.
+
+### Patch Changes
+
+- 9b8558f: Fix onboarding/practice loading by adjusting proxy CSP/header forwarding and address Wave 3 review feedback across recommendations, report parsing, settings UX, and profile/settings API consistency.
+- 73a407c: Fix CSP violations that blocked Pyodide, Monaco Editor, and React hydration in production. Set CSP nonce on request headers before SSR, add cdn.jsdelivr.net to CSP directives, and fix Monaco accessibility overlay and loading placeholder.
+- 515a02b: Harden wave 3 AI tutor safety and data integrity by sanitizing prompt inputs/selected AI outputs, fixing pattern weakness success accounting, and adding focused coverage for wave 3 UI and cache modules.
+- 07e1cb1: Fix End Session blocking delay: move AI feedback generation to background using Next.js `after()`, add feedback polling placeholder on summary page. Session now completes in <500ms instead of 5-15s.
+
 ## 0.2.1
 
 ### Patch Changes
