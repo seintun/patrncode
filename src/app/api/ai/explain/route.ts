@@ -6,6 +6,8 @@ import { handleApiError } from '@/lib/errors/api';
 import { withRateLimit } from '@/lib/ratelimit';
 import { type NextRequest } from 'next/server';
 import { explainRequestSchema, validateBody } from '@/lib/validations';
+import { sanitizeCoachingContent } from '@/lib/ai/safety';
+import { createSingleTextSseResponse } from '@/lib/ai/sse';
 
 async function handler(req: NextRequest): Promise<Response> {
   try {
@@ -36,7 +38,10 @@ async function handler(req: NextRequest): Promise<Response> {
       prompt: user,
     });
 
-    return result.toUIMessageStreamResponse();
+    const rawText = await result.text;
+    const safeText = sanitizeCoachingContent(rawText);
+
+    return createSingleTextSseResponse(safeText);
   } catch (error) {
     return handleApiError(new Response('', { status: 500 }), error, 'POST /api/ai/explain');
   }

@@ -7,6 +7,8 @@ import { isSessionMode } from '@/lib/sophia';
 import { withRateLimit } from '@/lib/ratelimit';
 import { type NextRequest } from 'next/server';
 import { hintRequestSchema, validateBody } from '@/lib/validations';
+import { sanitizeCoachingContent } from '@/lib/ai/safety';
+import { createSingleTextSseResponse } from '@/lib/ai/sse';
 
 async function handler(req: NextRequest): Promise<Response> {
   try {
@@ -43,7 +45,11 @@ async function handler(req: NextRequest): Promise<Response> {
       prompt: user,
     });
 
-    return result.toUIMessageStreamResponse();
+    const rawText = await result.text;
+    const safeMode = isSessionMode(mode) ? mode : undefined;
+    const safeText = sanitizeCoachingContent(rawText, { mode: safeMode });
+
+    return createSingleTextSseResponse(safeText);
   } catch (error) {
     return handleApiError(new Response('', { status: 500 }), error, 'POST /api/ai/hint');
   }
